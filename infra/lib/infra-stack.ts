@@ -8,7 +8,7 @@ export class InfraStack extends cdk.Stack {
     const amplifyApp = new amplify.App(this, "photographer-site", {
       sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
         owner: "epheat",
-        repository: "photographer",
+        repository: "photographer-site",
         oauthToken: cdk.SecretValue.secretsManager("GithubToken", {
           jsonField: "token",
         }),
