@@ -5,7 +5,8 @@ export class InfraStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const amplifyApp = new amplify.App(this, "photographer-site", {
+    const amplifyApp = new amplify.App(this, "photographerwebsite", {
+      appName: 'photographerwebsite',
       sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
         owner: "epheat",
         repository: "photographer-site",
