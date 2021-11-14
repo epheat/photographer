@@ -1,24 +1,14 @@
-# photographer
+# Welcome to your CDK TypeScript project!
 
-## Project setup
-```
-npm install
-```
+This is a blank project for TypeScript development with CDK.
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+The `cdk.json` file tells the CDK Toolkit how to execute your app.
 
-### Compiles and minifies for production
-```
-npm run build
-```
+## Useful commands
 
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+ * `npm run build`   compile typescript to js
+ * `npm run watch`   watch for changes and compile
+ * `npm run test`    perform the jest unit tests
+ * `cdk deploy`      deploy this stack to your default AWS account/region
+ * `cdk diff`        compare deployed stack with current state
+ * `cdk synth`       emits the synthesized CloudFormation template
