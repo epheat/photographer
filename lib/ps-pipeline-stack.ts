@@ -21,6 +21,7 @@ export class PSPipelineStack extends cdk.Stack {
           connectionArn: 'arn:aws:codestar-connections:us-east-1:854299661720:connection/2c2673db-4c57-4448-8d00-2d5d37777a14'
         }),
         commands: [
+          'npm ci',
           'npm run build',
           'npx cdk synth'
         ]
