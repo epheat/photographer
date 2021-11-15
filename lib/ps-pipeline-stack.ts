@@ -1,7 +1,5 @@
 import * as cdk from '@aws-cdk/core';
 import * as pipelines from '@aws-cdk/pipelines'
-import * as codepipelines from '@aws-cdk/aws-codepipeline';
-import * as actions from '@aws-cdk/aws-codepipeline-actions';
 
 export interface PSPipelineStackProps extends cdk.StackProps {
   name: string;

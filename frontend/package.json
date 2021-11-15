@@ -9,7 +9,6 @@
   },
   "dependencies": {
     "@aws-amplify/ui-vue": "^0.0.0-next-5e31719-2021101352941",
-    "@aws-cdk/aws-dynamodb": "^1.132.0",
     "core-js": "^3.6.5",
     "vue": "^3.0.0",
     "vue-router": "^4.0.12"

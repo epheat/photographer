@@ -6,7 +6,7 @@ import * as integrations from "@aws-cdk/aws-apigatewayv2-integrations";
 import * as authorizers from "@aws-cdk/aws-apigatewayv2-authorizers";
 import * as lambdaNode from "@aws-cdk/aws-lambda-nodejs";
 import * as s3 from "@aws-cdk/aws-s3";
-import * as deployment from "@aws-cdk/aws-s3-deployment";
+import * as s3deploy from "@aws-cdk/aws-s3-deployment";
 import * as cloudfront from "@aws-cdk/aws-cloudfront";
 import * as origins from "@aws-cdk/aws-cloudfront-origins";
 import * as path from "path";
@@ -72,29 +72,47 @@ export class PSWebsiteStack extends cdk.Stack {
 
     // S3 Storage
     // photo uploads
-    // const bucket = new s3.Bucket(this, 'website-assets', {
-    //   bucketName: cdk.PhysicalName.GENERATE_IF_NEEDED,
-    //   encryption: s3.BucketEncryption.S3_MANAGED,
-    //   accessControl: s3.BucketAccessControl.PRIVATE,
-    //   blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
-    // });
+    const bucket = new s3.Bucket(this, 'website-static-asset', {
+      bucketName: cdk.PhysicalName.GENERATE_IF_NEEDED,
+      encryption: s3.BucketEncryption.S3_MANAGED,
+      accessControl: s3.BucketAccessControl.PRIVATE,
+      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+    });
 
-    // const distribution = new cloudfront.Distribution(this, 'cloudfront-distribution', {
-    //   defaultBehavior: {
-    //     origin: new origins.S3Origin(bucket),
-    //     allowedMethods: cloudfront.AllowedMethods.ALLOW_GET_HEAD_OPTIONS,
-    //     viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-    //   },
-    //   defaultRootObject: 'index.html',
-    //   priceClass: cloudfront.PriceClass.PRICE_CLASS_100,
-    // });
+    const distribution = new cloudfront.Distribution(this, 'cloudfront-distribution', {
+      defaultBehavior: {
+        origin: new origins.S3Origin(bucket),
+        allowedMethods: cloudfront.AllowedMethods.ALLOW_GET_HEAD_OPTIONS,
+        viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+      },
+      defaultRootObject: 'index.html',
+    });
 
-    // const frontendEntry = path.join(__dirname, '../frontend'); // path to the Vue app
+    const frontendEntry = path.join(__dirname, '../frontend'); // path to the Vue app
 
     // new deployment.BucketDeployment(this, 'static-website-deployment', {
     //   sources: [],
     //   destinationBucket: 
     // })
 
+    new s3deploy.BucketDeployment(this, 'static-website-deployment', {
+      sources: [
+        s3deploy.Source.asset(frontendEntry, {
+          bundling: {
+            image: cdk.DockerImage.fromRegistry('node:lts'),
+            command: [
+              'bash', '-c', [
+                'cd /asset-input',
+                'npm ci',
+                'npm run build',
+                'cp -r /asset-input/dist/* /asset-output/',
+              ].join('&&'),
+            ]
+          }
+        }
+      )],
+      destinationBucket: bucket,
+      distribution,
+    });
   }
 }
