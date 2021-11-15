@@ -89,12 +89,6 @@ export class PSWebsiteStack extends cdk.Stack {
     });
 
     const frontendEntry = path.join(__dirname, '../frontend'); // path to the Vue app
-
-    // new deployment.BucketDeployment(this, 'static-website-deployment', {
-    //   sources: [],
-    //   destinationBucket: 
-    // })
-
     new s3deploy.BucketDeployment(this, 'static-website-deployment', {
       sources: [
         s3deploy.Source.asset(frontendEntry, {
