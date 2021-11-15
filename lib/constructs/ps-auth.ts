@@ -27,8 +27,8 @@ export class PSAuth extends Construct {
       ],
       oAuth: {
         flows: { implicitCodeGrant: true },
-        callbackUrls: [`${props.url}/login/oauth2/code/cognito`],
-        logoutUrls: [`${props.url}/logout`],
+        callbackUrls: [`https://${props.url}/login/oauth2/code/cognito`],
+        logoutUrls: [`https://${props.url}/logout`],
       }
     })
 
