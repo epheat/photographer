@@ -8,6 +8,7 @@
 
 <script>
 import LoginForm from "../components/LoginForm.vue";
+import { Auth } from "aws-amplify";
 
 export default {
   name: 'LoginPage',
@@ -16,12 +17,16 @@ export default {
   },
   data() {
     return {
-      
+      user: undefined
     }
   },
   methods: {
-    onSubmit(e) {
-      console.log(e);
+    async onSubmit(e) {
+      try {
+        this.user = await Auth.signIn(e.username, e.password)
+      } catch (err) {
+        console.log(err);
+      }
     }
   },
   components: {
