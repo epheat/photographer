@@ -2,18 +2,17 @@ import { createApp } from 'vue'
 import { createRouter, createWebHashHistory } from 'vue-router'
 import App from './App.vue'
 import Home from './pages/Home.vue'
-import PostView from './pages/PostView.vue'
-import Amplify from 'aws-amplify';
-import awsconfig from './aws-exports';
-import AmplifyVue from '@aws-amplify/ui-vue';
-import "@aws-amplify/ui-vue/styles.css";
-
-// https://docs.amplify.aws/ui/auth/authenticator/q/framework/vue/#recommended-usage
-Amplify.configure(awsconfig);
+import PostsPage from './pages/PostsPage.vue'
+import MusicPage from './pages/MusicPage.vue'
+import LoginPage from './pages/LoginPage.vue'
+import RegisterPage from './pages/RegisterPage.vue'
 
 const routes = [
     { path: '/', component: Home },
-    { path: '/post/:postId', component: PostView },
+    { path: '/posts', component: PostsPage },
+    { path: '/music', component: MusicPage },
+    { path: '/login', component: LoginPage },
+    { path: '/register', component: RegisterPage },
 ]
 // TODO: don't use hash history
 const router = createRouter({
@@ -22,7 +21,7 @@ const router = createRouter({
 })
 
 const app = createApp(App)
+app.config.devtools = true;
 
 app.use(router)
-app.use(AmplifyVue)
 app.mount('#app')
