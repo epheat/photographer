@@ -10,6 +10,7 @@ import * as s3deploy from "@aws-cdk/aws-s3-deployment";
 import * as cloudfront from "@aws-cdk/aws-cloudfront";
 import * as origins from "@aws-cdk/aws-cloudfront-origins";
 import * as path from "path";
+import { PSAuth } from "./constructs/ps-auth";
 
 export class PSWebsiteStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
@@ -108,5 +109,10 @@ export class PSWebsiteStack extends cdk.Stack {
       destinationBucket: bucket,
       distribution,
     });
+
+    // AuthN module - a cognito userpool for vending JWTs
+    const auth = new PSAuth(this, 'ps-auth', {
+      url: distribution.distributionDomainName
+    })
   }
 }

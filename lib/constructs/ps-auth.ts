@@ -4,7 +4,7 @@ import * as lambda from "@aws-cdk/aws-lambda"
 import * as iam from "@aws-cdk/aws-iam";
 
 export interface PSAuthProps {
-  
+  url: String
 }
 
 export class PSAuth extends Construct {
@@ -24,15 +24,19 @@ export class PSAuth extends Construct {
       userPoolClientName: 'photographerWebsite',
       supportedIdentityProviders: [
         cognito.UserPoolClientIdentityProvider.COGNITO
-      ]
+      ],
+      oAuth: {
+        flows: { implicitCodeGrant: true },
+        callbackUrls: [`${props.url}/login/oauth2/code/cognito`],
+        logoutUrls: [`${props.url}/logout`],
+      }
     })
 
-    const unauthenticatedRole = new iam.Role(this, 'unauth-role', {
-      assumedBy: new iam.ServicePrincipal('cognito-identity.amazonaws.com').withConditions({
+    // const unauthenticatedRole = new iam.Role(this, 'unauth-role', {
+    //   assumedBy: new iam.ServicePrincipal('cognito-identity.amazonaws.com').withConditions({
 
-      })
-    })
-
+    //   })
+    // })
      
   }
 }
