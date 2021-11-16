@@ -93,17 +93,13 @@ export class PSWebsiteStack extends cdk.Stack {
       url: distribution.distributionDomainName
     })
 
-    console.log(`hello`);
-    console.log(`userPoolId: ${auth.userPool.userPoolId}`);
-    console.log(`hello: ${auth.client.userPoolClientId}`);
-
     const frontendEntry = path.join(__dirname, '../frontend'); // path to the Vue app
     new s3deploy.BucketDeployment(this, 'static-website-deployment', {
       sources: [
         s3deploy.Source.asset(frontendEntry, {
           bundling: {
             user: 'root',
-            image: cdk.DockerImage.fromRegistry('node:lts'),
+            image: cdk.DockerImage.fromRegistry('public.ecr.aws/sam/build-nodejs14.x:latest'),
             command: [
               'bash', '-c', [
                 'cd /asset-input',
@@ -113,8 +109,11 @@ export class PSWebsiteStack extends cdk.Stack {
               ].join('&&'),
             ],
             environment: {
-              VUE_APP_COGNITO_USERPOOL_ID: auth.userPool.userPoolId,
-              VUE_APP_COGNITO_CLIENT_ID: auth.client.userPoolClientId
+              // tried to reference the userpool attributes, but those are CDK IResolvable tokens.
+              // i'll just hard code for now, anyways the clientId and userpoolId aren't secrets.
+              // https://stackoverflow.com/questions/41277968/securing-aws-cognito-user-pool-and-client-id-on-a-static-web-page
+              VUE_APP_COGNITO_USERPOOL_ID: "us-east-1_eecd1rMOK",
+              VUE_APP_COGNITO_CLIENT_ID: "7p8hqhf2gs46jnc1k21hlkvcua"
             }
           }
         }
