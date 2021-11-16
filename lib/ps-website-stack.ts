@@ -93,11 +93,16 @@ export class PSWebsiteStack extends cdk.Stack {
       url: distribution.distributionDomainName
     })
 
+    console.log(`hello`);
+    console.log(`userPoolId: ${auth.userPool.userPoolId}`);
+    console.log(`hello: ${auth.client.userPoolClientId}`);
+
     const frontendEntry = path.join(__dirname, '../frontend'); // path to the Vue app
     new s3deploy.BucketDeployment(this, 'static-website-deployment', {
       sources: [
         s3deploy.Source.asset(frontendEntry, {
           bundling: {
+            user: 'root',
             image: cdk.DockerImage.fromRegistry('node:lts'),
             command: [
               'bash', '-c', [

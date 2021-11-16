@@ -6,10 +6,22 @@
 </template>
 
 <script>
-import Navbar from './components/Navbar.vue'
+import Navbar from './components/Navbar.vue';
+import { authStore } from './auth/store.js';
+import { Auth } from 'aws-amplify';
 
 export default {
   name: 'App',
+  async beforeMount() {
+    try {
+      let user = await Auth.currentUserPoolUser();
+      if (user) {
+        authStore.setLoggedIn(user);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  },
   components: {
     navbar: Navbar
   }

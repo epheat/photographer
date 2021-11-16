@@ -29,7 +29,7 @@
 <script>
 import LoginForm from "../components/LoginForm.vue";
 import { Auth } from "aws-amplify";
-import { getAuthState, setLoggedIn } from "../auth/store.js";
+import { authStore } from "../auth/store.js";
 import ResetPasswordForm from '../components/ResetPasswordForm.vue';
 import RegisterForm from '../components/RegisterForm.vue';
 import ConfirmationForm from '../components/ConfirmationForm.vue';
@@ -63,10 +63,7 @@ export default {
     flowRoute: String
   },
   beforeMount() {
-    let authState = getAuthState();
-    if (authState.loggedIn == true) {
-      console.log("You're already logged in! Redirecting to Home...");
-    }
+
   },
   data() {
     return {
@@ -83,7 +80,7 @@ export default {
         if (user.challengeName == "NEW_PASSWORD_REQUIRED") {
           this.$router.push({ path: 'reset' });
         } else {
-          setLoggedIn(user);
+          authStore.setLoggedIn(user);
           this.$router.push('/');
         }
       } catch (err) {

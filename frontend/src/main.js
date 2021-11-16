@@ -3,6 +3,9 @@ import { router } from './router/router.js';
 import App from './App.vue'
 import Amplify from 'aws-amplify';
 
+console.log(`userPoolId: ${process.env.VUE_APP_COGNITO_USERPOOL_ID}`);
+console.log(`clientId: ${process.env.VUE_APP_COGNITO_CLIENT_ID}`);
+
 // see: https://docs.amplify.aws/lib/auth/start/q/platform/js/#re-use-existing-authentication-resource
 Amplify.configure({
     Auth: {
