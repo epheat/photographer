@@ -1,15 +1,12 @@
 <template>
-  <div class="ps-login-form form">
-    <form-field v-model="username" label="Username" />
-    <form-field v-model="password" label="Password" :secret="!showPassword" />
+  <div class="ps-confirmation-form form">
+    <p>Enter the 6 digit confirmation code that was sent to your email.</p>
+    <form-field v-model="code" label="Code" :secret="!showPassword" />
     <div class="form-container mb-10">
-      <label>Show Password</label>
+      <label>Show Code</label>
       <input type="checkbox" v-model="showPassword"/>
     </div>
-    <div class="form-container mb-10">
-      <div>Forgot Password? Click <router-link to="/auth/forgor">here.</router-link></div>
-    </div>
-    <button @click="submit">Login</button>
+    <button @click="submit">Confirm</button>
     <div class="error-message" v-if="errorMessage">{{ errorMessage }}</div>
   </div>
 </template>
@@ -23,16 +20,14 @@ export default {
   },
   data() {
     return {
-      username: "",
-      password: "",
+      code: "",
       showPassword: false,
     }
   },
   methods: {
     submit() {
       this.$emit('submit', {
-        username: this.username,
-        password: this.password
+        code: this.code,
       })
     }
   },

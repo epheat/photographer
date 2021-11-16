@@ -70,9 +70,8 @@ export class PSWebsiteStack extends cdk.Stack {
     //   identitySource: ['$request.header.Authorization'],
     // });
     // IAM Roles
-
+    
     // S3 Storage
-    // photo uploads
     const bucket = new s3.Bucket(this, 'website-static-asset', {
       bucketName: cdk.PhysicalName.GENERATE_IF_NEEDED,
       encryption: s3.BucketEncryption.S3_MANAGED,
@@ -89,6 +88,11 @@ export class PSWebsiteStack extends cdk.Stack {
       defaultRootObject: 'index.html',
     });
 
+    // AuthN module - a cognito userpool for vending JWTs
+    const auth = new PSAuth(this, 'ps-auth', {
+      url: distribution.distributionDomainName
+    })
+
     const frontendEntry = path.join(__dirname, '../frontend'); // path to the Vue app
     new s3deploy.BucketDeployment(this, 'static-website-deployment', {
       sources: [
@@ -102,17 +106,16 @@ export class PSWebsiteStack extends cdk.Stack {
                 'npm run build',
                 'cp -r /asset-input/dist/* /asset-output/',
               ].join('&&'),
-            ]
+            ],
+            environment: {
+              VUE_APP_COGNITO_USERPOOL_ID: auth.userPool.userPoolId,
+              VUE_APP_COGNITO_CLIENT_ID: auth.client.userPoolClientId
+            }
           }
         }
       )],
       destinationBucket: bucket,
       distribution,
     });
-
-    // AuthN module - a cognito userpool for vending JWTs
-    const auth = new PSAuth(this, 'ps-auth', {
-      url: distribution.distributionDomainName
-    })
   }
 }

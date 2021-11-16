@@ -1,19 +1,16 @@
 const authState = {
   loggedIn: false,
-  userId: undefined,
-  username: undefined,
+  user: undefined,
 }
 
 export const setLoggedOut = () => {
   authState.loggedIn = false;
-  authState.userId = undefined;
-  authState.username = undefined;
+  authState.user = undefined;
 }
 
-export const setLoggedIn = (userId, username) => {
+export const setLoggedIn = (user) => {
   authState.loggedIn = true;
-  authState.userId = userId;
-  authState.username = username;
+  authState.user = user;
 }
 
 export const getAuthState = () => {

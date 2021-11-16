@@ -1,15 +1,14 @@
 <template>
-  <div class="ps-login-form form">
-    <form-field v-model="username" label="Username" />
+  <div class="ps-register-form form">
+    <p>Welcome to the _photographer_ website! Please register with your desired username, email, and a password that you don't use anywhere else.</p>
+    <form-field v-model="username" label="Username"/>
+    <form-field v-model="email" label="Email"/>
     <form-field v-model="password" label="Password" :secret="!showPassword" />
     <div class="form-container mb-10">
       <label>Show Password</label>
       <input type="checkbox" v-model="showPassword"/>
     </div>
-    <div class="form-container mb-10">
-      <div>Forgot Password? Click <router-link to="/auth/forgor">here.</router-link></div>
-    </div>
-    <button @click="submit">Login</button>
+    <button @click="submit">Register</button>
     <div class="error-message" v-if="errorMessage">{{ errorMessage }}</div>
   </div>
 </template>
@@ -24,6 +23,7 @@ export default {
   data() {
     return {
       username: "",
+      email: "",
       password: "",
       showPassword: false,
     }
@@ -32,6 +32,7 @@ export default {
     submit() {
       this.$emit('submit', {
         username: this.username,
+        email: this.email,
         password: this.password
       })
     }
