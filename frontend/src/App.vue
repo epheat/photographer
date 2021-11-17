@@ -47,6 +47,11 @@ export default {
   width: 800px; // todo: responsive
   background-color: $ps-white;
   justify-self: center;
+  padding: 0px 15px;
+
+  h1 {
+    text-align: center;
+  }
 }
 
 .mb-10 {

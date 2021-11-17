@@ -20,7 +20,8 @@ export class PSAuth extends Construct {
       userPoolName: 'photographerWebsiteUsers',
       autoVerify: {
         email: true
-      }
+      },
+      selfSignUpEnabled: true
     })
     this.client = new cognito.UserPoolClient(this, 'ps-app', {
       generateSecret: false,

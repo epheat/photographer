@@ -1,6 +1,7 @@
 <template>
     <div class="ps-login-page page">
       <h1>{{ currentFlow.title }}</h1>
+      <p class="success-message" v-if="successMessage">{{ successMessage }}</p>
       <login-form
         v-if="currentFlow.route == 'login'"
         :errorMessage="errorMessage"
@@ -18,11 +19,22 @@
       />
       <confirmation-form
         v-if="currentFlow.route == 'confirm'"
+        :initialUsername="stashedUsername"
         :errorMessage="errorMessage"
         @submit="onConfirm"
       />
-      <p v-if="currentFlow.route == 'forgor'">forgor</p>
-      <p>© Evan Heaton 2021</p>
+      <forgot-password-form
+        v-if="currentFlow.route == 'forgor'"
+        :errorMessage="errorMessage"
+        @submit="onForgot"
+      />
+      <forgot-confirmation-form
+        v-if="currentFlow.route == 'forgor2'"
+        :initialUsername="stashedUsername"
+        :errorMessage="errorMessage"
+        @submit="onForgotConfirm"
+      />
+      <Footer></Footer>
     </div>
 </template>
 
@@ -33,6 +45,9 @@ import { authStore } from "../auth/store.js";
 import ResetPasswordForm from '../components/ResetPasswordForm.vue';
 import RegisterForm from '../components/RegisterForm.vue';
 import ConfirmationForm from '../components/ConfirmationForm.vue';
+import Footer from '../components/Footer.vue';
+import ForgotPasswordForm from '../components/ForgotPasswordForm.vue';
+import ForgotConfirmationForm from '../components/ForgotConfirmationForm.vue';
 
 const authFlows = [
   {
@@ -54,6 +69,10 @@ const authFlows = [
   {
     route: 'forgor',
     title: 'Forgot Password 🤕',
+  },
+  {
+    route: 'forgor2',
+    title: 'Confirmation ✅'
   }
 ]
 
@@ -67,6 +86,7 @@ export default {
   },
   data() {
     return {
+      successMessage: undefined,
       errorMessage: undefined,
       stashedUsername: undefined,
     }
@@ -74,7 +94,7 @@ export default {
   methods: {
     // Login flow
     async onSubmit(e) {
-      this.errorMessage = undefined;
+      this.resetMessages();
       try {
         let user = await Auth.signIn(e.username, e.password)
         if (user.challengeName == "NEW_PASSWORD_REQUIRED") {
@@ -89,7 +109,7 @@ export default {
     },
     // Reset password flow
     async onReset(e) {
-      this.errorMessage = undefined;
+      this.resetMessages();
       if (e.newPassword1 != e.newPassword2) {
         this.errorMessage = "New password fields must match.";
         return;
@@ -104,7 +124,7 @@ export default {
     },
     // Registration flow
     async onRegister(e) {
-      this.errorMessage = undefined;
+      this.resetMessages();
       try {
         let signUpResult = await Auth.signUp({
           username: e.username,
@@ -115,6 +135,7 @@ export default {
         })
         if (signUpResult.codeDeliveryDetails.DeliveryMedium == "EMAIL") {
           this.stashedUsername = e.username;
+          this.successMessage = `Sent a code to your email ${signUpResult.codeDeliveryDetails.Destination}`;
           this.$router.push({ path: 'confirm' });
         }
       } catch (err) {
@@ -123,13 +144,9 @@ export default {
     },
     // Registration part2: confirmation flow
     async onConfirm(e) {
-      this.errorMessage = undefined;
-      if (!this.stashedUsername) {
-        this.errorMessage = "How did you get here as an unknown user? Go away.";
-        return;
-      }
+      this.resetMessages();
       try {
-        let confirmationResult = await Auth.confirmSignUp(this.stashedUsername, e.code);
+        let confirmationResult = await Auth.confirmSignUp(e.username, e.code);
         if (confirmationResult == "SUCCESS") {
           this.$router.push({ path: 'login' });
         }
@@ -139,7 +156,38 @@ export default {
     },
     // Forgot password flow (I forgor)
     async onForgot(e) {
-      console.log(e);
+      this.resetMessages();
+      try {
+        let forgotResult = await Auth.forgotPassword(e.username);
+        if (forgotResult.CodeDeliveryDetails.DeliveryMedium == "EMAIL") {
+          this.stashedUsername = e.username;
+          this.successMessage = `Sent a code to your email ${forgotResult.CodeDeliveryDetails.Destination}`;
+          this.$router.push({ path: 'forgor2' });
+        }
+      } catch (err) {
+        this.errorMessage = err.message;
+      }
+    },
+    // Forgot password part2: confirmation flow
+    async onForgotConfirm(e) {
+      this.resetMessages();
+      if (e.newPassword1 != e.newPassword2) {
+        this.errorMessage = "New password fields must match.";
+        return;
+      }
+      try {
+        let confirmResult = await Auth.forgotPasswordSubmit(e.username, e.code, e.newPassword1);
+        if (confirmResult == "SUCCESS") {
+          this.successMessage = "Successfully reset password! 😇 Try logging in now...";
+          this.$router.push({ path: 'login' });
+        }
+      } catch (err) {
+        this.errorMessage = err.message;
+      }
+    },
+    resetMessages() {
+      this.successMessage = undefined;
+      this.errorMessage = undefined;
     }
   },
   computed: {
@@ -148,10 +196,13 @@ export default {
     }
   },
   components: {
-    'login-form': LoginForm,
-    'reset-password-form': ResetPasswordForm,
-    'register-form': RegisterForm,
-    'confirmation-form': ConfirmationForm
+    LoginForm,
+    ResetPasswordForm,
+    RegisterForm,
+    ConfirmationForm,
+    Footer,
+    ForgotPasswordForm,
+    ForgotConfirmationForm,
   }
 }
 </script>
@@ -174,6 +225,7 @@ export default {
   max-width: 400px;
   padding: 10px;
   margin: 0 auto;
+  box-shadow: 0px 2px 4px rgba(20, 20, 20, 0.5);
 
   button {
     height: 30px;
@@ -183,6 +235,10 @@ export default {
 
 .error-message {
   color: $ps-red;
+}
+.success-message {
+  color: $ps-green;
+  text-align: center;
 }
 
 </style>
