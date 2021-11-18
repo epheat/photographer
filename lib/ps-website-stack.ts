@@ -1,14 +1,10 @@
 import * as cdk from "@aws-cdk/core";
-import * as dynamodb from "@aws-cdk/aws-dynamodb";
-import * as lambda from "@aws-cdk/aws-lambda";
-import * as apigateway from "@aws-cdk/aws-apigatewayv2";
-import * as integrations from "@aws-cdk/aws-apigatewayv2-integrations";
-import * as authorizers from "@aws-cdk/aws-apigatewayv2-authorizers";
-import * as lambdaNode from "@aws-cdk/aws-lambda-nodejs";
 import * as s3 from "@aws-cdk/aws-s3";
 import * as s3deploy from "@aws-cdk/aws-s3-deployment";
 import * as cloudfront from "@aws-cdk/aws-cloudfront";
 import * as origins from "@aws-cdk/aws-cloudfront-origins";
+import * as route53 from "@aws-cdk/aws-route53";
+import * as targets from "@aws-cdk/aws-route53-targets";
 import * as path from "path";
 
 export interface PSWebsiteStackProps extends cdk.StackProps {
@@ -34,6 +30,12 @@ export class PSWebsiteStack extends cdk.Stack {
         viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
       },
       defaultRootObject: 'index.html',
+    });
+
+    const hostedZone = route53.HostedZone.fromHostedZoneId(this, 'hostedZone', 'Z0357170UGJZSZM98IY8');
+    const aliasRecord = new route53.ARecord(this, 'alias-record', {
+      target: route53.RecordTarget.fromAlias(new targets.CloudFrontTarget(distribution)),
+      zone: hostedZone,
     });
 
     const userPoolId = cdk.Fn.importValue(`userPoolId-${props.domain}`);
