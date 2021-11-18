@@ -9,7 +9,7 @@
     "watch": "tsc -w",
     "test": "jest",
     "cdk": "cdk",
-    "clean": "tsc --build --clean"
+    "clean": "tsc --build --clean && rm -r cdk.out"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.85",

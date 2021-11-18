@@ -6,19 +6,26 @@ import { PSAppStage } from '../lib/ps-app-stage';
 
 const app = new cdk.App();
 
+const defaultEnv = {
+  account: process.env.CDK_DEFAULT_ACCOUNT,
+  region: process.env.CDK_DEFAULT_REGION,
+};
+
 const delivery = new PSPipelineStack(app, 'PS-DeliveryPipeline', {
   name: 'PhotographerSiteDeliveryPipeline',
-  env: {
-    account: process.env.CDK_DEFAULT_ACCOUNT,
-    region: process.env.CDK_DEFAULT_REGION
-  }
+  env: defaultEnv,
 });
 
 const devStage = new PSAppStage(app, 'DevStage', {
-  env: {
-    account: process.env.CDK_DEFAULT_ACCOUNT,
-    region: process.env.CDK_DEFAULT_REGION
-  }
+  domain: "Dev",
+  env: defaultEnv,
 })
 
+// const prodStage = new PSAppStage(app, 'ProdStage', {
+//   domain: "Prod",
+//   env: defaultEnv,
+// })
+
 delivery.pipeline.addStage(devStage);
+
+// delivery.pipeline.addStage(prodStage);
