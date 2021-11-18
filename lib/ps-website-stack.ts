@@ -5,6 +5,7 @@ import * as cloudfront from "@aws-cdk/aws-cloudfront";
 import * as origins from "@aws-cdk/aws-cloudfront-origins";
 import * as route53 from "@aws-cdk/aws-route53";
 import * as targets from "@aws-cdk/aws-route53-targets";
+import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as path from "path";
 
 export interface PSWebsiteStackProps extends cdk.StackProps {
@@ -23,6 +24,19 @@ export class PSWebsiteStack extends cdk.Stack {
       blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
     });
 
+    const hostedZone = route53.HostedZone.fromHostedZoneAttributes(this, 'hostedZone', {
+      hostedZoneId: 'Z0357170UGJZSZM98IY8',
+      zoneName: 'evanheaton.com',
+    });
+
+    const sslCertificate = new acm.Certificate(this, 'ssl-certificate', {
+      domainName: 'evanheaton.com',
+      subjectAlternativeNames: [
+        '*.evanheaton.com'
+      ],
+      validation: acm.CertificateValidation.fromDns(hostedZone),
+    });
+
     const distribution = new cloudfront.Distribution(this, 'cloudfront-distribution', {
       defaultBehavior: {
         origin: new origins.S3Origin(bucket),
@@ -30,9 +44,10 @@ export class PSWebsiteStack extends cdk.Stack {
         viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
       },
       defaultRootObject: 'index.html',
+      certificate: sslCertificate,
+      domainNames: ['evanheaton.com', 'www.evanheaton.com'],
     });
 
-    const hostedZone = route53.HostedZone.fromHostedZoneId(this, 'hostedZone', 'Z0357170UGJZSZM98IY8');
     const aliasRecord = new route53.ARecord(this, 'alias-record', {
       target: route53.RecordTarget.fromAlias(new targets.CloudFrontTarget(distribution)),
       zone: hostedZone,
