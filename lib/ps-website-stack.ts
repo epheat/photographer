@@ -58,8 +58,8 @@ export class PSWebsiteStack extends cdk.Stack {
               // tried to reference the userpool attributes, but those are CDK IResolvable tokens.
               // i'll just hard code for now, anyways the clientId and userpoolId aren't secrets.
               // https://stackoverflow.com/questions/41277968/securing-aws-cognito-user-pool-and-client-id-on-a-static-web-page
-              VUE_APP_COGNITO_USERPOOL_ID: "us-east-1_eecd1rMOK",
-              VUE_APP_COGNITO_CLIENT_ID: "7p8hqhf2gs46jnc1k21hlkvcua"
+              VUE_APP_COGNITO_USERPOOL_ID: "us-east-1_TLQmyLdLo",
+              VUE_APP_COGNITO_CLIENT_ID: "1pscc7mteomtr9o9upfbmc97bk"
             }
           }
         }
