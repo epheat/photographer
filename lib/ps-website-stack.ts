@@ -7,6 +7,8 @@ import * as route53 from "@aws-cdk/aws-route53";
 import * as targets from "@aws-cdk/aws-route53-targets";
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as path from "path";
+import { exec, spawnSync } from "child_process";
+import * as fs from "fs-extra";
 
 export interface PSWebsiteStackProps extends cdk.StackProps {
   domain: String
@@ -24,11 +26,11 @@ export class PSWebsiteStack extends cdk.Stack {
       blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
     });
 
+    // Website hosted at evanheaton.com
     const hostedZone = route53.HostedZone.fromHostedZoneAttributes(this, 'hostedZone', {
       hostedZoneId: 'Z0357170UGJZSZM98IY8',
       zoneName: 'evanheaton.com',
     });
-
     const sslCertificate = new acm.Certificate(this, 'ssl-certificate', {
       domainName: 'evanheaton.com',
       subjectAlternativeNames: [
@@ -36,7 +38,6 @@ export class PSWebsiteStack extends cdk.Stack {
       ],
       validation: acm.CertificateValidation.fromDns(hostedZone),
     });
-
     const distribution = new cloudfront.Distribution(this, 'cloudfront-distribution', {
       defaultBehavior: {
         origin: new origins.S3Origin(bucket),
@@ -47,7 +48,6 @@ export class PSWebsiteStack extends cdk.Stack {
       certificate: sslCertificate,
       domainNames: ['evanheaton.com', 'www.evanheaton.com'],
     });
-
     const aliasRecord = new route53.ARecord(this, 'alias-record', {
       target: route53.RecordTarget.fromAlias(new targets.CloudFrontTarget(distribution)),
       zone: hostedZone,
@@ -61,6 +61,30 @@ export class PSWebsiteStack extends cdk.Stack {
       sources: [
         s3deploy.Source.asset(frontendEntry, {
           bundling: {
+            local: {
+              tryBundle(outputDir: string) {
+                try {
+                  exec('npm --version'); // check if npm is installed for local build.
+                  exec([
+                    'npm i',
+                    'npm run build'
+                  ].join('&&'), {
+                    env: {
+                      ...process.env,
+                      VUE_APP_COGNITO_USERPOOL_ID: "us-east-1_TLQmyLdLo",
+                      VUE_APP_COGNITO_CLIENT_ID: "1pscc7mteomtr9o9upfbmc97bk",
+                    },
+                    cwd: frontendEntry
+                  });
+                  // copy bundle to the CDK output dir
+                  fs.copySync(path.join(frontendEntry, 'dist'), outputDir);
+                } catch(err) {
+                  console.log(err);
+                  return false;
+                }
+                return true;
+              }
+            },
             user: 'root',
             image: cdk.DockerImage.fromRegistry('public.ecr.aws/sam/build-nodejs14.x:latest'),
             command: [
@@ -77,7 +101,7 @@ export class PSWebsiteStack extends cdk.Stack {
               // https://stackoverflow.com/questions/41277968/securing-aws-cognito-user-pool-and-client-id-on-a-static-web-page
               VUE_APP_COGNITO_USERPOOL_ID: "us-east-1_TLQmyLdLo",
               VUE_APP_COGNITO_CLIENT_ID: "1pscc7mteomtr9o9upfbmc97bk"
-            }
+            },
           }
         }
       )],

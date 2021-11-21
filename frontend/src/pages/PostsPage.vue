@@ -9,6 +9,8 @@
 <script>
 import Footer from '../components/Footer.vue';
 import Spinner from '../components/Spinner.vue';
+import { API } from 'aws-amplify';
+
 export default {
   name: 'PostsPage',
   props: {
