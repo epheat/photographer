@@ -44,7 +44,7 @@ export default {
 }
 
 .page {
-  width: 800px; // todo: responsive
+  max-width: 800px; // todo: responsive
   background-color: $ps-white;
   justify-self: center;
   padding: 0px 15px;

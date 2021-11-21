@@ -52,7 +52,14 @@ export class PSBackendStack extends cdk.Stack {
       entry: path.join(__dirname, "./lambda/posts.ts"),
       handler: 'get',
     });
-    postsTable.grantReadWriteData(getPostsLambda);
+    postsTable.grantReadData(getPostsLambda);
+
+    const createPostLambda = new nodejs.NodejsFunction(this, 'put-posts-func', {
+      runtime: lambda.Runtime.NODEJS_14_X,
+      entry: path.join(__dirname, "./lambda/posts.ts"),
+      handler: 'put',
+    });
+    postsTable.grantReadWriteData(createPostLambda);
 
     // APIG HTTP API
     // for setting up API routes to Lambdas
@@ -60,7 +67,14 @@ export class PSBackendStack extends cdk.Stack {
       description: 'photographer-website API routes',
       apiName: `ps-posts-api-${props.domain}`,
       corsPreflight: {
+        allowHeaders: [
+          'Content-Type',
+          'X-Amz-Date',
+          'Authorization',
+          'X-Api-Key',
+        ],
         allowMethods: [
+          apigateway.CorsHttpMethod.OPTIONS,
           apigateway.CorsHttpMethod.GET,
           apigateway.CorsHttpMethod.POST,
         ],
@@ -77,9 +91,17 @@ export class PSBackendStack extends cdk.Stack {
       path: '/posts',
       methods: [apigateway.HttpMethod.GET],
       integration: new integrations.LambdaProxyIntegration({
-        handler: getPostsLambda
+        handler: getPostsLambda,
       })
     });
+    httpApi.addRoutes({
+      path: '/posts/new',
+      methods: [apigateway.HttpMethod.POST],
+      integration: new integrations.LambdaProxyIntegration({
+        handler: createPostLambda,
+      })
+    })
+    // TODO: authorizer
 
     // const apiAliasRecord = new route53.ARecord(this, 'api-alias-record', {
     //   zone: hostedZone,
