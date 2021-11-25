@@ -33,7 +33,7 @@ export default {
 
 #app {
   color: #2c3e50;
-  font-family: monospace;
+  font-family: sans-serif;
 }
 
 .ps-app-container {
