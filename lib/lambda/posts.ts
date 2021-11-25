@@ -27,8 +27,38 @@ export async function get(event: APIGatewayProxyEventV2): Promise<APIGatewayProx
     });
     
     return success({
-        items: results.Items,
-        lastEvaluatedKey: results.LastEvaluatedKey
+      message: "Success.",
+      items: results.Items,
+      lastEvaluatedKey: results.LastEvaluatedKey
+    });
+  } catch (err) {
+    console.log(err);
+    return fault({
+      message: err
+    });
+  }
+}
+
+/**
+ * GET /posts/{postId}
+ * 
+ * Returns the post with postId={postId}
+ */
+export async function getPost(event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> {
+  if (!event.pathParameters?.postId) {
+    return error({ message: "Invalid Request: Missing postId path parameter." });
+  }
+  try {
+    const result = await ddb.get({
+      TableName: tableName,
+      Key: {
+        postId: event.pathParameters.postId
+      }
+    })
+
+    return success({
+      message: "Success.",
+      post: result.Item,
     });
   } catch (err) {
     console.log(err);

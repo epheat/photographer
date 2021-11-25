@@ -8,6 +8,7 @@ export const authStore = {
   state: reactive({
     loggedIn: false,
     user: undefined,
+    token: undefined,
   }),
 
   setLoggedOut() {
@@ -16,13 +17,15 @@ export const authStore = {
     }
     this.state.loggedIn = false;
     this.state.user = undefined;
+    this.state.token = undefined;
   },
 
-  setLoggedIn(user) {
+  setLoggedIn(user, token) {
     if (this.debug) {
       console.log(`setting logged in.`);
     }
     this.state.loggedIn = true;
     this.state.user = user;
+    this.state.token = token;
   }
 }

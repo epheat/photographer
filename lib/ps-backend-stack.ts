@@ -5,6 +5,7 @@ import * as nodejs from '@aws-cdk/aws-lambda-nodejs';
 import * as path from "path";
 import * as apigateway from "@aws-cdk/aws-apigatewayv2";
 import * as integrations from "@aws-cdk/aws-apigatewayv2-integrations";
+import * as authorizers from "@aws-cdk/aws-apigatewayv2-authorizers";
 import * as route53 from "@aws-cdk/aws-route53";
 import * as targets from '@aws-cdk/aws-route53-targets';
 import * as acm from '@aws-cdk/aws-certificatemanager';
@@ -53,6 +54,12 @@ export class PSBackendStack extends cdk.Stack {
       handler: 'get',
     });
     postsTable.grantReadData(getPostsLambda);
+    const getPostLambda = new nodejs.NodejsFunction(this, 'get-post-func', {
+      runtime: lambda.Runtime.NODEJS_14_X,
+      entry: path.join(__dirname, "./lambda/posts.ts"),
+      handler: 'getPost',
+    });
+    postsTable.grantReadData(getPostLambda);
 
     const createPostLambda = new nodejs.NodejsFunction(this, 'put-posts-func', {
       runtime: lambda.Runtime.NODEJS_14_X,
@@ -87,21 +94,34 @@ export class PSBackendStack extends cdk.Stack {
     //   certificate: acm.Certificate.fromCertificateArn(this, 'api-certificate', 'arn:aws:acm:us-east-1:854299661720:certificate/5236d810-165d-43b7-8e1e-46e701a61673'),
     // })
 
+    const authorizer = new authorizers.HttpUserPoolAuthorizer({
+      userPool: auth.userPool,
+      userPoolClients: [auth.client],
+      identitySource: ['$request.header.Authorization'],
+    })
+
     httpApi.addRoutes({
       path: '/posts',
       methods: [apigateway.HttpMethod.GET],
       integration: new integrations.LambdaProxyIntegration({
         handler: getPostsLambda,
-      })
+      }),
     });
+    httpApi.addRoutes({
+      path: '/posts/{postId}',
+      methods: [apigateway.HttpMethod.GET],
+      integration: new integrations.LambdaProxyIntegration({
+        handler: getPostLambda,
+      })
+    })
     httpApi.addRoutes({
       path: '/posts/new',
       methods: [apigateway.HttpMethod.POST],
       integration: new integrations.LambdaProxyIntegration({
         handler: createPostLambda,
-      })
+      }),
+      authorizer: authorizer,
     })
-    // TODO: authorizer
 
     // const apiAliasRecord = new route53.ARecord(this, 'api-alias-record', {
     //   zone: hostedZone,

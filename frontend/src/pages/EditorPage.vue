@@ -1,6 +1,7 @@
 <template>
   <div class="ps-editor-page">
     <h1>Post Editor 💻</h1>
+    <p class="success-message" v-if="successMessage">{{ successMessage }}</p>
     <div class="options">
       <form-field v-model="title" label="Title" />
     </div>
@@ -11,6 +12,7 @@
     <div class="actions">
       <button @click="submit">Submit</button>
     </div>
+    <p class="error-message" v-if="errorMessage">{{ errorMessage }}</p>
     <Footer></Footer>
   </div>
 </template>
@@ -19,7 +21,7 @@
 import Footer from '../components/Footer.vue';
 import { marked } from 'marked';
 import FormField from '../components/FormField.vue';
-import { API } from 'aws-amplify';
+import { API, Auth } from 'aws-amplify';
 
 export default {
   name: 'EditorPage',
@@ -30,6 +32,8 @@ export default {
     return {
       title: "",
       content: "",
+      successMessage: undefined,
+      errorMessage: undefined,
     }
   },
   methods: {
@@ -38,17 +42,21 @@ export default {
     },
     async submit() {
       try {
+        let token = (await Auth.currentSession()).getIdToken().getJwtToken();
         let response = await API.post('ps-api', '/posts/new', {
           body: {
             post: {
               title: this.title,
               content: this.content,
             }
+          },
+          headers: {
+            Authorization: `Bearer ${token}`,
           }
         });
-        console.log(response);
+        this.successMessage = response.message;
       } catch (err) {
-        console.log(err);
+        this.errorMessage = err.message;
       }
     },
   },
@@ -75,6 +83,14 @@ export default {
   }
   h1 {
     text-align: center;
+  }
+
+  .success-message {
+    color: $ps-green;
+    text-align: center;
+  }
+  .error-message {
+    color: $ps-red;
   }
 }
 .editor {
