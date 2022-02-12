@@ -1,3 +1,6 @@
+// response structures that match the APIGateway-Lambda integration response interface
+// see: https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html
+
 export const success = (body: any) => {
   return buildResponse(200, body);
 };
