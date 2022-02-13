@@ -18,10 +18,11 @@
 </template>
 
 <script>
-import Footer from '../components/Footer.vue';
+import Footer from '@/components/Footer.vue';
 import { marked } from 'marked';
-import FormField from '../components/FormField.vue';
+import FormField from '@/components/FormField.vue';
 import { API, Auth } from 'aws-amplify';
+import {authStore} from "@/auth/store";
 
 export default {
   name: 'EditorPage',
@@ -42,7 +43,11 @@ export default {
     },
     async submit() {
       try {
-        let token = (await Auth.currentSession()).getIdToken().getJwtToken();
+        if (!authStore.state.loggedIn) {
+          this.errorMessage = "Error: not logged in.";
+          return;
+        }
+        let token = (await Auth.currentSession()).getAccessToken().getJwtToken();
         let response = await API.post('ps-api', '/posts/new', {
           body: {
             post: {

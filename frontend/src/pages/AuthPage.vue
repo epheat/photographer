@@ -3,33 +3,33 @@
       <h1>{{ currentFlow.title }}</h1>
       <p class="success-message" v-if="successMessage">{{ successMessage }}</p>
       <login-form
-        v-if="currentFlow.route == 'login'"
+        v-if="currentFlow.route === 'login'"
         :errorMessage="errorMessage"
         @submit="onSubmit"
       />
       <reset-password-form
-        v-if="currentFlow.route == 'reset'"
+        v-if="currentFlow.route === 'reset'"
         :errorMessage="errorMessage"
         @submit="onReset"
       />
       <register-form
-        v-if="currentFlow.route == 'register'"
+        v-if="currentFlow.route === 'register'"
         :errorMessage="errorMessage"
         @submit="onRegister"
       />
       <confirmation-form
-        v-if="currentFlow.route == 'confirm'"
+        v-if="currentFlow.route === 'confirm'"
         :initialUsername="stashedUsername"
         :errorMessage="errorMessage"
         @submit="onConfirm"
       />
       <forgot-password-form
-        v-if="currentFlow.route == 'forgor'"
+        v-if="currentFlow.route === 'forgor'"
         :errorMessage="errorMessage"
         @submit="onForgot"
       />
       <forgot-confirmation-form
-        v-if="currentFlow.route == 'forgor2'"
+        v-if="currentFlow.route === 'forgor2'"
         :initialUsername="stashedUsername"
         :errorMessage="errorMessage"
         @submit="onForgotConfirm"
@@ -97,7 +97,7 @@ export default {
       this.resetMessages();
       try {
         let user = await Auth.signIn(e.username, e.password)
-        if (user.challengeName == "NEW_PASSWORD_REQUIRED") {
+        if (user.challengeName === "NEW_PASSWORD_REQUIRED") {
           this.$router.push({ path: 'reset' });
         } else {
           authStore.setLoggedIn(user);
@@ -110,7 +110,7 @@ export default {
     // Reset password flow
     async onReset(e) {
       this.resetMessages();
-      if (e.newPassword1 != e.newPassword2) {
+      if (e.newPassword1 !== e.newPassword2) {
         this.errorMessage = "New password fields must match.";
         return;
       }
@@ -133,7 +133,7 @@ export default {
             email: e.email
           }
         })
-        if (signUpResult.codeDeliveryDetails.DeliveryMedium == "EMAIL") {
+        if (signUpResult.codeDeliveryDetails.DeliveryMedium === "EMAIL") {
           this.stashedUsername = e.username;
           this.successMessage = `Sent a code to your email ${signUpResult.codeDeliveryDetails.Destination}`;
           this.$router.push({ path: 'confirm' });
@@ -147,7 +147,7 @@ export default {
       this.resetMessages();
       try {
         let confirmationResult = await Auth.confirmSignUp(e.username, e.code);
-        if (confirmationResult == "SUCCESS") {
+        if (confirmationResult === "SUCCESS") {
           this.$router.push({ path: 'login' });
         }
       } catch (err) {
@@ -159,7 +159,7 @@ export default {
       this.resetMessages();
       try {
         let forgotResult = await Auth.forgotPassword(e.username);
-        if (forgotResult.CodeDeliveryDetails.DeliveryMedium == "EMAIL") {
+        if (forgotResult.CodeDeliveryDetails.DeliveryMedium === "EMAIL") {
           this.stashedUsername = e.username;
           this.successMessage = `Sent a code to your email ${forgotResult.CodeDeliveryDetails.Destination}`;
           this.$router.push({ path: 'forgor2' });
@@ -171,13 +171,13 @@ export default {
     // Forgot password part2: confirmation flow
     async onForgotConfirm(e) {
       this.resetMessages();
-      if (e.newPassword1 != e.newPassword2) {
+      if (e.newPassword1 !== e.newPassword2) {
         this.errorMessage = "New password fields must match.";
         return;
       }
       try {
         let confirmResult = await Auth.forgotPasswordSubmit(e.username, e.code, e.newPassword1);
-        if (confirmResult == "SUCCESS") {
+        if (confirmResult === "SUCCESS") {
           this.successMessage = "Successfully reset password! 😇 Try logging in now...";
           this.$router.push({ path: 'login' });
         }
@@ -192,7 +192,7 @@ export default {
   },
   computed: {
     currentFlow() {
-      return authFlows.find(el => el.route == this.flowRoute)
+      return authFlows.find(el => el.route === this.flowRoute)
     }
   },
   components: {

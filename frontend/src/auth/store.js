@@ -3,12 +3,15 @@ import { reactive } from 'vue'
 // a simple store for authentication state.
 // from: https://v3.vuejs.org/guide/state-management.html
 
+// before calling APIs, retrieve the accessToken from Amplify Auth module's `getSession()`.
+// this will return a valid access token (if expired, will use the refresh token to acquire a new one).
+// see: https://docs.amplify.aws/lib/auth/manageusers/q/platform/js/#retrieve-current-session
+
 export const authStore = {
-  debug: false,
+  debug: true,
   state: reactive({
     loggedIn: false,
     user: undefined,
-    token: undefined,
   }),
 
   setLoggedOut() {
@@ -17,15 +20,13 @@ export const authStore = {
     }
     this.state.loggedIn = false;
     this.state.user = undefined;
-    this.state.token = undefined;
   },
 
-  setLoggedIn(user, token) {
+  setLoggedIn(user) {
     if (this.debug) {
-      console.log(`setting logged in.`);
+      console.log("setting logged in.");
     }
     this.state.loggedIn = true;
     this.state.user = user;
-    this.state.token = token;
   }
 }
