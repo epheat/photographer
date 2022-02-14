@@ -19,14 +19,14 @@ const ddb = DynamoDBDocument.from(client);
  * TODO: pagination
  */
 export async function get(event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> {
-  // get the first 20 posts, sorted by timestamp by querying on the "postTypeTimeSorted" index.
+  // get the first 10 posts, sorted by timestamp by querying on the "postTypeTimeSorted" index.
   try {
     const results = await ddb.query({
       TableName: tableName,
       IndexName: "postTypeTimeSorted",
       KeyConditionExpression: "postType = :postType",
       ExpressionAttributeValues: { ':postType': 'TEXT' },
-      Limit: 20
+      Limit: 10
     });
     
     return success({

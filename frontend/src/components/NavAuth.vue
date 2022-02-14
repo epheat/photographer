@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import { authStore } from '../auth/store.js';
+import { authStore } from '@/auth/store';
 import { Auth } from 'aws-amplify';
 
 export default {
@@ -41,6 +41,7 @@ export default {
 
 .ps-nav-auth {
   font-size: 0.8em;
+  padding-top: 3px;
   a {
     text-decoration: none;
     color: $ps-daisy;
@@ -50,5 +51,9 @@ export default {
 .ps-nav-container {
   display: flex;
   justify-content: space-around;
+
+  .nav-welcome {
+    color: $ps-light-grey;
+  }
 }
 </style>
