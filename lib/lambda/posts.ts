@@ -1,9 +1,9 @@
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocument } from "@aws-sdk/lib-dynamodb";
-import {fault, success, error, deny} from './responses';
+import { fault, success, error, deny } from './responses';
 import { v4 as uuidv4 } from "uuid";
-import {getUserInfo, userHasGroup} from "./auth";
+import { getUserInfo, userHasGroup } from "./auth";
 
 // TODO: environment variables for constants like table name
 const tableName = "PSPosts";

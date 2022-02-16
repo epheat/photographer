@@ -7,13 +7,14 @@
       </div>
       <div class="navs" v-if="!isMobile">
         <router-link to="/posts">Posts</router-link>
-        <router-link to="/music">Music</router-link>
+        <router-link to="/games">Games</router-link>
       </div>
       <nav-auth class="auth"></nav-auth>
     </div>
     <div class="mobile-navs" v-if="isMobile && navExtended">
+      <router-link to="/">Home</router-link>
       <router-link to="/posts">Posts</router-link>
-      <router-link to="/music">Music</router-link>
+      <router-link to="/games">Games</router-link>
     </div>
   </div>
 </template>
@@ -67,13 +68,13 @@ export default {
 
   .mobile-navs {
     display: grid;
-    grid-template-rows: 1fr auto;
-    grid-auto-flow: column;
+    grid-auto-flow: row;
 
     a {
       background-color: $ps-dark;
-      padding: 5px;
+      padding: 8px;
       padding-left: 15px;
+      border-bottom: 1px solid $ps-white;
     }
   }
 

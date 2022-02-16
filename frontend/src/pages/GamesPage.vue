@@ -1,0 +1,76 @@
+<template>
+  <div class="ps-music-page page">
+    <h1>Games</h1>
+    <div class="game-container" @click="onClickGame('FantasySurvivor-S42')">
+      <img class="game-image" alt="survivor logo" src="@/assets/survivor_logo.png"/>
+      <div class="game-text">
+        <div class="game-title">FantasySurvivor-S42</div>
+        <p class="game-description">Follow along with Survivor season 42 as you predict each week who will win challenges, who will lose, and who will get voted out. In this game, fire represents your life. When your fire's gone, so are you. Requires an account to play.</p>
+      </div>
+    </div>
+    <Footer></Footer>
+  </div>
+</template>
+
+<script>
+import Footer from '../components/Footer.vue';
+
+export default {
+  name: "GamesPage",
+  props: {
+
+  },
+  methods: {
+    onClickGame(name) {
+      this.$router.push(`/games/${name}`);
+    },
+  },
+  components: {
+    Footer,
+  }
+}
+</script>
+
+<style lang="scss" scoped>
+@import "../scss/colors.scss";
+@import "../scss/sizes.scss";
+
+.game-container {
+  display: flex;
+  margin: 5px;
+  padding: 10px;
+  background-color: $ps-lighter-grey;
+  box-shadow: 0px 4px 4px #777777;
+
+  transition: scale 0.2s;
+  cursor: pointer;
+  justify-content: center;
+
+  @media screen and (max-width: $phone) {
+    flex-direction: column;
+    .game-image {
+      margin: 0 auto 10px;
+    }
+  }
+
+  &:hover {
+    scale: 1.03;
+  }
+
+  .game-image {
+    display: inline-block;
+    flex-basis: 50px;
+    max-width: 100px;
+    object-fit: contain;
+    flex-shrink: 0;
+    background-color: $ps-offwhite;
+  }
+  .game-text {
+    margin-left: 10px;
+    flex-shrink: 1;
+    .game-title {
+      font-weight: bold;
+    }
+  }
+}
+</style>

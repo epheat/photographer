@@ -8,7 +8,7 @@ import { reactive } from 'vue'
 // see: https://docs.amplify.aws/lib/auth/manageusers/q/platform/js/#retrieve-current-session
 
 export const authStore = {
-  debug: true,
+  debug: false,
   state: reactive({
     loggedIn: false,
     user: undefined,
@@ -25,8 +25,14 @@ export const authStore = {
   setLoggedIn(user) {
     if (this.debug) {
       console.log("setting logged in.");
+      console.log(user);
     }
     this.state.loggedIn = true;
     this.state.user = user;
+  },
+
+  isMember(group) {
+    if (!this.state.user) return false;
+    return this.state.user.signInUserSession.idToken.payload["cognito:groups"].includes(group);
   }
 }

@@ -34,12 +34,19 @@ export class PSBackendStack extends cdk.Stack {
       partitionKey: { name: 'postId', type: dynamodb.AttributeType.STRING },
       pointInTimeRecovery: true
     });
-
     postsTable.addGlobalSecondaryIndex({
       indexName: 'postTypeTimeSorted',
       partitionKey: { name: 'postType', type: dynamodb.AttributeType.STRING },
       sortKey: { name: 'createdDate', type: dynamodb.AttributeType.NUMBER },
       projectionType: dynamodb.ProjectionType.ALL,
+    });
+
+    const gameDataTable = new dynamodb.Table(this, 'game-data-table', {
+      tableName: "PSGameData",
+      billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
+      partitionKey: { name: 'entityId', type: dynamodb.AttributeType.STRING },
+      sortKey: { name: 'resourceId', type: dynamodb.AttributeType.STRING },
+      pointInTimeRecovery: true,
     });
 
     // AuthN
@@ -67,6 +74,20 @@ export class PSBackendStack extends cdk.Stack {
       handler: 'put',
     });
     postsTable.grantReadWriteData(createPostLambda);
+
+    // survivor functions
+    const getCastLambda = new nodejs.NodejsFunction(this, 'get-cast-func', {
+      runtime: lambda.Runtime.NODEJS_14_X,
+      entry: path.join(__dirname, "./lambda/survivor.ts"),
+      handler: 'getCast',
+    });
+    gameDataTable.grantReadData(getCastLambda);
+    const setCastLambda = new nodejs.NodejsFunction(this, 'set-cast-func', {
+      runtime: lambda.Runtime.NODEJS_14_X,
+      entry: path.join(__dirname, "./lambda/survivor.ts"),
+      handler: 'setCast',
+    });
+    gameDataTable.grantReadWriteData(setCastLambda);
 
     // APIG HTTP API
     // for setting up API routes to Lambdas
@@ -113,12 +134,29 @@ export class PSBackendStack extends cdk.Stack {
       integration: new integrations.LambdaProxyIntegration({
         handler: getPostLambda,
       })
-    })
+    });
     httpApi.addRoutes({
       path: '/posts/new',
       methods: [apigateway.HttpMethod.POST],
       integration: new integrations.LambdaProxyIntegration({
         handler: createPostLambda,
+      }),
+      authorizer: authorizer,
+    });
+
+    httpApi.addRoutes({
+      path: '/games/survivor42/cast',
+      methods: [apigateway.HttpMethod.GET],
+      integration: new integrations.LambdaProxyIntegration({
+        handler: getCastLambda,
+      }),
+      authorizer: authorizer,
+    })
+    httpApi.addRoutes({
+      path: '/games/survivor42/cast',
+      methods: [apigateway.HttpMethod.POST],
+      integration: new integrations.LambdaProxyIntegration({
+        handler: setCastLambda,
       }),
       authorizer: authorizer,
     })
