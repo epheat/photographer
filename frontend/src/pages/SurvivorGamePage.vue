@@ -36,7 +36,10 @@
         <div class="reload" @click="getCast">Reload from db</div>
         <div class="submit" @click="setCast">Set cast data</div>
       </div>
-
+      <h2>Prediction editor</h2>
+      <p>List all the current predictions here. For predictions, allow completion of the prediction while providing the winner of the challenge. Allow deletion of predictions.</p>
+      <h3>New Prediction:</h3>
+      <PredictionEditor />
     </div>
     <Footer></Footer>
   </div>
@@ -47,6 +50,7 @@ import Footer from '../components/Footer.vue';
 import {API, Auth} from "aws-amplify";
 import {authStore} from "@/auth/store";
 import CastMember from "@/components/survivor/CastMember";
+import PredictionEditor from "@/components/survivor/PredictionEditor";
 
 export default {
   name: "SurvivorGamePage",
@@ -124,6 +128,7 @@ export default {
     }
   },
   components: {
+    PredictionEditor,
     CastMember,
     Footer,
   }

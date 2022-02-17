@@ -31,6 +31,7 @@ import ZachWurtenberger from "@/assets/survivors/ZachWurtenberger.jpg";
 export default {
   name: "CastMember",
   props: {
+    id: String,
     name: String,
     age: Number,
     hometown: String,
@@ -62,7 +63,7 @@ export default {
   },
   methods: {
     getImgUrl() {
-      return this.survivorImages[this.name.replaceAll(" ", "")];
+      return this.survivorImages[this.id];
     }
   }
 }
