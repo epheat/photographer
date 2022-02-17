@@ -24,10 +24,13 @@
       </div>
     </div>
     <div class="tab-content cast" v-if="currentTab === 2">
-      roster
+      <div class="cast-container">
+        <CastMember v-for="survivor in cast" v-bind="survivor" :key="survivor.name"/>
+      </div>
     </div>
     <div class="tab-content admin" v-if="currentTab === 3">
       <h2>Cast editor</h2>
+      <p>Use these controls to edit the cast over the course of the season, as survivors get voted out each episode. Could also be used to track who has an idol.</p>
       <textarea :value="castEditorValue" @input="updateCastEditorValue"></textarea>
       <div class="controls">
         <div class="reload" @click="getCast">Reload from db</div>
@@ -43,6 +46,7 @@
 import Footer from '../components/Footer.vue';
 import {API, Auth} from "aws-amplify";
 import {authStore} from "@/auth/store";
+import CastMember from "@/components/survivor/CastMember";
 
 export default {
   name: "SurvivorGamePage",
@@ -55,6 +59,7 @@ export default {
       errorMessage: "",
       successMessage: "",
       loading: false,
+      cast: [],
 
       // admin only
       castEditorValue: "",
@@ -84,6 +89,7 @@ export default {
             Authorization: `Bearer ${token}`,
           }
         });
+        this.cast = response.items;
         this.castEditorValue = JSON.stringify(response.items, null, 2);
         this.loading = false;
       } catch (err) {
@@ -118,6 +124,7 @@ export default {
     }
   },
   components: {
+    CastMember,
     Footer,
   }
 }
@@ -125,6 +132,7 @@ export default {
 
 <style lang="scss" scoped>
 @import "../scss/colors.scss";
+@import "../scss/sizes.scss";
 
 .error-message {
   color: $ps-red;
@@ -147,6 +155,19 @@ export default {
       cursor: auto;
       background-color: $ps-white;
     }
+  }
+}
+
+.cast-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+
+  @media screen and (max-width: $tablet) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @media screen and (max-width: $phone) {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
@@ -191,7 +212,10 @@ export default {
     padding: 15px;
     border: none;
     outline: none;
-    width: auto;
+    width: 100%;
+    max-width: 100%;
+    height: 20em;
+    box-sizing: border-box;
     margin-bottom: 10px;
   }
 }
