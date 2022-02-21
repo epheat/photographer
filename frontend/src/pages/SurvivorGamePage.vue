@@ -112,6 +112,7 @@ export default {
   },
   methods: {
     setTab(tab) {
+      this.resetMessages();
       this.currentTab = tab;
     },
     updateCastEditorValue(e) {
@@ -242,11 +243,24 @@ export default {
         });
         this.successMessage = response.message;
         this.loading = false;
-        this.showModal = false;
+        const newUserPrediction = {
+          episode: this.selectedPrediction.episode,
+          predictionType: this.selectedPrediction.predictionType,
+          selections: selectSurvivors.options,
+          resourceType: "UserPrediction",
+          predictionId: this.selectedPrediction.resourceId,
+        };
+        const existingUserPredictionIndex = this.userPredictions.findIndex(up => up.predictionId === this.selectedPrediction.resourceId);
+        if (existingUserPredictionIndex === -1) {
+          this.userPredictions.push(newUserPrediction);
+        } else {
+          this.userPredictions.splice(this.userPredictions.findIndex(up => up.predictionId === this.selectedPrediction.resourceId), 1, newUserPrediction);
+        }
+        this.closeModal();
       } catch (err) {
         this.errorMessage = err.message;
         this.loading = false;
-        this.showModal = false;
+        this.closeModal();
       }
     },
     resetMessages() {
@@ -256,6 +270,7 @@ export default {
     closeModal() {
       this.showModal = false;
       this.selectedPrediction = null;
+      this.selectedUserPrediction = null;
     }
   },
   components: {
