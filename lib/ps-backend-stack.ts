@@ -89,6 +89,38 @@ export class PSBackendStack extends cdk.Stack {
     });
     gameDataTable.grantReadWriteData(setCastLambda);
 
+    const getPredictionsLambda = new nodejs.NodejsFunction(this, 'get-predictions-func', {
+      runtime: lambda.Runtime.NODEJS_14_X,
+      entry: path.join(__dirname, "./lambda/survivor.ts"),
+      handler: 'getPredictions',
+    });
+    gameDataTable.grantReadData(getPredictionsLambda);
+    const setPredictionLambda = new nodejs.NodejsFunction(this, 'set-prediction-func', {
+      runtime: lambda.Runtime.NODEJS_14_X,
+      entry: path.join(__dirname, "./lambda/survivor.ts"),
+      handler: 'setPrediction',
+    });
+    gameDataTable.grantReadWriteData(setPredictionLambda);
+    const deletePredictionLambda = new nodejs.NodejsFunction(this, 'del-prediction-func', {
+      runtime: lambda.Runtime.NODEJS_14_X,
+      entry: path.join(__dirname, "./lambda/survivor.ts"),
+      handler: 'deletePrediction',
+    });
+    gameDataTable.grantReadWriteData(deletePredictionLambda);
+    const getUserPredictionsLambda = new nodejs.NodejsFunction(this, 'get-user-predictions-func', {
+      runtime: lambda.Runtime.NODEJS_14_X,
+      entry: path.join(__dirname, "./lambda/survivor.ts"),
+      handler: 'getUserPredictions',
+    });
+    gameDataTable.grantReadData(getUserPredictionsLambda);
+    const setUserPredictionLambda = new nodejs.NodejsFunction(this, 'set-user-prediction-func', {
+      runtime: lambda.Runtime.NODEJS_14_X,
+      entry: path.join(__dirname, "./lambda/survivor.ts"),
+      handler: 'setUserPrediction',
+    });
+    gameDataTable.grantReadWriteData(setUserPredictionLambda);
+
+
     // APIG HTTP API
     // for setting up API routes to Lambdas
     const httpApi = new apigateway.HttpApi(this, 'ps-posts-api', {
@@ -157,6 +189,47 @@ export class PSBackendStack extends cdk.Stack {
       methods: [apigateway.HttpMethod.POST],
       integration: new integrations.LambdaProxyIntegration({
         handler: setCastLambda,
+      }),
+      authorizer: authorizer,
+    })
+
+    httpApi.addRoutes({
+      path: '/games/survivor42/predictions',
+      methods: [apigateway.HttpMethod.GET],
+      integration: new integrations.LambdaProxyIntegration({
+        handler: getPredictionsLambda,
+      }),
+      authorizer: authorizer,
+    })
+    httpApi.addRoutes({
+      path: '/games/survivor42/predictions',
+      methods: [apigateway.HttpMethod.POST],
+      integration: new integrations.LambdaProxyIntegration({
+        handler: setPredictionLambda,
+      }),
+      authorizer: authorizer,
+    })
+    httpApi.addRoutes({
+      path: '/games/survivor42/predictions',
+      methods: [apigateway.HttpMethod.DELETE],
+      integration: new integrations.LambdaProxyIntegration({
+        handler: deletePredictionLambda,
+      }),
+      authorizer: authorizer,
+    })
+    httpApi.addRoutes({
+      path: '/games/survivor42/userPredictions',
+      methods: [apigateway.HttpMethod.GET],
+      integration: new integrations.LambdaProxyIntegration({
+        handler: getUserPredictionsLambda,
+      }),
+      authorizer: authorizer,
+    })
+    httpApi.addRoutes({
+      path: '/games/survivor42/userPredictions',
+      methods: [apigateway.HttpMethod.POST],
+      integration: new integrations.LambdaProxyIntegration({
+        handler: setUserPredictionLambda,
       }),
       authorizer: authorizer,
     })

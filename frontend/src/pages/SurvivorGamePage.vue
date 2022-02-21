@@ -10,12 +10,34 @@
     <div class="error-message" v-if="errorMessage">{{ errorMessage }}</div>
     <div class="success-message" v-if="successMessage">{{ successMessage }}</div>
     <div class="loading-message" v-if="loading">loading...</div>
+    <Modal v-if="showModal" :show="showModal" @close="closeModal">
+      <template #header>
+        <h2>{{ selectedPrediction.episode }} - {{ selectedPrediction.predictionType }} prediction</h2>
+        <p>Select {{ selectedPrediction.select }} survivors for this prediction.</p>
+      </template>
+      <SurvivorSelector
+          :cast="cast"
+          @selectSurvivors="submitUserPrediction"
+          :maxSelect="selectedPrediction.select"
+          :initSelections="selectedUserPrediction ? selectedUserPrediction.selections : []"
+      />
+    </Modal>
     <div class="tab-content home" v-if="currentTab === 0">
       <h2>Inventory</h2>
       <p>Items that you acquire over the course of the game will show up here. Click on an item to use it.</p>
       <div class="inventory">Your inventory is empty.</div>
       <h2>Predictions</h2>
-      <div>Past and future predictions will show up here. You can only edit your predictions up until the day that the episode airs. </div>
+      <Button style="display: inline-block" @press="refreshPredictions">Refresh</Button>
+      <p>Past and future predictions will show up here. You can only edit your predictions up until the day that the episode airs. </p>
+      <PredictionDisplay
+          class="user-prediction-display"
+          v-for="prediction in predictions"
+          v-bind="prediction"
+          :key="prediction.id"
+          @click="openUserPredictionModal(prediction)"
+          :submitted="userPredictions.find(up => up.predictionId === prediction.resourceId) !== undefined"
+          :userSelections="userPredictions.find(up => up.predictionId === prediction.resourceId) !== undefined ? userPredictions.find(up => up.predictionId === prediction.resourceId).selections : undefined"
+      />
     </div>
     <div class="tab-content leaderboard" v-if="currentTab === 1">
       <h2>Rankings</h2>
@@ -25,7 +47,7 @@
     </div>
     <div class="tab-content cast" v-if="currentTab === 2">
       <div class="cast-container">
-        <CastMember v-for="survivor in cast" v-bind="survivor" :key="survivor.name"/>
+        <CastMember v-for="survivor in cast" v-bind="survivor" :key="survivor.id"/>
       </div>
     </div>
     <div class="tab-content admin" v-if="currentTab === 3">
@@ -38,19 +60,24 @@
       </div>
       <h2>Prediction editor</h2>
       <p>List all the current predictions here. For predictions, allow completion of the prediction while providing the winner of the challenge. Allow deletion of predictions.</p>
+      <PredictionDisplay v-for="prediction in predictions" v-bind="prediction" :key="prediction.id"/>
       <h3>New Prediction:</h3>
-      <PredictionEditor />
+      <PredictionEditor :cast="cast" @submitPrediction="putPrediction" />
     </div>
     <Footer></Footer>
   </div>
 </template>
 
 <script>
-import Footer from '../components/Footer.vue';
+import Footer from '@/components/Footer';
 import {API, Auth} from "aws-amplify";
 import {authStore} from "@/auth/store";
 import CastMember from "@/components/survivor/CastMember";
 import PredictionEditor from "@/components/survivor/PredictionEditor";
+import PredictionDisplay from "@/components/survivor/PredictionDisplay";
+import Modal from "@/components/Modal";
+import SurvivorSelector from "@/components/survivor/SurvivorSelector";
+import Button from "@/components/Button";
 
 export default {
   name: "SurvivorGamePage",
@@ -63,7 +90,12 @@ export default {
       errorMessage: "",
       successMessage: "",
       loading: false,
+      showModal: false,
       cast: [],
+      predictions: [],
+      userPredictions: [],
+      selectedPrediction: null,
+      selectedUserPrediction: null,
 
       // admin only
       castEditorValue: "",
@@ -75,6 +107,8 @@ export default {
       return;
     }
     this.getCast();
+    this.getPredictions();
+    this.getUserPredictions();
   },
   methods: {
     setTab(tab) {
@@ -82,6 +116,18 @@ export default {
     },
     updateCastEditorValue(e) {
       this.castEditorValue = e.target.value;
+    },
+    openUserPredictionModal(prediction) {
+      this.selectedPrediction = prediction;
+      this.selectedUserPrediction = this.getUserResponseForPrediction(prediction);
+      this.showModal = true;
+    },
+    getUserResponseForPrediction(prediction) {
+      return this.userPredictions.find(up => up.predictionId === prediction.resourceId);
+    },
+    refreshPredictions() {
+      this.getPredictions();
+      this.getUserPredictions();
     },
     async getCast() {
       this.resetMessages();
@@ -122,15 +168,104 @@ export default {
         this.loading = false;
       }
     },
+    async getPredictions() {
+      this.resetMessages();
+      try {
+        let token = (await Auth.currentSession()).getAccessToken().getJwtToken();
+        let response = await API.get('ps-api', '/games/survivor42/predictions', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
+        })
+        this.predictions = response.items;
+        this.successMessage = response.message;
+        this.loading = false;
+      } catch (err) {
+        this.errorMessage = err.message;
+        this.loading = false;
+      }
+    },
+    async putPrediction(prediction) {
+      this.resetMessages();
+      try {
+        let token = (await Auth.currentSession()).getAccessToken().getJwtToken();
+        this.loading = true;
+        let response = await API.post('ps-api', '/games/survivor42/predictions', {
+          body: {
+            prediction: prediction,
+          },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
+        });
+        this.successMessage = response.message;
+        this.loading = false;
+      } catch (err) {
+        this.errorMessage = err.message;
+        this.loading = false;
+      }
+    },
+    async getUserPredictions() {
+      this.resetMessages();
+      this.resetMessages();
+      try {
+        let token = (await Auth.currentSession()).getAccessToken().getJwtToken();
+        let response = await API.get('ps-api', '/games/survivor42/userPredictions', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
+        })
+        this.userPredictions = response.items;
+        this.successMessage = response.message;
+        this.loading = false;
+      } catch (err) {
+        this.errorMessage = err.message;
+        this.loading = false;
+      }
+    },
+    async submitUserPrediction(selectSurvivors) {
+      this.resetMessages();
+      try {
+        let token = (await Auth.currentSession()).getAccessToken().getJwtToken();
+        this.loading = true;
+        let response = await API.post('ps-api', '/games/survivor42/userPredictions', {
+          body: {
+            userPrediction: {
+              episode: this.selectedPrediction.episode,
+              predictionType: this.selectedPrediction.predictionType,
+              selections: selectSurvivors.options,
+            },
+          },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
+        });
+        this.successMessage = response.message;
+        this.loading = false;
+        this.showModal = false;
+      } catch (err) {
+        this.errorMessage = err.message;
+        this.loading = false;
+        this.showModal = false;
+      }
+    },
     resetMessages() {
       this.successMessage = undefined;
       this.errorMessage = undefined;
+    },
+    closeModal() {
+      this.showModal = false;
+      this.selectedPrediction = null;
     }
   },
   components: {
+    SurvivorSelector,
+    Modal,
     PredictionEditor,
+    PredictionDisplay,
     CastMember,
     Footer,
+    Button,
   }
 }
 </script>
@@ -201,6 +336,9 @@ export default {
   padding: 10px;
   border-radius: 5px;
   border: 2px dashed $ps-light-grey;
+}
+.user-prediction-display {
+  cursor: pointer;
 }
 
 .admin {

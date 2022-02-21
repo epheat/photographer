@@ -14,7 +14,9 @@ export default {
   props: {
     // for v-model in Vue3, use modelValue instead of value
     // https://v3.vuejs.org/guide/migration/v-model.html#_3-x-syntax
-    modelValue: String,
+    modelValue: {
+      type: [String, Number],
+    },
     label: String,
     secret: Boolean,
   },

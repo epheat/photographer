@@ -1,6 +1,6 @@
 <template>
   <div class="cast-member">
-    <img :alt="name" :src="getImgUrl()"/>
+    <img :alt="name" :src="getImgUrl()" :class="{grey: votedOut}"/>
     <h3>{{ name }}</h3>
     <p>Age: {{ age }}</p>
     <p>From: {{ hometown }}</p>
@@ -36,6 +36,7 @@ export default {
     age: Number,
     hometown: String,
     occupation: String,
+    votedOut: String,
   },
   data() {
     return {
@@ -81,6 +82,9 @@ export default {
   img {
     box-sizing: border-box;
     width: 100%;
+    &.grey {
+      filter: grayscale(100%);
+    }
   }
 }
 </style>
