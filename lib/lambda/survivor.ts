@@ -325,7 +325,7 @@ export async function completePrediction(event: APIGatewayProxyEventV2): Promise
                 TableName: tableName,
                 Key: {
                     entityId: userSub,
-                    resourceId: "FantasySurvivor-S42-USerPoints",
+                    resourceId: "FantasySurvivor-S42-UserPoints",
                 }
             });
             let userPointsRecord;
