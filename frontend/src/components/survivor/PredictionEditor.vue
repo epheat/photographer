@@ -10,7 +10,14 @@
       <div>Episode air date: <input type="date" v-model="airDate"/></div>
       <div>Episode air time (PST): <input type="time" v-model="airTime"/></div>
     </div>
-    <SurvivorSelector :cast="cast" @selectSurvivors="submitPrediction" initSelectAll />
+    <SurvivorSelector
+        :cast="cast"
+        @selectSurvivors="submitPrediction"
+        v-model="survivorSelections"
+    />
+    <div class="buttons">
+      <Button submit @press="submitPrediction" />
+    </div>
   </div>
 </template>
 
@@ -18,6 +25,7 @@
 import FormField from "@/components/FormField";
 import FormSelect from "@/components/FormSelect";
 import SurvivorSelector from "@/components/survivor/SurvivorSelector";
+import Button from "@/components/Button";
 export default {
   name: "PredictionEditor",
   props: {
@@ -31,10 +39,11 @@ export default {
       select: 1,
       airDate: "",
       airTime: "",
+      survivorSelections: this.cast.map(s => s.id),
     }
   },
   methods: {
-    submitPrediction(survivorSelect) {
+    submitPrediction() {
       const predictBefore = new Date(`${this.airDate}T${this.airTime}:00-08:00`).getTime();
       this.$emit('submitPrediction', {
         episode: this.episode,
@@ -42,11 +51,11 @@ export default {
         reward: parseInt(this.reward, 10),
         select: parseInt(this.select, 10),
         predictBefore: predictBefore,
-        options: survivorSelect.options,
+        options: this.survivorSelections,
       });
     }
   },
-  components: {SurvivorSelector, FormSelect, FormField}
+  components: {Button, SurvivorSelector, FormSelect, FormField}
 }
 </script>
 

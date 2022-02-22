@@ -34,7 +34,7 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .mask {
   position: fixed;
   z-index: 9998;
@@ -56,6 +56,21 @@ export default {
   background-color: #fff;
   border-radius: 2px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, .33);
+}
+.modal-header {
+  margin-bottom: 10px;
+  h2, p {
+    margin: 5px 0px;
+  }
+}
+.modal-actions {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 10px;
+
+  .ps-button {
+    display: inline-block;
+  }
 }
 // animations, see: https://vuejs.org/guide/built-ins/transition.html#the-transition-component
 .modal-enter-active, .modal-leave-active {

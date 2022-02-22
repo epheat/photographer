@@ -66,6 +66,9 @@ export default {
     },
     selections() {
       if (!this.userSelections) return undefined;
+      if (this.userSelections.length === 0) {
+        return "No survivors selected.";
+      }
       let selectionString = "You selected: ";
       for (let i=0; i<this.userSelections.length-1; i++) {
         selectionString += `${this.userSelections[i].id}, `;

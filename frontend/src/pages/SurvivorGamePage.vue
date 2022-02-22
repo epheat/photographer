@@ -10,7 +10,7 @@
     <div class="error-message" v-if="errorMessage">{{ errorMessage }}</div>
     <div class="success-message" v-if="successMessage">{{ successMessage }}</div>
     <div class="loading-message" v-if="loading">loading...</div>
-    <Modal v-if="showModal" :show="showModal" @close="closeModal">
+    <Modal :show="showModal" @close="closeModal">
       <template #header>
         <h2>{{ selectedPrediction.episode }} - {{ selectedPrediction.predictionType }} prediction</h2>
         <p>Select {{ selectedPrediction.select }} survivors for this prediction.</p>
@@ -19,8 +19,12 @@
           :cast="cast"
           @selectSurvivors="submitUserPrediction"
           :maxSelect="selectedPrediction.select"
-          :initSelections="selectedUserPrediction ? selectedUserPrediction.selections : []"
+          v-model="userPredictionSelections"
       />
+      <template #actions>
+        <Button submit @press="submitUserPrediction">Submit</Button>
+      </template>
+
     </Modal>
     <div class="tab-content home" v-if="currentTab === 0">
       <h2>Inventory</h2>
@@ -96,6 +100,7 @@ export default {
       userPredictions: [],
       selectedPrediction: null,
       selectedUserPrediction: null,
+      userPredictionSelections: [],
 
       // admin only
       castEditorValue: "",
@@ -120,11 +125,12 @@ export default {
     },
     openUserPredictionModal(prediction) {
       this.selectedPrediction = prediction;
-      this.selectedUserPrediction = this.getUserResponseForPrediction(prediction);
+      this.userPredictionSelections = this.getUserSelectionsForPrediction(prediction);
       this.showModal = true;
     },
-    getUserResponseForPrediction(prediction) {
-      return this.userPredictions.find(up => up.predictionId === prediction.resourceId);
+    getUserSelectionsForPrediction(prediction) {
+      const userPrediction = this.userPredictions.find(up => up.predictionId === prediction.resourceId);
+      return userPrediction ? userPrediction.selections.map(selection => selection.id) : [];
     },
     refreshPredictions() {
       this.getPredictions();
@@ -224,7 +230,7 @@ export default {
         this.loading = false;
       }
     },
-    async submitUserPrediction(selectSurvivors) {
+    async submitUserPrediction() {
       this.resetMessages();
       try {
         let token = (await Auth.currentSession()).getAccessToken().getJwtToken();
@@ -234,7 +240,7 @@ export default {
             userPrediction: {
               episode: this.selectedPrediction.episode,
               predictionType: this.selectedPrediction.predictionType,
-              selections: selectSurvivors.options,
+              selections: this.userPredictionSelections.map(id => { return { id: id }}),
             },
           },
           headers: {
@@ -246,7 +252,7 @@ export default {
         const newUserPrediction = {
           episode: this.selectedPrediction.episode,
           predictionType: this.selectedPrediction.predictionType,
-          selections: selectSurvivors.options,
+          selections: this.userPredictionSelections.map(id => { return { id: id }}),
           resourceType: "UserPrediction",
           predictionId: this.selectedPrediction.resourceId,
         };

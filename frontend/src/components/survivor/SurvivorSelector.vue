@@ -7,7 +7,7 @@
             type="checkbox"
             :checked="hasId(survivor.id)"
             :disabled="shouldDisable(survivor.id)"
-            @click="handleOption(survivor)"
+            @click="handleOption(survivor.id)"
             :class="{disable: shouldDisable(survivor.id)}"
         />
         <label :for="survivor.id" :class="{disable: shouldDisable(survivor.id)}">
@@ -15,59 +15,44 @@
         </label>
       </div>
     </div>
-    <div class="buttons">
-      <Button submit @press="confirm">Confirm</Button>
-    </div>
   </div>
 </template>
 
 <script>
 import CastHead from "@/components/survivor/CastHead";
-import Button from "@/components/Button";
+
 export default {
   name: "SurvivorSelector",
-  components: {Button, CastHead},
+  components: {CastHead},
   props: {
     cast: Array,
     maxSelect: Number,
-    initSelectAll: Boolean,
-    initSelections: Array
+    // ["SurvivorId", "SurvivorId"]
+    modelValue: Array,
   },
   data() {
     return {
-      options: this.getStartingSelections(),
+      // none
     }
   },
   methods: {
-    getStartingSelections() {
-      if (this.initSelectAll) {
-        return this.cast.map(s => { return { id: s.id }});
-      } else if (this.initSelections) {
-        return this.initSelections.filter(selection => this.cast.find(s => s.id === selection.id) !== undefined);
-      } else {
-        return [];
-      }
-    },
-    handleOption(survivor) {
-      const indexOfSurvivor = this.options.findIndex(s => s.id === survivor.id);
+    handleOption(id) {
+      const indexOfSurvivor = this.modelValue.indexOf(id);
       if (indexOfSurvivor === -1) {
-        // that survivor id is not present in options currently. If we're not at our limit, add it.
+        // that survivor id is not present in modelValue currently. If we're not at our limit, add it.
         if (!this.atLimit) {
-          this.options.push({ id: survivor.id });
+          this.$emit('update:modelValue', [...this.modelValue, id ]);
         }
       } else {
         // survivor id is already present in options. Therefore, remove it.
-        this.options.splice(indexOfSurvivor, 1);
+        this.$emit('update:modelValue', [...this.modelValue].filter(s => s !== id));
       }
     },
     hasId(id) {
-      return this.options.filter(s => s.id === id).length > 0;
+      return this.modelValue.includes(id);
     },
     shouldDisable(id) {
       return this.atLimit && !this.hasId(id);
-    },
-    confirm() {
-      this.$emit('selectSurvivors', { options: this.options.map(s => { return { id: s.id }}) });
     },
     shortenName(name) {
       const spaceIndex = name.indexOf(" ");
@@ -76,7 +61,7 @@ export default {
   },
   computed: {
     atLimit() {
-      return this.maxSelect && this.options.length >= this.maxSelect;
+      return this.maxSelect && this.modelValue.length >= this.maxSelect;
     }
   }
 }
@@ -111,8 +96,5 @@ export default {
   img {
     width: 30px;
   }
-}
-.buttons {
-  margin: 0 auto;
 }
 </style>
