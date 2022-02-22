@@ -7,10 +7,10 @@
       <th>change</th>
     </tr>
     <tr v-for="(row, index) in data" :key="row.resourceId">
-      <td>{{ index }}</td>
+      <td>{{ index + 1 }}</td>
       <td>{{ row.username }}</td>
       <td>{{ row.points }}</td>
-      <td>🔻</td>
+      <td class="center">-</td>
     </tr>
   </table>
 </template>
@@ -39,6 +39,10 @@ export default {
     border: 1px solid #888888;
     text-align: left;
     padding: 8px;
+
+    &.center {
+      text-align: center;
+    }
   }
 
   tr:nth-child(even) {

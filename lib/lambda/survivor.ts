@@ -60,6 +60,7 @@ export async function setCast(event: APIGatewayProxyEventV2): Promise<APIGateway
                 entityId: "FantasySurvivor-S42",
                 resourceId: "Cast",
                 survivors: request.survivors,
+                resourceType: "Cast"
             }
         });
         return success({
@@ -412,11 +413,11 @@ export async function getLeaderboard(event: APIGatewayProxyEventV2): Promise<API
     }
 }
 
-function calculatePoints(selections: any, reward: number, userPrediction: any) {
+function calculatePoints(resultSelections: any, reward: number, userPrediction: any) {
     let pointsToAward = 0;
-    for (const { id } of selections) {
-        for (const userSelection of userPrediction.selections) {
-            if (userSelection.id === id) {
+    for (const id of resultSelections) {
+        for (const userSelectionId of userPrediction.selections) {
+            if (userSelectionId === id) {
                 pointsToAward += reward;
             }
         }
@@ -424,10 +425,9 @@ function calculatePoints(selections: any, reward: number, userPrediction: any) {
     return pointsToAward;
 }
 
-function optionsContainSelections(options: { id: string }[], selections: { id: string }[]) {
-    const validIds = options.map(s => s.id);
-    for (let { id } of selections) {
-        if (!validIds.includes(id)) {
+function optionsContainSelections(options: string[], selections: string[]) {
+    for (let id of selections) {
+        if (!options.includes(id)) {
             return false;
         }
     }

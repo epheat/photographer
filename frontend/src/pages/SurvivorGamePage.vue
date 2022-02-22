@@ -16,7 +16,7 @@
         <p>Select {{ selectedPrediction.select }} survivors for this prediction.</p>
       </template>
       <SurvivorSelector
-          :cast="cast"
+          :cast="filterCast(cast, selectedPrediction)"
           :maxSelect="selectedPrediction.select"
           v-model="userPredictionSelections"
       />
@@ -30,7 +30,7 @@
         <p>Select the winners for this prediction. For ImmunityChallenge predictions, select the winning survivors. For TribalCouncil, select the survivor who went home.</p>
       </template>
       <SurvivorSelector
-          :cast="cast"
+          :cast="filterCast(cast, adminSelectedPrediction)"
           v-model="completePredictionSelections"
       />
       <template #actions>
@@ -158,7 +158,7 @@ export default {
     },
     getUserSelectionsForPrediction(prediction) {
       const userPrediction = this.userPredictions.find(up => up.predictionId === prediction.resourceId);
-      return userPrediction ? userPrediction.selections.map(selection => selection.id) : [];
+      return userPrediction ? userPrediction.selections : [];
     },
     refreshPredictions() {
       this.getPredictions();
@@ -285,7 +285,7 @@ export default {
             userPrediction: {
               episode: this.selectedPrediction.episode,
               predictionType: this.selectedPrediction.predictionType,
-              selections: this.userPredictionSelections.map(id => { return { id: id }}),
+              selections: this.userPredictionSelections,
             },
           },
           headers: {
@@ -297,7 +297,7 @@ export default {
         const newUserPrediction = {
           episode: this.selectedPrediction.episode,
           predictionType: this.selectedPrediction.predictionType,
-          selections: this.userPredictionSelections.map(id => { return { id: id }}),
+          selections: this.userPredictionSelections,
           resourceType: "UserPrediction",
           predictionId: this.selectedPrediction.resourceId,
         };
@@ -349,7 +349,7 @@ export default {
             prediction: {
               episode: this.adminSelectedPrediction.episode,
               predictionType: this.adminSelectedPrediction.predictionType,
-              selections: this.completePredictionSelections.map(id => { return { id: id }}),
+              selections: this.completePredictionSelections,
             },
           },
           headers: {
@@ -377,6 +377,9 @@ export default {
     closePredictionCompleteModal() {
       this.showPredictionCompleteModal = false;
       this.adminSelectedPrediction = null;
+    },
+    filterCast(cast, prediction) {
+      return cast.filter(survivor => prediction.options.includes(survivor.id));
     }
   },
   components: {
