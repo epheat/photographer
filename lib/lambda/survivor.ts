@@ -177,7 +177,7 @@ export async function getUserPredictions(event: APIGatewayProxyEventV2): Promise
         const results = await ddb.query({
             TableName: tableName,
             KeyConditionExpression: "entityId = :entityId and begins_with(resourceId, :resourceType)",
-            ExpressionAttributeValues: { ':entityId': sub, ':resourceType': 'FantasySurvivor-S42-Prediction' },
+            ExpressionAttributeValues: { ':entityId': sub, ':resourceType': 'FantasySurvivor-S42-UserPrediction' },
         });
 
         return success({
@@ -233,7 +233,7 @@ export async function setUserPrediction(event: APIGatewayProxyEventV2): Promise<
             TableName: tableName,
             Item: {
                 entityId: sub,
-                resourceId: `FantasySurvivor-S42-Prediction-${request.userPrediction.episode}-${request.userPrediction.predictionType}`,
+                resourceId: `FantasySurvivor-S42-UserPrediction-${request.userPrediction.episode}-${request.userPrediction.predictionType}`,
                 predictionId: `Prediction-${request.userPrediction.episode}-${request.userPrediction.predictionType}`,
                 episode: request.userPrediction.episode,
                 predictionType: request.userPrediction.predictionType,
@@ -296,7 +296,7 @@ export async function completePrediction(event: APIGatewayProxyEventV2): Promise
     }
     // for each user-prediction record for this resourceId, match the user selections with the prediction results to compute points
     const userPoints = [];
-    const resourceId = `FantasySurvivor-S42-Prediction-${request.prediction.episode}-${request.prediction.predictionType}`;
+    const resourceId = `FantasySurvivor-S42-UserPrediction-${request.prediction.episode}-${request.prediction.predictionType}`;
     try {
         const results = await ddb.query({
             TableName: tableName,
@@ -325,7 +325,7 @@ export async function completePrediction(event: APIGatewayProxyEventV2): Promise
                 TableName: tableName,
                 Key: {
                     entityId: userSub,
-                    resourceId: "FantasySurvivor-S42-Points",
+                    resourceId: "FantasySurvivor-S42-USerPoints",
                 }
             });
             let userPointsRecord;
@@ -333,7 +333,7 @@ export async function completePrediction(event: APIGatewayProxyEventV2): Promise
                 // if this user has no points, create a fresh record.
                 userPointsRecord = {
                     entityId: userSub,
-                    resourceId: "FantasySurvivor-S42-Points",
+                    resourceId: "FantasySurvivor-S42-UserPoints",
                     pointHistory: [
                         { event: resourceId, pointsAdded: pointsToAward }
                     ],
@@ -396,12 +396,12 @@ export async function getLeaderboard(event: APIGatewayProxyEventV2): Promise<API
     try {
         const result = await ddb.query({
             TableName: tableName,
-            IndexName: "resourceTypeIndex",
-            KeyConditionExpression: "resourceType = :resourceType and resourceId = :resourceId",
+            IndexName: "pointsIndex",
+            KeyConditionExpression: "resourceId = :resourceId",
             ExpressionAttributeValues: {
-                ':resourceType': 'UserPoints',
-                ':resourceId': 'FantasySurvivor-S42-Points',
+                ':resourceId': 'FantasySurvivor-S42-UserPoints'
             },
+            ScanIndexForward: false,
         });
         return success({
             message: "Success.",

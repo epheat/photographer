@@ -54,6 +54,12 @@ export class PSBackendStack extends cdk.Stack {
       sortKey: { name: 'resourceId', type: dynamodb.AttributeType.STRING },
       projectionType: dynamodb.ProjectionType.ALL,
     });
+    gameDataTable.addGlobalSecondaryIndex({
+      indexName: 'pointsIndex',
+      partitionKey: { name: 'resourceId', type: dynamodb.AttributeType.STRING },
+      sortKey: { name: 'points', type: dynamodb.AttributeType.NUMBER },
+      projectionType: dynamodb.ProjectionType.ALL,
+    })
 
     // AuthN
     // a cognito userpool for vending JWTs, and associated IAM roles
