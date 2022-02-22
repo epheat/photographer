@@ -10,21 +10,32 @@
     <div class="error-message" v-if="errorMessage">{{ errorMessage }}</div>
     <div class="success-message" v-if="successMessage">{{ successMessage }}</div>
     <div class="loading-message" v-if="loading">loading...</div>
-    <Modal :show="showModal" @close="closeModal">
+    <Modal :show="showUserPredictionModal" @close="closeUserPredictionModal">
       <template #header>
         <h2>{{ selectedPrediction.episode }} - {{ selectedPrediction.predictionType }} prediction</h2>
         <p>Select {{ selectedPrediction.select }} survivors for this prediction.</p>
       </template>
       <SurvivorSelector
           :cast="cast"
-          @selectSurvivors="submitUserPrediction"
           :maxSelect="selectedPrediction.select"
           v-model="userPredictionSelections"
       />
       <template #actions>
         <Button submit @press="submitUserPrediction">Submit</Button>
       </template>
-
+    </Modal>
+    <Modal :show="showPredictionCompleteModal" @close="closePredictionCompleteModal">
+      <template #header>
+        <h2>Complete the {{ adminSelectedPrediction.episode }} - {{ adminSelectedPrediction.predictionType }} prediction?</h2>
+        <p>Select the winners for this prediction. For ImmunityChallenge predictions, select the winning survivors. For TribalCouncil, select the survivor who went home.</p>
+      </template>
+      <SurvivorSelector
+          :cast="cast"
+          v-model="completePredictionSelections"
+      />
+      <template #actions>
+        <Button submit @press="submitCompletePrediction">Submit</Button>
+      </template>
     </Modal>
     <div class="tab-content home" v-if="currentTab === 0">
       <h2>Inventory</h2>
@@ -39,8 +50,8 @@
           v-bind="prediction"
           :key="prediction.id"
           @click="openUserPredictionModal(prediction)"
-          :submitted="userPredictions.find(up => up.predictionId === prediction.resourceId) !== undefined"
-          :userSelections="userPredictions.find(up => up.predictionId === prediction.resourceId) !== undefined ? userPredictions.find(up => up.predictionId === prediction.resourceId).selections : undefined"
+          :submitted="getUserSelectionsForPrediction(prediction).length > 0"
+          :userSelections="getUserSelectionsForPrediction(prediction)"
       />
     </div>
     <div class="tab-content leaderboard" v-if="currentTab === 1">
@@ -64,7 +75,13 @@
       </div>
       <h2>Prediction editor</h2>
       <p>List all the current predictions here. For predictions, allow completion of the prediction while providing the winner of the challenge. Allow deletion of predictions.</p>
-      <PredictionDisplay v-for="prediction in predictions" v-bind="prediction" :key="prediction.id"/>
+      <PredictionDisplay
+          class="admin-prediction-display"
+          v-for="prediction in predictions"
+          v-bind="prediction"
+          :key="prediction.id"
+          @click="openPredictionCompleteModal(prediction)"
+      />
       <h3>New Prediction:</h3>
       <PredictionEditor :cast="cast" @submitPrediction="putPrediction" />
     </div>
@@ -94,7 +111,7 @@ export default {
       errorMessage: "",
       successMessage: "",
       loading: false,
-      showModal: false,
+      showUserPredictionModal: false,
       cast: [],
       predictions: [],
       userPredictions: [],
@@ -104,6 +121,9 @@ export default {
 
       // admin only
       castEditorValue: "",
+      showPredictionCompleteModal: false,
+      adminSelectedPrediction: null,
+      completePredictionSelections: [],
     }
   },
   mounted() {
@@ -126,7 +146,12 @@ export default {
     openUserPredictionModal(prediction) {
       this.selectedPrediction = prediction;
       this.userPredictionSelections = this.getUserSelectionsForPrediction(prediction);
-      this.showModal = true;
+      this.showUserPredictionModal = true;
+    },
+    openPredictionCompleteModal(prediction) {
+      this.adminSelectedPrediction = prediction;
+      this.completePredictionSelections = [];
+      this.showPredictionCompleteModal = true;
     },
     getUserSelectionsForPrediction(prediction) {
       const userPrediction = this.userPredictions.find(up => up.predictionId === prediction.resourceId);
@@ -262,21 +287,28 @@ export default {
         } else {
           this.userPredictions.splice(this.userPredictions.findIndex(up => up.predictionId === this.selectedPrediction.resourceId), 1, newUserPrediction);
         }
-        this.closeModal();
+        this.closeUserPredictionModal();
       } catch (err) {
         this.errorMessage = err.message;
         this.loading = false;
-        this.closeModal();
+        this.closeUserPredictionModal();
       }
+    },
+    async submitCompletePrediction() {
+      console.log(this.completePredictionSelections);
     },
     resetMessages() {
       this.successMessage = undefined;
       this.errorMessage = undefined;
     },
-    closeModal() {
-      this.showModal = false;
+    closeUserPredictionModal() {
+      this.showUserPredictionModal = false;
       this.selectedPrediction = null;
       this.selectedUserPrediction = null;
+    },
+    closePredictionCompleteModal() {
+      this.showPredictionCompleteModal = false;
+      this.adminSelectedPrediction = null;
     }
   },
   components: {
@@ -358,7 +390,7 @@ export default {
   border-radius: 5px;
   border: 2px dashed $ps-light-grey;
 }
-.user-prediction-display {
+.user-prediction-display, .admin-prediction-display {
   cursor: pointer;
 }
 

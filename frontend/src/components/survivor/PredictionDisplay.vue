@@ -71,9 +71,9 @@ export default {
       }
       let selectionString = "You selected: ";
       for (let i=0; i<this.userSelections.length-1; i++) {
-        selectionString += `${this.userSelections[i].id}, `;
+        selectionString += `${this.userSelections[i]}, `;
       }
-      selectionString += `${this.userSelections[this.userSelections.length-1].id}.`;
+      selectionString += `${this.userSelections[this.userSelections.length-1]}.`;
       return selectionString;
     },
     timeRemaining() {

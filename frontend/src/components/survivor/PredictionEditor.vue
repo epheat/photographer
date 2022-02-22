@@ -16,7 +16,7 @@
         v-model="survivorSelections"
     />
     <div class="buttons">
-      <Button submit @press="submitPrediction" />
+      <Button submit @press="submitPrediction">Submit</Button>
     </div>
   </div>
 </template>
@@ -91,6 +91,14 @@ export default {
 
   @media screen and (max-width: $phone) {
     grid-template-columns: 1fr;
+  }
+}
+.buttons {
+  margin-top: 5px;
+  display: flex;
+  justify-content: space-around;
+  .ps-button {
+    display: inline-block;
   }
 }
 </style>
