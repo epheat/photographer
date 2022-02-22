@@ -34,6 +34,7 @@
           v-model="completePredictionSelections"
       />
       <template #actions>
+        <Button cancel @press="deletePrediction">Delete</Button>
         <Button submit @press="submitCompletePrediction">Submit</Button>
       </template>
     </Modal>
@@ -313,8 +314,32 @@ export default {
         this.closeUserPredictionModal();
       }
     },
+    async deletePrediction() {
+      this.resetMessages();
+      try {
+        let token = (await Auth.currentSession()).getAccessToken().getJwtToken();
+        this.loading = true;
+        let response = await API.del('ps-api', '/games/survivor42/predictions', {
+          body: {
+            prediction: {
+              episode: this.adminSelectedPrediction.episode,
+              predictionType: this.adminSelectedPrediction.predictionType,
+            },
+          },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
+        });
+        this.successMessage = response.message;
+        this.loading = false;
+        this.closePredictionCompleteModal();
+      } catch (err) {
+        this.errorMessage = err.message;
+        this.loading = false;
+        this.closePredictionCompleteModal();
+      }
+    },
     async submitCompletePrediction() {
-      console.log(this.completePredictionSelections);
       this.resetMessages();
       try {
         let token = (await Auth.currentSession()).getAccessToken().getJwtToken();
