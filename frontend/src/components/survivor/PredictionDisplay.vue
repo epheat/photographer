@@ -79,6 +79,9 @@ export default {
     timeRemaining() {
       // adapted from: https://stackoverflow.com/a/16767434
       let difference = this.predictBefore - this.currentTime;
+      if (difference < 0) {
+        return "Prediction closed.";
+      }
       const daysRemaining = Math.floor(difference / 1000 / 60 / 60 / 24);
       difference -= daysRemaining * 1000 * 60 * 60 * 24;
       const hoursRemaining = Math.floor(difference  / 1000 / 60 / 60);

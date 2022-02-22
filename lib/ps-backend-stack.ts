@@ -48,6 +48,12 @@ export class PSBackendStack extends cdk.Stack {
       sortKey: { name: 'resourceId', type: dynamodb.AttributeType.STRING },
       pointInTimeRecovery: true,
     });
+    gameDataTable.addGlobalSecondaryIndex({
+      indexName: 'resourceTypeIndex',
+      partitionKey: { name: 'resourceType', type: dynamodb.AttributeType.STRING },
+      sortKey: { name: 'resourceId', type: dynamodb.AttributeType.STRING },
+      projectionType: dynamodb.ProjectionType.ALL,
+    });
 
     // AuthN
     // a cognito userpool for vending JWTs, and associated IAM roles
@@ -119,6 +125,18 @@ export class PSBackendStack extends cdk.Stack {
       handler: 'setUserPrediction',
     });
     gameDataTable.grantReadWriteData(setUserPredictionLambda);
+    const completePredictionLambda = new nodejs.NodejsFunction(this, 'complete-prediction-func', {
+      runtime: lambda.Runtime.NODEJS_14_X,
+      entry: path.join(__dirname, "./lambda/survivor.ts"),
+      handler: 'completePrediction',
+    });
+    gameDataTable.grantReadWriteData(completePredictionLambda);
+    const getLeaderboardLambda = new nodejs.NodejsFunction(this, 'get-leaderboard-func', {
+      runtime: lambda.Runtime.NODEJS_14_X,
+      entry: path.join(__dirname, "./lambda/survivor.ts"),
+      handler: 'getLeaderboard',
+    });
+    gameDataTable.grantReadData(getLeaderboardLambda);
 
 
     // APIG HTTP API
@@ -233,6 +251,22 @@ export class PSBackendStack extends cdk.Stack {
       }),
       authorizer: authorizer,
     })
+    httpApi.addRoutes({
+      path: '/games/survivor42/predictions/complete',
+      methods: [apigateway.HttpMethod.POST],
+      integration: new integrations.LambdaProxyIntegration({
+        handler: completePredictionLambda,
+      }),
+      authorizer: authorizer,
+    })
+    httpApi.addRoutes({
+      path: '/games/survivor42/leaderboard',
+      methods: [apigateway.HttpMethod.GET],
+      integration: new integrations.LambdaProxyIntegration({
+        handler: getLeaderboardLambda,
+      }),
+      authorizer: authorizer,
+    });
 
     // const apiAliasRecord = new route53.ARecord(this, 'api-alias-record', {
     //   zone: hostedZone,

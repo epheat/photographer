@@ -56,9 +56,8 @@
     </div>
     <div class="tab-content leaderboard" v-if="currentTab === 1">
       <h2>Rankings</h2>
-      <div class="ps-leaderboard">
-
-      </div>
+      <Button @press="getLeaderboard">Refresh</Button>
+      <Leaderboard :data="leaderboardData" />
     </div>
     <div class="tab-content cast" v-if="currentTab === 2">
       <div class="cast-container">
@@ -99,6 +98,7 @@ import PredictionDisplay from "@/components/survivor/PredictionDisplay";
 import Modal from "@/components/Modal";
 import SurvivorSelector from "@/components/survivor/SurvivorSelector";
 import Button from "@/components/Button";
+import Leaderboard from "@/components/survivor/Leaderboard";
 
 export default {
   name: "SurvivorGamePage",
@@ -118,6 +118,7 @@ export default {
       selectedPrediction: null,
       selectedUserPrediction: null,
       userPredictionSelections: [],
+      leaderboardData: [],
 
       // admin only
       castEditorValue: "",
@@ -134,6 +135,7 @@ export default {
     this.getCast();
     this.getPredictions();
     this.getUserPredictions();
+    this.getLeaderboard();
   },
   methods: {
     setTab(tab) {
@@ -194,6 +196,23 @@ export default {
           }
         });
         this.successMessage = response.message;
+        this.loading = false;
+      } catch (err) {
+        this.errorMessage = err.message;
+        this.loading = false;
+      }
+    },
+    async getLeaderboard() {
+      this.resetMessages();
+      try {
+        let token = (await Auth.currentSession()).getAccessToken().getJwtToken();
+        this.loading = true;
+        let response = await API.get('ps-api', '/games/survivor42/leaderboard', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
+        });
+        this.leaderboardData = response.items;
         this.loading = false;
       } catch (err) {
         this.errorMessage = err.message;
@@ -296,6 +315,30 @@ export default {
     },
     async submitCompletePrediction() {
       console.log(this.completePredictionSelections);
+      this.resetMessages();
+      try {
+        let token = (await Auth.currentSession()).getAccessToken().getJwtToken();
+        this.loading = true;
+        let response = await API.post('ps-api', '/games/survivor42/predictions/complete', {
+          body: {
+            prediction: {
+              episode: this.adminSelectedPrediction.episode,
+              predictionType: this.adminSelectedPrediction.predictionType,
+              selections: this.completePredictionSelections.map(id => { return { id: id }}),
+            },
+          },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
+        });
+        this.successMessage = response.message;
+        this.loading = false;
+        this.closePredictionCompleteModal();
+      } catch (err) {
+        this.errorMessage = err.message;
+        this.loading = false;
+        this.closePredictionCompleteModal();
+      }
     },
     resetMessages() {
       this.successMessage = undefined;
@@ -312,6 +355,7 @@ export default {
     }
   },
   components: {
+    Leaderboard,
     SurvivorSelector,
     Modal,
     PredictionEditor,
@@ -364,24 +408,10 @@ export default {
   }
 }
 
-.standings {
-  display: flex;
-  justify-content: space-evenly;
-
-  .standings-box {
-    padding: 8px;
-    background-color: $ps-lighter-grey;
-    border-radius: 4px;
-    box-shadow: 0px 4px 4px #888888;
-
-    h3 {
-      margin: 0px 0px 5px 0px;
-    }
-  }
-
-  .standings-box.place span {
-    font-weight: bold;
-    font-size: 1.25em;
+.leaderboard {
+  .ps-button {
+    margin-bottom: 10px;
+    display: inline-block;
   }
 }
 .inventory {

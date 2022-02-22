@@ -51,7 +51,7 @@ export default {
         reward: parseInt(this.reward, 10),
         select: parseInt(this.select, 10),
         predictBefore: predictBefore,
-        options: this.survivorSelections,
+        options: this.survivorSelections.map(id => { return { id: id }}),
       });
     }
   },

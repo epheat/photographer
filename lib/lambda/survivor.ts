@@ -3,7 +3,6 @@ import { DynamoDBDocument } from "@aws-sdk/lib-dynamodb";
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from "aws-lambda";
 import {deny, error, fault, success} from "./responses";
 import {getUserInfo, userHasGroup} from "./auth";
-import {type} from "os";
 
 const tableName = "PSGameData";
 const client = new DynamoDBClient({ region: "us-east-1" });
@@ -240,6 +239,7 @@ export async function setUserPrediction(event: APIGatewayProxyEventV2): Promise<
                 selections: request.userPrediction.selections,
                 resourceType: "UserPrediction",
                 lastUpdatedDate: requestTime,
+                username: username,
             }
         });
         return success({
@@ -250,6 +250,178 @@ export async function setUserPrediction(event: APIGatewayProxyEventV2): Promise<
         console.log(err);
         return fault({ message: err });
     }
+}
+
+/**
+ * POST /games/survivor42/predictions/complete
+ *
+ * complete a prediction by providing the results, awarding points to users.
+ */
+export async function completePrediction(event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> {
+    if (!userHasGroup(event, "Admins")) { return deny(); }
+    if (!event.body) { return error({ message: "Invalid Request: Missing body." }); }
+    const request = JSON.parse(event.body);
+    console.log(`completePrediction request - ${event.body}`);
+    if (!request?.prediction || !request?.prediction?.episode || !request?.prediction?.predictionType || !request?.prediction?.selections) {
+        return error({ message: "Invalid Request: missing required fields." });
+    }
+    const requestTime = new Date().getTime();
+    // first, fetch the prediction record and make sure the prediction window has ended, and the results match the prediction options
+    let prediction;
+    try {
+        const result = await ddb.get({
+            TableName: tableName,
+            Key: {
+                entityId: "FantasySurvivor-S42",
+                resourceId: `Prediction-${request.prediction.episode}-${request.prediction.predictionType}`,
+            }
+        });
+        if (!result.Item) {
+            return error({ message: "Invalid Request: prediction does not exist." });
+        }
+        if (requestTime < result.Item.predictBefore) {
+            return error({ message: "Invalid Request: prediction cannot be completed because the prediction window hasn't ended." });
+        }
+        if (!optionsContainSelections(result.Item.options, request.prediction.selections)) {
+            return error({ message: "Invalid Request: input prediction completion selections contained invalid survivor ids for this prediction." });
+        }
+        if (result.Item.results) {
+            return error({ message: "Invalid Request: prediction has already been completed."})
+        }
+        prediction = result.Item;
+    } catch (err) {
+        console.log(err);
+        return fault({ message: err });
+    }
+    // for each user-prediction record for this resourceId, match the user selections with the prediction results to compute points
+    const userPoints = [];
+    const resourceId = `FantasySurvivor-S42-Prediction-${request.prediction.episode}-${request.prediction.predictionType}`;
+    try {
+        const results = await ddb.query({
+            TableName: tableName,
+            IndexName: "resourceTypeIndex",
+            KeyConditionExpression: "resourceType = :resourceType and resourceId = :resourceId",
+            ExpressionAttributeValues: {
+                ':resourceType': 'UserPrediction',
+                ':resourceId': resourceId,
+            },
+        });
+        for (const userPrediction of results.Items || []) {
+            userPoints.push({
+                userSub: userPrediction.entityId,
+                username: userPrediction.username,
+                pointsToAward: calculatePoints(request.prediction.selections, prediction.reward, userPrediction),
+            });
+        }
+    } catch (err) {
+        console.log(err);
+        return fault({ message: err });
+    }
+    // award points to each user, mark the user-points record as having been updated for the completed predictionId
+    try {
+        for (const { userSub, pointsToAward, username } of userPoints) {
+            const getResult = await ddb.get({
+                TableName: tableName,
+                Key: {
+                    entityId: userSub,
+                    resourceId: "FantasySurvivor-S42-Points",
+                }
+            });
+            let userPointsRecord;
+            if (!getResult.Item) {
+                // if this user has no points, create a fresh record.
+                userPointsRecord = {
+                    entityId: userSub,
+                    resourceId: "FantasySurvivor-S42-Points",
+                    pointHistory: [
+                        { event: resourceId, pointsAdded: pointsToAward }
+                    ],
+                    resourceType: "UserPoints",
+                    points: pointsToAward,
+                    lastUpdatedDate: requestTime,
+                    username: username,
+                    episode: request.prediction.episode,
+                }
+            } else {
+                // otherwise, fill from the existing record with some edits
+                // if points were already awarded for this event, skip (idempotency)
+                if (getResult.Item.pointHistory.find((thing: { event: string; }) => thing.event === resourceId)) {
+                    userPointsRecord = getResult.Item;
+                } else {
+                    userPointsRecord = {
+                        ...getResult.Item,
+                        pointHistory: [
+                            ...getResult.Item.pointHistory,
+                            {event: resourceId, pointsAdded: pointsToAward}
+                        ],
+                        points: getResult.Item.points += pointsToAward,
+                        lastUpdatedDate: requestTime
+                    }
+                }
+            }
+            console.log(`Adding ${pointsToAward} points for userSub ${userSub}, from prediction ${resourceId}.`);
+            const putResult = await ddb.put({
+                TableName: tableName,
+                Item: userPointsRecord,
+            });
+        }
+    } catch (err) {
+        console.log(err);
+        return fault({ message: err });
+    }
+    // finally, once all user-prediction records are covered, mark the game-prediction record as completed
+    try {
+        const result = await ddb.put({
+            TableName: tableName,
+            Item: {
+                ...prediction,
+                results: request.prediction.selections,
+                lastUpdatedDate: requestTime,
+            }
+        });
+    } catch (err) {
+        console.log(err);
+        return fault({ message: err });
+    }
+    return success({ message: "Success." });
+}
+
+/**
+ * GET /games/survivor42/leaderboard
+ *
+ * get points for all users, to populate the leaderboard.
+ */
+export async function getLeaderboard(event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> {
+    try {
+        const result = await ddb.query({
+            TableName: tableName,
+            IndexName: "resourceTypeIndex",
+            KeyConditionExpression: "resourceType = :resourceType and resourceId = :resourceId",
+            ExpressionAttributeValues: {
+                ':resourceType': 'UserPoints',
+                ':resourceId': 'FantasySurvivor-S42-Points',
+            },
+        });
+        return success({
+            message: "Success.",
+            items: result.Items,
+        })
+    } catch (err) {
+        console.log(err);
+        return fault({ message: err });
+    }
+}
+
+function calculatePoints(selections: any, reward: number, userPrediction: any) {
+    let pointsToAward = 0;
+    for (const { id } of selections) {
+        for (const userSelection of userPrediction.selections) {
+            if (userSelection.id === id) {
+                pointsToAward += reward;
+            }
+        }
+    }
+    return pointsToAward;
 }
 
 function optionsContainSelections(options: { id: string }[], selections: { id: string }[]) {
