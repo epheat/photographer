@@ -59,6 +59,9 @@
       <h2>Rankings</h2>
       <Button @press="getLeaderboard">Refresh</Button>
       <Leaderboard :data="leaderboardData" />
+      <h2>User Predictions</h2>
+      <Button @press="getAllUserPredictions">Refresh</Button>
+      <UserPredictionsTable :userPredictions="allUserPredictions" />
     </div>
     <div class="tab-content cast" v-if="currentTab === 2">
       <div class="cast-container">
@@ -100,6 +103,7 @@ import Modal from "@/components/Modal";
 import SurvivorSelector from "@/components/survivor/SurvivorSelector";
 import Button from "@/components/Button";
 import Leaderboard from "@/components/survivor/Leaderboard";
+import UserPredictionsTable from "@/components/survivor/UserPredictionsTable";
 
 export default {
   name: "SurvivorGamePage",
@@ -116,6 +120,7 @@ export default {
       cast: [],
       predictions: [],
       userPredictions: [],
+      allUserPredictions: [],
       selectedPrediction: null,
       selectedUserPrediction: null,
       userPredictionSelections: [],
@@ -136,6 +141,7 @@ export default {
     this.getCast();
     this.getPredictions();
     this.getUserPredictions();
+    this.getAllUserPredictions();
     this.getLeaderboard();
   },
   methods: {
@@ -275,6 +281,23 @@ export default {
         this.loading = false;
       }
     },
+    async getAllUserPredictions() {
+      this.resetMessages();
+      try {
+        let token = (await Auth.currentSession()).getAccessToken().getJwtToken();
+        let response = await API.get('ps-api', '/games/survivor42/userPredictions', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
+        })
+        this.allUserPredictions = response.items;
+        this.successMessage = response.message;
+        this.loading = false;
+      } catch (err) {
+        this.errorMessage = err.message;
+        this.loading = false;
+      }
+    },
     async submitUserPrediction() {
       this.resetMessages();
       try {
@@ -391,6 +414,7 @@ export default {
     CastMember,
     Footer,
     Button,
+    UserPredictionsTable,
   }
 }
 </script>
@@ -473,5 +497,4 @@ export default {
     margin-bottom: 10px;
   }
 }
-
 </style>

@@ -1,17 +1,15 @@
 <template>
-  <div class="leaderboard">
+  <div class="user-predictions-table">
     <table>
       <tr>
-        <th>place</th>
         <th>username</th>
-        <th>points</th>
-        <th>change</th>
+        <th>prediction</th>
+        <th>selections</th>
       </tr>
-      <tr v-for="(row, index) in data" :key="row.resourceId">
-        <td>{{ index + 1 }}</td>
-        <td>{{ row.username }}</td>
-        <td>{{ row.points }}</td>
-        <td class="center">-</td>
+      <tr v-for="userPrediction in userPredictions" :key="`${userPrediction.entityId}-${userPrediction.resourceId}`">
+        <td>{{ userPrediction.username }}</td>
+        <td>{{ userPrediction.predictionId }}</td>
+        <td>{{ userPrediction.selections }}</td>
       </tr>
     </table>
   </div>
@@ -19,12 +17,9 @@
 
 <script>
 export default {
-  name: "Leaderboard",
+  name: "PredictionTable",
   props: {
-    data: Array,
-  },
-  computed: {
-
+    userPredictions: Array,
   }
 }
 </script>
@@ -32,7 +27,7 @@ export default {
 <style lang="scss" scoped>
 @import "../../scss/colors.scss";
 
-.leaderboard {
+.user-predictions-table {
   table {
     border-collapse: collapse;
     width: 100%;
