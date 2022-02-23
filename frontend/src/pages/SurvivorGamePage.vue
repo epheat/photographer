@@ -259,12 +259,12 @@ export default {
     },
     async getUserPredictions() {
       this.resetMessages();
-      this.resetMessages();
       try {
-        let token = (await Auth.currentSession()).getAccessToken().getJwtToken();
-        let response = await API.get('ps-api', '/games/survivor42/userPredictions', {
+        let session = await Auth.currentSession();
+        let jwt = session.getAccessToken().getJwtToken();
+        let response = await API.get('ps-api', `/games/survivor42/userPredictions/${session.getIdToken().payload.sub}`, {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${jwt}`,
           }
         })
         this.userPredictions = response.items;

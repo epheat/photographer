@@ -125,6 +125,12 @@ export class PSBackendStack extends cdk.Stack {
       handler: 'getUserPredictions',
     });
     gameDataTable.grantReadData(getUserPredictionsLambda);
+    const getUserPredictionLambda = new nodejs.NodejsFunction(this, 'get-user-prediction-func', {
+      runtime: lambda.Runtime.NODEJS_14_X,
+      entry: path.join(__dirname, "./lambda/survivor.ts"),
+      handler: 'getUserPrediction',
+    });
+    gameDataTable.grantReadData(getUserPredictionLambda);
     const setUserPredictionLambda = new nodejs.NodejsFunction(this, 'set-user-prediction-func', {
       runtime: lambda.Runtime.NODEJS_14_X,
       entry: path.join(__dirname, "./lambda/survivor.ts"),
@@ -246,6 +252,14 @@ export class PSBackendStack extends cdk.Stack {
       methods: [apigateway.HttpMethod.GET],
       integration: new integrations.LambdaProxyIntegration({
         handler: getUserPredictionsLambda,
+      }),
+      authorizer: authorizer,
+    })
+    httpApi.addRoutes({
+      path: '/games/survivor42/userPredictions/{sub}',
+      methods: [apigateway.HttpMethod.GET],
+      integration: new integrations.LambdaProxyIntegration({
+        handler: getUserPredictionLambda,
       }),
       authorizer: authorizer,
     })

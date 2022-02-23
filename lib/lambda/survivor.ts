@@ -167,19 +167,16 @@ export async function deletePrediction(event: APIGatewayProxyEventV2): Promise<A
 /**
  * GET /games/survivor42/userPredictions
  *
- * get your own userPredictions
+ * get all userPredictions
  */
 export async function getUserPredictions(event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> {
-    const { username, sub } = getUserInfo(event);
-    console.log(`getUserPrediction request for user ${username}.`);
-
     try {
         const results = await ddb.query({
             TableName: tableName,
-            KeyConditionExpression: "entityId = :entityId and begins_with(resourceId, :resourceType)",
-            ExpressionAttributeValues: { ':entityId': sub, ':resourceType': 'FantasySurvivor-S42-UserPrediction' },
+            IndexName: "resourceTypeIndex",
+            KeyConditionExpression: "resourceType = :resourceType",
+            ExpressionAttributeValues: { ':resourceType': "UserPrediction" },
         });
-
         return success({
             message: "Success.",
             items: results.Items,
@@ -188,6 +185,31 @@ export async function getUserPredictions(event: APIGatewayProxyEventV2): Promise
         return fault({ message: err });
     }
 }
+
+/**
+ * GET /games/survivor42/userPrediction/:sub
+ *
+ * get a specific user's userPredictions
+ */
+export async function getUserPrediction(event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> {
+    if (!event.pathParameters?.sub) {
+        return error({ message: "Invalid Request: Missing sub path parameter." });
+    }
+    try {
+        const results = await ddb.query({
+            TableName: tableName,
+            KeyConditionExpression: "entityId = :entityId and begins_with(resourceId, :resourceType)",
+            ExpressionAttributeValues: { ':entityId': event.pathParameters?.sub, ':resourceType': 'FantasySurvivor-S42-UserPrediction' },
+        });
+        return success({
+            message: "Success.",
+            items: results.Items,
+        });
+    } catch (err) {
+        return fault({ message: err });
+    }
+}
+
 
 /**
  * POST /games/survivor42/userPredictions
