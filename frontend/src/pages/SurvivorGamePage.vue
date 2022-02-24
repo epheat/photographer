@@ -5,7 +5,7 @@
       <div class="tab" :class="{active: currentTab === 0}" @click="setTab(0)">Predictions</div>
       <div class="tab" :class="{active: currentTab === 1}" @click="setTab(1)">Leaderboard</div>
       <div class="tab" :class="{active: currentTab === 2}" @click="setTab(2)">Cast</div>
-      <div class="tab" :class="{active: currentTab === 3}" @click="setTab(3)">Admin</div>
+      <div class="tab" v-if="shouldShowAdminPage" :class="{active: currentTab === 3}" @click="setTab(3)">Admin</div>
     </div>
     <div class="error-message" v-if="errorMessage">{{ errorMessage }}</div>
     <div class="success-message" v-if="successMessage">{{ successMessage }}</div>
@@ -127,6 +127,7 @@ export default {
       leaderboardData: [],
 
       // admin only
+      shouldShowAdminPage: false,
       castEditorValue: "",
       showPredictionCompleteModal: false,
       adminSelectedPrediction: null,
@@ -137,6 +138,8 @@ export default {
     if (!authStore.state.loggedIn) {
       this.errorMessage = "Error: not logged in.";
       return;
+    } else {
+      this.shouldShowAdminPage = authStore.isMember("Admins");
     }
     this.getCast();
     this.getPredictions();
