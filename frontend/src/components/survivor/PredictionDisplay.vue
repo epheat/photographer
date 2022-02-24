@@ -16,6 +16,7 @@
 <script>
 import Campfire from "@/assets/campfire.png";
 import Necklace from "@/assets/necklace.png";
+import Medals from "@/assets/medals.png";
 
 export default {
   name: "Prediction",
@@ -46,22 +47,28 @@ export default {
     icon() {
       if (this.predictionType === "ImmunityChallenge") {
         return Necklace;
-      } else {
+      } else if (this.predictionType === "TribalCouncil") {
         return Campfire;
+      } else {
+        return Medals
       }
     },
     title() {
       if (this.predictionType === "ImmunityChallenge") {
         return "Immunity Challenge prediction";
-      } else {
+      } else if (this.predictionType === "TribalCouncil") {
         return "Tribal Council prediction";
+      } else {
+        return "Finalists prediction"
       }
     },
     instructions() {
       if (this.predictionType === "ImmunityChallenge") {
         return `Select ${this.select} survivors. Earn points for each selected survivor that wins the immunity challenge.`;
-      } else {
+      } else if (this.predictionType === "TribalCouncil") {
         return `Select ${this.select} survivors. Earn points if any of them go home this episode.`;
+      } else {
+        return `Select ${this.select} survivors. Earn points for each one that is a finalist.`;
       }
     },
     selections() {

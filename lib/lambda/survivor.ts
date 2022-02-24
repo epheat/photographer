@@ -135,16 +135,66 @@ export async function setPrediction(event: APIGatewayProxyEventV2): Promise<APIG
 }
 
 /**
- * DELETE /games/survivor42/predictions
+ * POST /games/survivor42/predictions/delete
  *
- * deletes a prediction.
+ * deletes a prediction. Revokes
  */
 export async function deletePrediction(event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> {
     if (!userHasGroup(event, "Admins")) { return deny(); }
     if (!event.body) { return error({ message: "Invalid Request: Missing body." }); }
     const request = JSON.parse(event.body);
-    if (!request?.prediction || !request?.prediction?.episode || !request?.prediction?.predictionType) {
+    if (!request?.prediction || !request?.prediction?.episode || !request?.prediction?.predictionType || !request?.revokePoints) {
         return error({ message: "Invalid Request: missing required fields." });
+    }
+    const resourceId = `FantasySurvivor-S42-UserPrediction-${request.prediction.episode}-${request.prediction.predictionType}`;
+    if (request.revokePoints) {
+        try {
+            const userPoints = await ddb.query({
+                TableName: tableName,
+                IndexName: "pointsIndex",
+                KeyConditionExpression: "resourceId = :resourceId",
+                ExpressionAttributeValues: {
+                    ':resourceId': 'FantasySurvivor-S42-UserPoints',
+                },
+            });
+            // for each userPoints record
+            for (const userPointsRecord of userPoints.Items || []) {
+                // if the user has points for this prediction being deleted
+                const historyEvent = userPointsRecord.pointHistory.find((item: { event: string; }) => item.event === resourceId);
+                if (historyEvent) {
+                    // then remove them (put back the points record with points subtracted)
+                    await ddb.put({
+                        TableName: tableName,
+                        Item: {
+                            ...userPointsRecord,
+                            points: userPointsRecord.points - historyEvent.pointsAdded,
+                            pointHistory: userPointsRecord.pointHistory.filter((item: { event: string; }) => item.event !== resourceId),
+                        }
+                    })
+                }
+            }
+            const userPredictions = await ddb.query({
+                TableName: tableName,
+                IndexName: "resourceTypeIndex",
+                KeyConditionExpression: "resourceType = :resourceType and resourceId = :resourceId",
+                ExpressionAttributeValues: {
+                    ':resourceType': 'UserPrediction',
+                    ':resourceId': resourceId,
+                },
+            });
+            // delete each userPrediction record.
+            for (const userPredictionRecord of userPredictions.Items || []) {
+                await ddb.delete({
+                    TableName: tableName,
+                    Key: {
+                        entityId: userPredictionRecord.entityId,
+                        resourceId: userPredictionRecord.resourceId,
+                    }
+                })
+            }
+        } catch (err) {
+            return fault({ message: err });
+        }
     }
 
     try {

@@ -240,8 +240,8 @@ export class PSBackendStack extends cdk.Stack {
       authorizer: authorizer,
     })
     httpApi.addRoutes({
-      path: '/games/survivor42/predictions',
-      methods: [apigateway.HttpMethod.DELETE],
+      path: '/games/survivor42/predictions/delete',
+      methods: [apigateway.HttpMethod.POST],
       integration: new integrations.LambdaProxyIntegration({
         handler: deletePredictionLambda,
       }),

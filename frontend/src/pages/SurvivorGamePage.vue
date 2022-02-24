@@ -44,7 +44,7 @@
       <div class="inventory">Your inventory is empty.</div>
       <h2>Predictions</h2>
       <Button style="display: inline-block" @press="refreshPredictions">Refresh</Button>
-      <p>Past and future predictions will show up here. You can only edit your predictions up until the day that the episode airs. </p>
+      <p>Past and future predictions will show up here. You can only edit your predictions up until the day that the episode airs. Click on a prediction to make your selection.</p>
       <PredictionDisplay
           class="user-prediction-display"
           v-for="prediction in predictions"
@@ -345,12 +345,13 @@ export default {
       try {
         let token = (await Auth.currentSession()).getAccessToken().getJwtToken();
         this.loading = true;
-        let response = await API.del('ps-api', '/games/survivor42/predictions', {
+        let response = await API.post('ps-api', '/games/survivor42/predictions/delete', {
           body: {
             prediction: {
               episode: this.adminSelectedPrediction.episode,
               predictionType: this.adminSelectedPrediction.predictionType,
             },
+            revokePoints: true,
           },
           headers: {
             Authorization: `Bearer ${token}`,
