@@ -33,6 +33,7 @@ export const authStore = {
 
   isMember(group) {
     if (!this.state.user) return false;
-    return this.state.user.signInUserSession.idToken.payload["cognito:groups"].includes(group);
+    const groups = this.state.user.signInUserSession.idToken.payload["cognito:groups"];
+    return groups && groups.includes(group);
   }
 }
