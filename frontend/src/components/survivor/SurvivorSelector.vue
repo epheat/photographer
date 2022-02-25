@@ -10,9 +10,15 @@
             @click="handleOption(survivor.id)"
             :class="{disable: shouldDisable(survivor.id)}"
         />
-        <label :for="survivor.id" :class="{disable: shouldDisable(survivor.id)}">
-          <CastHead :out="survivor.votedOut" :id="survivor.id" /> {{ shortenName(survivor.name) }}
-        </label>
+        <div class="name-div" :class="{disable: shouldDisable(survivor.id)}">
+          <label class="name-label" :for="survivor.id">
+            <CastHead :votedOut="survivor.votedOut" :id="survivor.id" :tribe="survivor.tribe" />
+            <span class="vertical">
+              <span class="name">{{ shortenName(survivor.name) }}</span>
+              <span class="tribe">{{ survivor.tribe }}</span>
+            </span>
+          </label>
+        </div>
       </div>
     </div>
   </div>
@@ -56,7 +62,7 @@ export default {
     },
     shortenName(name) {
       const spaceIndex = name.indexOf(" ");
-      return `${name.substring(0, spaceIndex + 2)}.`;
+      return `${name.substring(0, spaceIndex)}`;
     }
   },
   computed: {
@@ -75,6 +81,8 @@ export default {
   flex-wrap: wrap;
 
   .survivor-option {
+    display: flex;
+    margin-bottom: 5px;
     flex-basis: 25%;
     @media screen and (max-width: $tablet) {
       flex-basis: 33%;
@@ -84,6 +92,21 @@ export default {
     }
     input.disable {
       cursor: not-allowed;
+    }
+
+    .name-label {
+      display: flex;
+      .vertical {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        .name {
+          font-weight: bold;
+        }
+        .tribe {
+          font-size: 0.8em;
+        }
+      }
     }
   }
   label {
@@ -95,6 +118,7 @@ export default {
   }
   img {
     width: 30px;
+    margin-right: 5px;
   }
 }
 </style>

@@ -1,10 +1,16 @@
 <template>
   <div class="cast-member">
-    <img :alt="name" :src="getImgUrl()" :class="{grey: votedOut}"/>
+    <img :alt="name" :src="getImgUrl()" :class="{
+      grey: votedOut,
+      ika: tribe === 'Ika',
+      vati: tribe === 'Vati',
+      taku: tribe === 'Taku',
+    }"/>
     <h3>{{ name }}</h3>
     <p>Age: {{ age }}</p>
     <p>From: {{ hometown }}</p>
     <p>Occupation: {{ occupation }}</p>
+    <p>Tribe: {{ tribe }}</p>
   </div>
 </template>
 
@@ -36,6 +42,7 @@ export default {
     age: Number,
     hometown: String,
     occupation: String,
+    tribe: String,
     votedOut: String,
   },
   data() {
@@ -71,6 +78,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "../../scss/colors.scss";
+
 .cast-member {
   padding: 10px;
 
@@ -83,7 +92,16 @@ export default {
     box-sizing: border-box;
     width: 100%;
     &.grey {
-      filter: grayscale(100%);
+      filter: grayscale(100%) opacity(50%);
+    }
+    &.ika {
+      border: 3px solid $survivor-ika;
+    }
+    &.taku {
+      border: 3px solid $survivor-taku;
+    }
+    &.vati {
+      border: 3px solid $survivor-vati;
     }
   }
 }

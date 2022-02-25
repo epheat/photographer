@@ -183,7 +183,7 @@ export default {
             Authorization: `Bearer ${token}`,
           }
         });
-        this.cast = response.items;
+        this.cast = response.items.sort((s1, s2) => s1.tribe < s2.tribe);
         this.castEditorValue = JSON.stringify(response.items, null, 2);
         this.loading = false;
       } catch (err) {

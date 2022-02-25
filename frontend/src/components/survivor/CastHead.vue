@@ -1,5 +1,10 @@
 <template>
-  <img :src="getImgUrl()" :alt="id" :class="{ grey: this.out }"/>
+  <img :src="getImgUrl()" :alt="id" :class="{
+    grey: votedOut,
+    ika: tribe === 'Ika',
+    vati: tribe === 'Vati',
+    taku: tribe === 'Taku',
+  }"/>
 </template>
 
 <script>
@@ -26,7 +31,8 @@ export default {
   name: "CastHead",
   props: {
     id: String,
-    out: String,
+    votedOut: String,
+    tribe: String,
   },
   data() {
     return {
@@ -61,11 +67,22 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "../../scss/colors.scss";
+
 img {
   object-fit: cover;
 
   &.grey {
     filter: grayscale(100%);
+  }
+  &.ika {
+    border: 3px solid $survivor-ika;
+  }
+  &.taku {
+    border: 3px solid $survivor-taku;
+  }
+  &.vati {
+    border: 3px solid $survivor-vati;
   }
 }
 </style>

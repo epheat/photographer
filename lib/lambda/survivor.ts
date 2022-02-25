@@ -413,7 +413,6 @@ export async function completePrediction(event: APIGatewayProxyEventV2): Promise
                     points: pointsToAward,
                     lastUpdatedDate: requestTime,
                     username: username,
-                    episode: request.prediction.episode,
                 }
             } else {
                 // otherwise, fill from the existing record with some edits
