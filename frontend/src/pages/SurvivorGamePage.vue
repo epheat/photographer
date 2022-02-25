@@ -61,7 +61,7 @@
       <Leaderboard :data="leaderboardData" />
       <h2>User Predictions</h2>
       <Button @press="getAllUserPredictions">Refresh</Button>
-      <UserPredictionsTable :userPredictions="allUserPredictions" />
+      <UserPredictionsTable :userPredictions="filterUserPredictions(allUserPredictions)" />
     </div>
     <div class="tab-content cast" v-if="currentTab === 2">
       <div class="cast-container">
@@ -407,6 +407,11 @@ export default {
     },
     filterCast(cast, prediction) {
       return cast.filter(survivor => prediction.options.includes(survivor.id));
+    },
+    filterUserPredictions(userPredictions) {
+      return userPredictions.filter(userPrediction => {
+        return this.predictions.find(prediction => prediction.resourceId === userPrediction.predictionId && prediction.results)
+      })
     }
   },
   components: {
