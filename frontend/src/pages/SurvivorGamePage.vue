@@ -46,8 +46,18 @@
       <Button style="display: inline-block" @press="refreshPredictions">Refresh</Button>
       <p>Past and future predictions will show up here. You can only edit your predictions up until the day that the episode airs. Click on a prediction to make your selection.</p>
       <PredictionDisplay
+        class="user-prediction-display"
+        v-for="prediction in ongoingPredictions"
+        v-bind="prediction"
+        :key="prediction.id"
+        @click="openUserPredictionModal(prediction)"
+        :submitted="getUserSelectionsForPrediction(prediction).length > 0"
+        :userSelections="getUserSelectionsForPrediction(prediction)"
+      />
+      <h3 v-if="completedPredictions.length > 0">Past predictions</h3>
+      <PredictionDisplay
           class="user-prediction-display"
-          v-for="prediction in predictions"
+          v-for="prediction in completedPredictions"
           v-bind="prediction"
           :key="prediction.id"
           @click="openUserPredictionModal(prediction)"
@@ -60,8 +70,11 @@
       <Button @press="getLeaderboard">Refresh</Button>
       <Leaderboard :data="leaderboardData" />
       <h2>User Predictions</h2>
+      <p>View user predictions from previous rounds here. Use this information to help determine who to select in your future predictions.</p>
       <Button @press="getAllUserPredictions">Refresh</Button>
-      <UserPredictionsTable :userPredictions="filterUserPredictions(allUserPredictions)" />
+      <input id="userPredictionCheck" type="checkbox" v-if="shouldShowAdminPage" v-model="showCurrentUserPredictions"/>
+      <label for="userPredictionCheck" v-if="shouldShowAdminPage">Show current</label>
+      <UserPredictionsTable :userPredictions="filteredUserPredictions" />
     </div>
     <div class="tab-content cast" v-if="currentTab === 2">
       <div class="cast-container">
@@ -132,6 +145,7 @@ export default {
       showPredictionCompleteModal: false,
       adminSelectedPrediction: null,
       completePredictionSelections: [],
+      showCurrentUserPredictions: false,
     }
   },
   mounted() {
@@ -156,9 +170,11 @@ export default {
       this.castEditorValue = e.target.value;
     },
     openUserPredictionModal(prediction) {
-      this.selectedPrediction = prediction;
-      this.userPredictionSelections = this.getUserSelectionsForPrediction(prediction);
-      this.showUserPredictionModal = true;
+      if (!prediction.results) {
+        this.selectedPrediction = prediction;
+        this.userPredictionSelections = this.getUserSelectionsForPrediction(prediction);
+        this.showUserPredictionModal = true;
+      }
     },
     openPredictionCompleteModal(prediction) {
       this.adminSelectedPrediction = prediction;
@@ -342,6 +358,10 @@ export default {
     },
     async deletePrediction() {
       this.resetMessages();
+      const confirmation = confirm("Are you sure you want to delete?");
+      if (!confirmation) {
+        return;
+      }
       try {
         let token = (await Auth.currentSession()).getAccessToken().getJwtToken();
         this.loading = true;
@@ -408,10 +428,19 @@ export default {
     filterCast(cast, prediction) {
       return cast.filter(survivor => prediction.options.includes(survivor.id));
     },
-    filterUserPredictions(userPredictions) {
-      return userPredictions.filter(userPrediction => {
-        return this.predictions.find(prediction => prediction.resourceId === userPrediction.predictionId && prediction.results)
+  },
+  computed: {
+    // ALL user predictions (not just current user), filtered to only be completed ones
+    filteredUserPredictions() {
+      return this.allUserPredictions.filter(userPrediction => {
+        return this.predictions.find(prediction => prediction.resourceId === userPrediction.predictionId && ( this.showCurrentUserPredictions || prediction.results))
       })
+    },
+    completedPredictions() {
+      return this.predictions.filter(prediction => prediction.results).sort((p1, p2) => p2 - p1);
+    },
+    ongoingPredictions() {
+      return this.predictions.filter(prediction => !prediction.results);
     }
   },
   components: {
@@ -480,9 +509,6 @@ export default {
   padding: 10px;
   border-radius: 5px;
   border: 2px dashed $ps-light-grey;
-}
-.user-prediction-display, .admin-prediction-display {
-  cursor: pointer;
 }
 
 .admin {

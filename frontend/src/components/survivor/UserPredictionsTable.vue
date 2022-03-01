@@ -9,15 +9,19 @@
       <tr v-for="userPrediction in userPredictions" :key="`${userPrediction.entityId}-${userPrediction.resourceId}`">
         <td>{{ userPrediction.username }}</td>
         <td>{{ userPrediction.predictionId }}</td>
-        <td>{{ userPrediction.selections }}</td>
+        <td>
+          <CastHead v-for="survivor in userPrediction.selections" :key="survivor" :id="survivor"/>
+        </td>
       </tr>
     </table>
   </div>
 </template>
 
 <script>
+import CastHead from "@/components/survivor/CastHead";
 export default {
   name: "PredictionTable",
+  components: {CastHead},
   props: {
     userPredictions: Array,
   }
@@ -45,6 +49,11 @@ export default {
 
   tr:nth-child(even) {
     background-color: $ps-lightest-grey;
+  }
+
+  .cast-head {
+    width: 40px;
+    margin-right: 5px;
   }
 }
 </style>

@@ -1,11 +1,12 @@
 <template>
-  <div class="prediction-display">
+  <div class="prediction-display" :class="{completed: results !== undefined && results.length > 0}">
     <img :src="icon" :alt="predictionType" />
     <div class="details">
       <h3><strong>{{ episode }}</strong> - {{ title }}</h3>
       <p>{{ reward }} points - <span class="time-remaining">{{ timeRemaining }}</span></p>
       <p>{{ instructions }}</p>
       <p class="user-selections" v-if="submitted">{{ selections }}</p>
+      <p class="result-instructions" v-if="results">{{ resultText }}</p>
     </div>
     <div class="completion">
       <div class="dot" :class="{submitted: submitted}"></div>
@@ -28,6 +29,7 @@ export default {
     predictBefore: Number,
     submitted: Boolean,
     userSelections: Array,
+    results: Array
   },
   data() {
     return {
@@ -68,7 +70,7 @@ export default {
       } else if (this.predictionType === "TribalCouncil") {
         return `Select ${this.select} survivors. Earn points if any of them go home this episode.`;
       } else {
-        return `Select ${this.select} survivors. Earn points for each one that is a finalist.`;
+        return `Select ${this.select} survivors. Earn points for each one that makes it to final tribal.`;
       }
     },
     selections() {
@@ -82,6 +84,13 @@ export default {
       }
       selectionString += `${this.userSelections[this.userSelections.length-1]}.`;
       return selectionString;
+    },
+    resultText() {
+      if (!this.userSelections) {
+        return `Result: ${this.results}`;
+      }
+      const numberCorrect = this.results.filter(id => this.userSelections.includes(id)).length;
+      return `Result: ${this.results}. ${numberCorrect}/${this.select}: Earned ${numberCorrect * this.reward} points.`;
     },
     timeRemaining() {
       // adapted from: https://stackoverflow.com/a/16767434
@@ -140,6 +149,12 @@ export default {
   padding: 10px;
   margin-bottom: 10px;
   background-color: $ps-prediction-in-progress;
+
+  cursor: pointer;
+  &.completed {
+    cursor: default;
+    filter: opacity(0.75);
+  }
 
   &.correct {
     background-color: $ps-prediction-correct;
