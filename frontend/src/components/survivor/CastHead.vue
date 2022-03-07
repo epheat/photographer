@@ -1,5 +1,5 @@
 <template>
-  <img :src="getImgUrl()" :alt="id" class="cast-head" :class="{
+  <img :src="getImgUrl()" :alt="id" :title="id" class="cast-head" :class="{
     grey: votedOut,
     ika: tribe === 'Ika',
     vati: tribe === 'Vati',

@@ -5,7 +5,10 @@
       <h3><strong>{{ episode }}</strong> - {{ title }}</h3>
       <p>{{ reward }} points - <span class="time-remaining">{{ timeRemaining }}</span></p>
       <p>{{ instructions }}</p>
-      <p class="user-selections" v-if="submitted">{{ selections }}</p>
+      <p class="user-selections" v-if="submitted">
+        {{ selectionsText }}
+        <CastHead v-for="survivor in userSelections" :key="survivor" :id="survivor"/>
+      </p>
       <p class="result-instructions" v-if="results">{{ resultText }}</p>
     </div>
     <div class="completion">
@@ -18,9 +21,11 @@
 import Campfire from "@/assets/campfire.png";
 import Necklace from "@/assets/necklace.png";
 import Medals from "@/assets/medals.png";
+import CastHead from "@/components/survivor/CastHead";
 
 export default {
   name: "Prediction",
+  components: {CastHead},
   props: {
     episode: String,
     predictionType: String,
@@ -73,17 +78,12 @@ export default {
         return `Select ${this.select} survivors. Earn points for each one that makes it to final tribal.`;
       }
     },
-    selections() {
+    selectionsText() {
       if (!this.userSelections) return undefined;
       if (this.userSelections.length === 0) {
         return "No survivors selected.";
       }
-      let selectionString = "You selected: ";
-      for (let i=0; i<this.userSelections.length-1; i++) {
-        selectionString += `${this.userSelections[i]}, `;
-      }
-      selectionString += `${this.userSelections[this.userSelections.length-1]}.`;
-      return selectionString;
+      return "You selected: ";
     },
     resultText() {
       if (!this.userSelections) {
@@ -142,6 +142,7 @@ export default {
 
 <style lang="scss" scoped>
 @import "../../scss/colors.scss";
+@import "../../scss/sizes.scss";
 
 .prediction-display {
   display: flex;
@@ -197,6 +198,21 @@ export default {
 
   .user-selections {
     margin-top: 10px;
+
+    .cast-head {
+      display: inline-block;
+      width: 30px;
+      margin-right: 4px;
+    }
   }
+
+  @media screen and (max-width: $phone) {
+    flex-direction: column;
+
+    .completion {
+      margin: 0;
+    }
+  }
+
 }
 </style>
