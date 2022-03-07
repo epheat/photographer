@@ -13,7 +13,7 @@
     <Modal :show="showUserPredictionModal" @close="closeUserPredictionModal">
       <template #header>
         <h2>{{ selectedPrediction.episode }} - {{ selectedPrediction.predictionType }} prediction</h2>
-        <p>Select {{ selectedPrediction.select }} survivors for this prediction.</p>
+        <p>{{ selectedPredictionInstructions }}</p>
       </template>
       <SurvivorSelector
           :cast="filterCast(cast, selectedPrediction)"
@@ -441,7 +441,19 @@ export default {
     },
     ongoingPredictions() {
       return this.predictions.filter(prediction => !prediction.results);
-    }
+    },
+    selectedPredictionInstructions() {
+      // ImmunityChallenge, TribalCouncil, Finalist
+      if (this.selectedPrediction.predictionType === "ImmunityChallenge") {
+        return `Select ${this.selectedPrediction.select} survivors. Earn ${this.selectedPrediction.reward} points for each selected survivor that wins the immunity challenge this episode.`;
+      } else if (this.selectedPrediction.predictionType === "TribalCouncil") {
+        return `Select ${this.selectedPrediction.select} survivors. Earn ${this.selectedPrediction.reward} points if a selected survivor gets voted out at tribal council this episode.`;
+      } else if (this.selectedPrediction.predictionType === "Finalist") {
+        return `Select ${this.selectedPrediction.select} survivors. Earn ${this.selectedPrediction.reward} points for each selected survivor that makes it to final tribal.`;
+      } else {
+        return "";
+      }
+    },
   },
   components: {
     Leaderboard,

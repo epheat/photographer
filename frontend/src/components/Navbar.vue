@@ -11,11 +11,13 @@
       </div>
       <nav-auth class="auth"></nav-auth>
     </div>
-    <div class="mobile-navs" v-if="isMobile && navExtended">
-      <router-link to="/">Home</router-link>
-      <router-link to="/posts">Posts</router-link>
-      <router-link to="/games">Games</router-link>
-    </div>
+    <Transition name="mobile">
+      <div class="mobile-navs" v-show="isMobile && navExtended" :class="{ retracted: !navExtended }">
+        <router-link to="/">Home</router-link>
+        <router-link to="/posts">Posts</router-link>
+        <router-link to="/games">Games</router-link>
+      </div>
+    </Transition>
   </div>
 </template>
 
@@ -69,6 +71,7 @@ export default {
   .mobile-navs {
     display: grid;
     grid-auto-flow: row;
+    overflow: hidden;
 
     a {
       background-color: $ps-dark;
@@ -127,5 +130,13 @@ export default {
   .auth {
     flex-basis: 150px;
   }
+}
+
+.mobile-enter-active, .mobile-leave-active {
+  transition: max-height 0.3s;
+  max-height: 120px;
+}
+.mobile-enter-from, .mobile-leave-to {
+  max-height: 0px;
 }
 </style>

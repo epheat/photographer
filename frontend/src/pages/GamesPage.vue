@@ -1,6 +1,7 @@
 <template>
   <div class="ps-music-page page">
     <h1>Games</h1>
+    <p>Click on a game to join (must be signed in to play).</p>
     <div class="game-container" @click="onClickGame('FantasySurvivor-S42')">
       <img class="game-image" alt="survivor logo" src="@/assets/survivor_logo.png"/>
       <div class="game-text">

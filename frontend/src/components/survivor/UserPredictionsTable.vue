@@ -52,7 +52,7 @@ export default {
   }
 
   .cast-head {
-    width: 40px;
+    width: 32px;
     margin-right: 5px;
   }
 }
