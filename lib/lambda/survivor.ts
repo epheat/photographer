@@ -169,6 +169,7 @@ export async function deletePrediction(event: APIGatewayProxyEventV2): Promise<A
                             ...userPointsRecord,
                             points: userPointsRecord.points - historyEvent.pointsAdded,
                             pointHistory: userPointsRecord.pointHistory.filter((item: { event: string; }) => item.event !== resourceId),
+                            placementHistory: userPointsRecord.placementHistory.filter((item: { event: string; }) => item.event !== resourceId),
                         }
                     })
                 }
@@ -367,7 +368,7 @@ export async function completePrediction(event: APIGatewayProxyEventV2): Promise
         return fault({ message: err });
     }
     // for each user-prediction record for this resourceId, match the user selections with the prediction results to compute points
-    const userPoints = [];
+    const userPoints: { userSub: string; username: string; pointsToAward: number; points: number; }[] = [];
     const resourceId = `FantasySurvivor-S42-UserPrediction-${request.prediction.episode}-${request.prediction.predictionType}`;
     try {
         const results = await ddb.query({
@@ -380,10 +381,12 @@ export async function completePrediction(event: APIGatewayProxyEventV2): Promise
             },
         });
         for (const userPrediction of results.Items || []) {
+            const pointsToAward = calculatePoints(request.prediction.selections, prediction.reward, userPrediction);
             userPoints.push({
                 userSub: userPrediction.entityId,
                 username: userPrediction.username,
-                pointsToAward: calculatePoints(request.prediction.selections, prediction.reward, userPrediction),
+                pointsToAward: pointsToAward,
+                points: pointsToAward,
             });
         }
     } catch (err) {
@@ -392,22 +395,54 @@ export async function completePrediction(event: APIGatewayProxyEventV2): Promise
     }
     // award points to each user, mark the user-points record as having been updated for the completed predictionId
     try {
-        for (const { userSub, pointsToAward, username } of userPoints) {
-            const getResult = await ddb.get({
-                TableName: tableName,
-                Key: {
-                    entityId: userSub,
-                    resourceId: "FantasySurvivor-S42-UserPoints",
-                }
+        // get all existing user points records in descending order
+        const queryResult = await ddb.query({
+            TableName: tableName,
+            IndexName: "pointsIndex",
+            KeyConditionExpression: "resourceId = :resourceId",
+            ExpressionAttributeValues: {
+                ':resourceId': 'FantasySurvivor-S42-UserPoints'
+            },
+            ScanIndexForward: false,
+        });
+        // fill in existing points records that didn't make predictions this round
+        const pointsRecordsButNotThisRound = queryResult.Items?.filter(item => {
+            return userPoints.find(up => up.userSub === item.entityId) === undefined
+        }) || [];
+        pointsRecordsButNotThisRound.forEach(pt => {
+            userPoints.push({
+                userSub: pt.entityId,
+                username: pt.username,
+                pointsToAward: 0,
+                points: pt.points,
             });
+        })
+
+        // loop to calculate placements
+        for (const point of userPoints) {
+            const existingPointRecord = queryResult.Items?.find(entry => entry.entityId === point.userSub)
+            if (existingPointRecord) {
+                point.points = existingPointRecord.points + point.pointsToAward;
+            } // else it is the default of pointsToAward
+        }
+        userPoints.sort((p1, p2) => p2.points - p1.points);
+        console.log(userPoints);
+
+        // loop to write back points records
+        for (let i = 0; i < userPoints.length; i++) {
+            const { userSub, pointsToAward, username, points } = userPoints[i];
+            const existingPointRecord = queryResult.Items?.find(entry => entry.entityId === userSub)
             let userPointsRecord;
-            if (!getResult.Item) {
+            if (!existingPointRecord) {
                 // if this user has no points, create a fresh record.
                 userPointsRecord = {
                     entityId: userSub,
                     resourceId: "FantasySurvivor-S42-UserPoints",
                     pointHistory: [
-                        { event: resourceId, pointsAdded: pointsToAward }
+                        { event: resourceId, pointsAdded: pointsToAward, points: pointsToAward, timestamp: requestTime }
+                    ],
+                    placementHistory: [
+                        { event: resourceId, placement: i + 1, timestamp: requestTime }
                     ],
                     resourceType: "UserPoints",
                     points: pointsToAward,
@@ -417,16 +452,20 @@ export async function completePrediction(event: APIGatewayProxyEventV2): Promise
             } else {
                 // otherwise, fill from the existing record with some edits
                 // if points were already awarded for this event, skip (idempotency)
-                if (getResult.Item.pointHistory.find((thing: { event: string; }) => thing.event === resourceId)) {
-                    userPointsRecord = getResult.Item;
+                if (existingPointRecord.pointHistory.find((thing: { event: string; }) => thing.event === resourceId)) {
+                    userPointsRecord = existingPointRecord;
                 } else {
                     userPointsRecord = {
-                        ...getResult.Item,
+                        ...existingPointRecord,
                         pointHistory: [
-                            ...getResult.Item.pointHistory,
-                            {event: resourceId, pointsAdded: pointsToAward}
+                            ...existingPointRecord.pointHistory,
+                            { event: resourceId, pointsAdded: pointsToAward, points: points, timestamp: requestTime }
                         ],
-                        points: getResult.Item.points += pointsToAward,
+                        placementHistory: [
+                            ...existingPointRecord.placementHistory,
+                            { event: resourceId, placement: i + 1, timestamp: requestTime }
+                        ],
+                        points: points,
                         lastUpdatedDate: requestTime
                     }
                 }
