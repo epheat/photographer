@@ -277,7 +277,7 @@ export async function setUserPrediction(event: APIGatewayProxyEventV2): Promise<
     }
     const requestTime = new Date().getTime();
     // based on the request episode+predictionType, fetch the prediction from game data. We need to make sure the
-    // predicion is still ongoing, and the user's selections are even eligible for the prediction
+    // prediction is still ongoing, and the user's selections are even eligible for the prediction
     try {
         const result = await ddb.get({
             TableName: tableName,
@@ -294,6 +294,9 @@ export async function setUserPrediction(event: APIGatewayProxyEventV2): Promise<
         }
         if (!optionsContainSelections(result.Item.options, request.userPrediction.selections)) {
             return error({ message: "Invalid Request: user prediction contained invalid survivor ids for this prediction." });
+        }
+        if (request.userPrediction.selections.length > result.Item.select) {
+            return error({ message: "Invalid Request: too many selections." });
         }
     } catch (err) {
         console.log(err);

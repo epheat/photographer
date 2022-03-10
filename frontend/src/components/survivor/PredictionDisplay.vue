@@ -214,5 +214,8 @@ export default {
     }
   }
 
+  .result-instructions {
+    overflow-wrap: anywhere;
+  }
 }
 </style>
