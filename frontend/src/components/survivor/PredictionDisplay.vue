@@ -73,7 +73,7 @@ export default {
       if (this.predictionType === "ImmunityChallenge") {
         return `Select ${this.select} survivors. Earn points for each selected survivor that wins the immunity challenge.`;
       } else if (this.predictionType === "TribalCouncil") {
-        return `Select ${this.select} survivors. Earn points if any of them go home this episode.`;
+        return `Select ${this.select} survivors. Earn points if any of them get voted out this episode.`;
       } else {
         return `Select ${this.select} survivors. Earn points for each one that makes it to final tribal.`;
       }
@@ -87,10 +87,10 @@ export default {
     },
     resultText() {
       if (!this.userSelections) {
-        return `Result: ${this.results}`;
+        return `Result: ${this.results.join(", ")}`;
       }
       const numberCorrect = this.results.filter(id => this.userSelections.includes(id)).length;
-      return `Result: ${this.results}. ${numberCorrect}/${this.select}: Earned ${numberCorrect * this.reward} points.`;
+      return `Result: ${this.results.join(", ")}. ${numberCorrect}/${this.select}: Earned ${numberCorrect * this.reward} points.`;
     },
     timeRemaining() {
       // adapted from: https://stackoverflow.com/a/16767434
