@@ -432,9 +432,18 @@ export async function completePrediction(event: APIGatewayProxyEventV2): Promise
         console.log(userPoints);
 
         // loop to write back points records
+        let previousPoints = undefined;
+        let previousPlacement = 1;
         for (let i = 0; i < userPoints.length; i++) {
             const { userSub, pointsToAward, username, points } = userPoints[i];
             const existingPointRecord = queryResult.Items?.find(entry => entry.entityId === userSub)
+            let placement = i + 1;
+            if (points === previousPoints) {
+                placement = previousPlacement;
+            } else {
+                previousPlacement = placement;
+                previousPoints = points;
+            }
             let userPointsRecord;
             if (!existingPointRecord) {
                 // if this user has no points, create a fresh record.
@@ -445,10 +454,11 @@ export async function completePrediction(event: APIGatewayProxyEventV2): Promise
                         { event: resourceId, pointsAdded: pointsToAward, points: pointsToAward, timestamp: requestTime }
                     ],
                     placementHistory: [
-                        { event: resourceId, placement: i + 1, timestamp: requestTime }
+                        { event: resourceId, placement: placement, timestamp: requestTime }
                     ],
                     resourceType: "UserPoints",
                     points: pointsToAward,
+                    placement: placement,
                     lastUpdatedDate: requestTime,
                     username: username,
                 }
@@ -466,9 +476,10 @@ export async function completePrediction(event: APIGatewayProxyEventV2): Promise
                         ],
                         placementHistory: [
                             ...existingPointRecord.placementHistory,
-                            { event: resourceId, placement: i + 1, timestamp: requestTime }
+                            { event: resourceId, placement: placement, timestamp: requestTime }
                         ],
                         points: points,
+                        placement: placement,
                         lastUpdatedDate: requestTime
                     }
                 }
@@ -525,6 +536,42 @@ export async function getLeaderboard(event: APIGatewayProxyEventV2): Promise<API
         return fault({ message: err });
     }
 }
+
+/**
+ * GET /games/survivor42/userInventory/:sub
+ *
+ * get a specific user's inventory
+ */
+export async function getUserInventory(event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> {
+    if (!event.pathParameters?.sub) {
+        return error({ message: "Invalid Request: Missing sub path parameter." });
+    }
+    try {
+        const results = await ddb.get({
+            TableName: tableName,
+            Key: {
+                entityId: event.pathParameters?.sub,
+                resourceId: 'FantasySurvivor-S42-UserInventory'
+            }
+        });
+        return success({
+            message: "Success.",
+            item: results.Item,
+        });
+    } catch (err) {
+        return fault({ message: err });
+    }
+}
+
+/**
+ * POST /games/survivor42/items/:sub
+ *
+ * update a user's inventory
+ */
+export async function putItem(event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> {
+    return success({ message: "Success." });
+}
+
 
 function calculatePoints(resultSelections: any, reward: number, userPrediction: any) {
     let pointsToAward = 0;

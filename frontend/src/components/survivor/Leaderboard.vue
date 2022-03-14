@@ -7,11 +7,11 @@
         <th>points</th>
         <th>change</th>
       </tr>
-      <tr v-for="(row, index) in data" :key="row.resourceId">
-        <td>{{ index + 1 }}</td>
+      <tr v-for="row in data" :key="row.resourceId">
+        <td>{{ row.placement }}</td>
         <td>{{ row.username }}</td>
         <td>{{ row.points }}</td>
-        <td class="center">-</td>
+        <td class="center">{{ getChange(row) }}</td>
       </tr>
     </table>
   </div>
@@ -23,8 +23,24 @@ export default {
   props: {
     data: Array,
   },
-  computed: {
-
+  methods: {
+    getChange(row) {
+      const mostRecentEvent = row.placementHistory.find(placementEvent =>
+          placementEvent.timestamp === row.lastUpdatedDate).event;
+      const mostRecentEpisode = mostRecentEvent.split("-")[1];
+      const placements = row.placementHistory.filter(placementEvent => !placementEvent.event.includes(mostRecentEpisode))
+                                             .sort((a, b) => b.timestamp - a.timestamp);
+      console.log(placements);
+      if (placements.length > 0) {
+        if (placements[0].placement > row.placement) {
+          return "⬆"
+        } else {
+          return "⬇"
+        }
+      } else {
+        return "-";
+      }
+    }
   }
 }
 </script>

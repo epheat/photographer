@@ -26,7 +26,6 @@ export async function get(event: APIGatewayProxyEventV2): Promise<APIGatewayProx
       IndexName: "postTypeTimeSorted",
       KeyConditionExpression: "postType = :postType",
       ExpressionAttributeValues: { ':postType': 'TEXT' },
-      Limit: 10
     });
     
     return success({
