@@ -13,11 +13,12 @@
     <Modal :show="showUserPredictionModal" @close="closeUserPredictionModal">
       <template #header>
         <h2>{{ selectedPrediction.episode }} - {{ selectedPrediction.predictionType }} prediction</h2>
+        <p v-if="confirmedItem"><i>Using Item - {{ confirmedItem.itemType }}</i></p>
         <p>{{ selectedPredictionInstructions }}</p>
       </template>
       <SurvivorSelector
           :cast="filterCast(cast, selectedPrediction)"
-          :maxSelect="selectedPrediction.select"
+          :maxSelect="maxSelect"
           v-model="userPredictionSelections"
       />
       <template #actions>
@@ -38,6 +39,17 @@
         <Button submit @press="submitCompletePrediction">Submit</Button>
       </template>
     </Modal>
+    <Modal :show="showItemModal" @close="closeItemModal">
+      <template #header>
+        <h2>Use your {{ selectedItem.itemType }} item?</h2>
+        <p>{{ selectedItemDescription }}</p>
+      </template>
+      <div></div>
+      <template #actions>
+        <Button cancel @press="cancelItemModal">Cancel</Button>
+        <Button submit @press="confirmUseItem">Confirm</Button>
+      </template>
+    </Modal>
     <div class="tab-content home" v-if="currentTab === 0">
       <h2>Inventory</h2>
       <Button style="display: inline-block" @press="getInventory">Refresh</Button>
@@ -49,6 +61,8 @@
               :key="item.id"
               :id="item.id"
               :itemType="item.itemType"
+              :highlight="confirmedItem?.id === item.id"
+              @click="openItemModal(item)"
           />
         </template>
         <span v-else>Your inventory is empty.</span>
@@ -154,6 +168,9 @@ export default {
       userPredictionSelections: [],
       leaderboardData: [],
       userInventory: [],
+      showItemModal: false,
+      selectedItem: null,
+      confirmedItem: null,
 
       // admin only
       shouldShowAdminPage: false,
@@ -176,6 +193,7 @@ export default {
     this.getUserPredictions();
     this.getAllUserPredictions();
     this.getLeaderboard();
+    this.getInventory();
   },
   methods: {
     setTab(tab) {
@@ -196,6 +214,10 @@ export default {
       this.adminSelectedPrediction = prediction;
       this.completePredictionSelections = [];
       this.showPredictionCompleteModal = true;
+    },
+    openItemModal(item) {
+      this.selectedItem = item;
+      this.showItemModal = true;
     },
     getUserSelectionsForPrediction(prediction) {
       const userPrediction = this.userPredictions.find(up => up.predictionId === prediction.resourceId);
@@ -364,6 +386,7 @@ export default {
               episode: this.selectedPrediction.episode,
               predictionType: this.selectedPrediction.predictionType,
               selections: this.userPredictionSelections,
+              item: this.confirmedItem?.id ?? null
             },
           },
           headers: {
@@ -383,7 +406,15 @@ export default {
         if (existingUserPredictionIndex === -1) {
           this.userPredictions.push(newUserPrediction);
         } else {
-          this.userPredictions.splice(this.userPredictions.findIndex(up => up.predictionId === this.selectedPrediction.resourceId), 1, newUserPrediction);
+          this.userPredictions.splice(existingUserPredictionIndex, 1, newUserPrediction);
+        }
+        // if there was an item used on this prediction, remove it from the inventory.
+        if (this.confirmedItem) {
+          const itemIndex = this.userInventory.findIndex(item => item.id === this.confirmedItem.id);
+          if (itemIndex !== -1) {
+            this.userInventory.splice(itemIndex, 1);
+          }
+          this.confirmedItem = null;
         }
         this.closeUserPredictionModal();
       } catch (err) {
@@ -466,6 +497,10 @@ export default {
         this.loading = false;
       }
     },
+    confirmUseItem() {
+      this.confirmedItem = this.selectedItem;
+      this.closeItemModal();
+    },
     resetMessages() {
       this.successMessage = undefined;
       this.errorMessage = undefined;
@@ -478,6 +513,14 @@ export default {
     closePredictionCompleteModal() {
       this.showPredictionCompleteModal = false;
       this.adminSelectedPrediction = null;
+    },
+    cancelItemModal() {
+      this.confirmedItem = null;
+      this.closeItemModal();
+    },
+    closeItemModal() {
+      this.showItemModal = false;
+      this.selectedItem = null;
     },
     filterCast(cast, prediction) {
       return cast.filter(survivor => prediction.options.includes(survivor.id));
@@ -499,13 +542,28 @@ export default {
     selectedPredictionInstructions() {
       // ImmunityChallenge, TribalCouncil, Finalist
       if (this.selectedPrediction.predictionType === "ImmunityChallenge") {
-        return `Select ${this.selectedPrediction.select} survivors. Earn ${this.selectedPrediction.reward} points for each selected survivor that wins the immunity challenge this episode.`;
+        return `Select ${this.maxSelect} survivors. Earn ${this.selectedPrediction.reward} points for each selected survivor that wins the immunity challenge this episode.`;
       } else if (this.selectedPrediction.predictionType === "TribalCouncil") {
-        return `Select ${this.selectedPrediction.select} survivors. Earn ${this.selectedPrediction.reward} points if a selected survivor gets voted out at tribal council this episode.`;
+        return `Select ${this.maxSelect} survivors. Earn ${this.selectedPrediction.reward} points if a selected survivor gets voted out at tribal council this episode.`;
       } else if (this.selectedPrediction.predictionType === "Finalist") {
-        return `Select ${this.selectedPrediction.select} survivors. Earn ${this.selectedPrediction.reward} points for each selected survivor that makes it to final tribal.`;
+        return `Select ${this.maxSelect} survivors. Earn ${this.selectedPrediction.reward} points for each selected survivor that makes it to final tribal.`;
       } else {
         return "";
+      }
+    },
+    selectedItemDescription() {
+      if (this.selectedItem?.itemType === "ExtraVoteAdvantage") {
+        return `This advantage allows you to select ${this.selectedItem.extraVotes} extra survivors on your next prediction. You will earn points as normal for each survivor that wins the prediction.
+        Use it wisely! The last time this can be used is when there are 8 survivors remaining.`;
+      } else {
+        return "";
+      }
+    },
+    maxSelect() {
+      if (this.confirmedItem?.itemType === "ExtraVoteAdvantage") {
+        return this.selectedPrediction.select + this.confirmedItem.extraVotes;
+      } else {
+        return this.selectedPrediction.select;
       }
     },
     activePlayers() {
@@ -587,6 +645,7 @@ export default {
   border: 2px dashed $ps-light-grey;
 
   .inventory-item {
+    cursor: pointer;
     width: 60px;
   }
 }

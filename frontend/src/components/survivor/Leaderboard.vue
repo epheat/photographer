@@ -30,7 +30,6 @@ export default {
       const mostRecentEpisode = mostRecentEvent.split("-")[1];
       const placements = row.placementHistory.filter(placementEvent => !placementEvent.event.includes(mostRecentEpisode))
                                              .sort((a, b) => b.timestamp - a.timestamp);
-      console.log(placements);
       if (placements.length > 0) {
         if (placements[0].placement > row.placement) {
           return "⬆"

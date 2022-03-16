@@ -1,5 +1,5 @@
 <template>
-  <img :src="getImgUrl()" :alt="id" :title="id" class="inventory-item" />
+  <img :src="getImgUrl()" :alt="id" :title="id" class="inventory-item" :class="{highlight: highlight}" />
 </template>
 
 <script>
@@ -10,6 +10,7 @@ export default {
   props: {
     id: String,
     itemType: String,
+    highlight: Boolean,
   },
   data() {
     return {
@@ -26,8 +27,12 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 img {
   object-fit: cover;
+
+  &.highlight {
+    box-shadow: 0px 0px 2px 4px yellow;
+  }
 }
 </style>

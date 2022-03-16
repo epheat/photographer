@@ -37,7 +37,7 @@ export default {
         userSub: this.userSub,
         item: {
           itemType: this.itemType,
-          extraVotes: this.extraVotes, // TODO: accomodate more item types
+          extraVotes: parseInt(this.extraVotes), // TODO: accommodate more item types
         }
       });
     }
