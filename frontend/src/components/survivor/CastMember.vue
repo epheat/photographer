@@ -43,7 +43,7 @@ export default {
     hometown: String,
     occupation: String,
     tribe: String,
-    votedOut: String,
+    votedOut: Boolean,
   },
   data() {
     return {

@@ -40,8 +40,19 @@
     </Modal>
     <div class="tab-content home" v-if="currentTab === 0">
       <h2>Inventory</h2>
-      <p>Items that you acquire over the course of the game will show up here. Click on an item to use it.</p>
-      <div class="inventory">Your inventory is empty.</div>
+      <Button style="display: inline-block" @press="getInventory">Refresh</Button>
+      <p>Items that you acquire over the course of the game will show up here. Click on an item to learn more.</p>
+      <div class="inventory">
+        <template v-if="userInventory.length">
+          <InventoryItem
+              v-for="item in userInventory"
+              :key="item.id"
+              :id="item.id"
+              :itemType="item.itemType"
+          />
+        </template>
+        <span v-else>Your inventory is empty.</span>
+      </div>
       <h2>Predictions</h2>
       <Button style="display: inline-block" @press="refreshPredictions">Refresh</Button>
       <p>Past and future predictions will show up here. You can only edit your predictions up until the day that the episode airs. Click on a prediction to make your selection.</p>
@@ -100,6 +111,8 @@
       />
       <h3>New Prediction:</h3>
       <PredictionEditor :cast="cast" @submitPrediction="putPrediction" />
+      <h3>Grant an item:</h3>
+      <ItemEditor :users="activePlayers" @submitItem="putItem" />
     </div>
     <Footer></Footer>
   </div>
@@ -117,6 +130,8 @@ import SurvivorSelector from "@/components/survivor/SurvivorSelector";
 import Button from "@/components/Button";
 import Leaderboard from "@/components/survivor/Leaderboard";
 import UserPredictionsTable from "@/components/survivor/UserPredictionsTable";
+import InventoryItem from "@/components/survivor/InventoryItem";
+import ItemEditor from "@/components/survivor/ItemEditor";
 
 export default {
   name: "SurvivorGamePage",
@@ -138,6 +153,7 @@ export default {
       selectedUserPrediction: null,
       userPredictionSelections: [],
       leaderboardData: [],
+      userInventory: [],
 
       // admin only
       shouldShowAdminPage: false,
@@ -282,6 +298,26 @@ export default {
         this.loading = false;
       }
     },
+    async putItem(itemEvent) {
+      this.resetMessages();
+      try {
+        let token = (await Auth.currentSession()).getAccessToken().getJwtToken();
+        this.loading = true;
+        let response = await API.post('ps-api', `/games/survivor42/items/${itemEvent.userSub}`, {
+          body: {
+            item: itemEvent.item,
+          },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
+        });
+        this.successMessage = response.message;
+        this.loading = false;
+      } catch (err) {
+        this.errorMessage = err.message;
+        this.loading = false;
+      }
+    },
     async getUserPredictions() {
       this.resetMessages();
       try {
@@ -412,6 +448,24 @@ export default {
         this.closePredictionCompleteModal();
       }
     },
+    async getInventory() {
+      this.resetMessages();
+      try {
+        let session = await Auth.currentSession();
+        let jwt = session.getAccessToken().getJwtToken();
+        let response = await API.get('ps-api', `/games/survivor42/userInventory/${session.getIdToken().payload.sub}`, {
+          headers: {
+            Authorization: `Bearer ${jwt}`,
+          }
+        })
+        this.userInventory = response.item.items;
+        this.successMessage = response.message;
+        this.loading = false;
+      } catch (err) {
+        this.errorMessage = err.message;
+        this.loading = false;
+      }
+    },
     resetMessages() {
       this.successMessage = undefined;
       this.errorMessage = undefined;
@@ -454,8 +508,18 @@ export default {
         return "";
       }
     },
+    activePlayers() {
+      return this.leaderboardData.map(entry => {
+        return {
+          username: entry.username,
+          userSub: entry.entityId,
+        }
+      })
+    },
   },
   components: {
+    ItemEditor,
+    InventoryItem,
     Leaderboard,
     SurvivorSelector,
     Modal,
@@ -521,6 +585,10 @@ export default {
   padding: 10px;
   border-radius: 5px;
   border: 2px dashed $ps-light-grey;
+
+  .inventory-item {
+    width: 60px;
+  }
 }
 
 .admin {

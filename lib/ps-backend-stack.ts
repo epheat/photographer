@@ -149,6 +149,18 @@ export class PSBackendStack extends cdk.Stack {
       handler: 'getLeaderboard',
     });
     gameDataTable.grantReadData(getLeaderboardLambda);
+    const getUserInventoryLambda = new nodejs.NodejsFunction(this, 'get-user-inventory-func', {
+      runtime: lambda.Runtime.NODEJS_14_X,
+      entry: path.join(__dirname, "./lambda/survivor.ts"),
+      handler: 'getUserInventory',
+    });
+    gameDataTable.grantReadData(getUserInventoryLambda);
+    const putItemLambda = new nodejs.NodejsFunction(this, 'put-item-func', {
+      runtime: lambda.Runtime.NODEJS_14_X,
+      entry: path.join(__dirname, "./lambda/survivor.ts"),
+      handler: 'putItem',
+    });
+    gameDataTable.grantReadWriteData(putItemLambda);
 
 
     // APIG HTTP API
@@ -284,6 +296,22 @@ export class PSBackendStack extends cdk.Stack {
       methods: [apigateway.HttpMethod.GET],
       integration: new integrations.LambdaProxyIntegration({
         handler: getLeaderboardLambda,
+      }),
+      authorizer: authorizer,
+    });
+    httpApi.addRoutes({
+      path: '/games/survivor42/userInventory/{sub}',
+      methods: [apigateway.HttpMethod.GET],
+      integration: new integrations.LambdaProxyIntegration({
+        handler: getUserInventoryLambda,
+      }),
+      authorizer: authorizer,
+    });
+    httpApi.addRoutes({
+      path: '/games/survivor42/items/{sub}',
+      methods: [apigateway.HttpMethod.POST],
+      integration: new integrations.LambdaProxyIntegration({
+        handler: putItemLambda,
       }),
       authorizer: authorizer,
     });

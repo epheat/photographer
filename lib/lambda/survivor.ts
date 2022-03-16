@@ -3,6 +3,7 @@ import { DynamoDBDocument } from "@aws-sdk/lib-dynamodb";
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from "aws-lambda";
 import {deny, error, fault, success} from "./responses";
 import {getUserInfo, userHasGroup} from "./auth";
+import {v4 as uuidv4} from "uuid";
 
 const tableName = "PSGameData";
 const client = new DynamoDBClient({ region: "us-east-1" });
@@ -276,6 +277,7 @@ export async function setUserPrediction(event: APIGatewayProxyEventV2): Promise<
         return error({ message: "Invalid Request: missing required fields." });
     }
     const requestTime = new Date().getTime();
+    let inventory = undefined;
     // based on the request episode+predictionType, fetch the prediction from game data. We need to make sure the
     // prediction is still ongoing, and the user's selections are even eligible for the prediction
     try {
@@ -295,7 +297,32 @@ export async function setUserPrediction(event: APIGatewayProxyEventV2): Promise<
         if (!optionsContainSelections(result.Item.options, request.userPrediction.selections)) {
             return error({ message: "Invalid Request: user prediction contained invalid survivor ids for this prediction." });
         }
-        if (request.userPrediction.selections.length > result.Item.select) {
+        let maxSelections = result.Item.select;
+        // check for advantages -- if an id is specified, grab it from the user inventory and apply it.
+        if (request.userPrediction.item) {
+            const userInventory = await ddb.get({
+                TableName: tableName,
+                Key: {
+                    entityId: sub,
+                    resourceId: 'FantasySurvivor-S42-UserInventory'
+                }
+            });
+            inventory = userInventory.Item?.items ?? [];
+            const itemIndex = inventory.findIndex((item: { id: string; }) => item.id === request.userPrediction.item);
+            if (itemIndex != -1) {
+                // if the item was found in the user's inventory, remove it from the inventory and apply its effects.
+                if (inventory[itemIndex].itemType === "ExtraVoteAdvantage") {
+                    maxSelections += inventory[itemIndex].extraVotes;
+                } else if (inventory[itemIndex].itemType === "MultiplierAdvantage") {
+                    // TODO: apply a multiplier to the userPrediction record, which is taken into account during scoring
+                }
+                inventory.splice(itemIndex, 1);
+            } else {
+                return error({ message: "Invalid Request: tried to use invalid item." });
+            }
+        }
+
+        if (request.userPrediction.selections.length > maxSelections) {
             return error({ message: "Invalid Request: too many selections." });
         }
     } catch (err) {
@@ -319,6 +346,19 @@ export async function setUserPrediction(event: APIGatewayProxyEventV2): Promise<
                 username: username,
             }
         });
+
+        // if the user used an advantage as part of this request, commit that change back to the inventory.
+        if (inventory !== undefined) {
+            await ddb.put({
+                TableName: tableName,
+                Item: {
+                    entityId: sub,
+                    resourceId: 'FantasySurvivor-S42-UserInventory',
+                    items: inventory,
+                    lastUpdatedDate: requestTime,
+                }
+            })
+        }
         return success({
             message: "Success.",
             attributes: result.Attributes,
@@ -569,9 +609,60 @@ export async function getUserInventory(event: APIGatewayProxyEventV2): Promise<A
  * update a user's inventory
  */
 export async function putItem(event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> {
+    if (!event.pathParameters?.sub) {
+        return error({ message: "Invalid Request: Missing sub path parameter." });
+    }
+    if (!userHasGroup(event, "Admins")) { return deny(); }
+    if (!event.body) { return error({ message: "Invalid Request: Missing body." }); }
+    const request = JSON.parse(event.body);
+    console.log(`putItem request - ${event.body}`);
+    if (!request?.item || !isValidItem(request.item)) {
+        return error({ message: "Invalid Request: missing required fields." });
+    }
+    const requestTime = new Date().getTime();
+    try {
+        const getResult = await ddb.get({
+            TableName: tableName,
+            Key: {
+                entityId: event.pathParameters?.sub,
+                resourceId: 'FantasySurvivor-S42-UserInventory'
+            }
+        });
+        let inventory = getResult.Item ?? {
+            entityId: event.pathParameters.sub,
+            resourceId: 'FantasySurvivor-S42-UserInventory',
+            items: []
+        }
+        inventory.lastUpdatedDate = requestTime;
+        inventory.items.push({
+            id: uuidv4(),
+            lastUpdatedDate: requestTime,
+            ...request.item,
+        });
+
+        await ddb.put({
+            TableName: tableName,
+            Item: {
+                ...inventory,
+            }
+        })
+    } catch (err) {
+        console.log(err);
+        return fault({ message: err });
+    }
     return success({ message: "Success." });
 }
 
+function isValidItem(item: any): boolean {
+    // add any new item types here
+    if (item.itemType === "ExtraVoteAdvantage") {
+        return item.extraVotes;
+    } else if (item.itemType === "MultiplierAdvantage") {
+        return item.multiplier;
+    } else {
+        return false;
+    }
+}
 
 function calculatePoints(resultSelections: any, reward: number, userPrediction: any) {
     let pointsToAward = 0;

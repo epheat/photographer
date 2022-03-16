@@ -44,7 +44,7 @@ export default {
   },
   methods: {
     submitPrediction() {
-      const predictBefore = new Date(`${this.airDate}T${this.airTime}:00-08:00`).getTime();
+      const predictBefore = new Date(`${this.airDate}T${this.airTime}:00-07:00`).getTime();
       this.$emit('submitPrediction', {
         episode: this.episode,
         predictionType: this.predictionType,

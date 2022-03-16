@@ -31,7 +31,7 @@ export default {
   name: "CastHead",
   props: {
     id: String,
-    votedOut: String,
+    votedOut: Boolean,
     tribe: String,
   },
   data() {
