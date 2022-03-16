@@ -312,6 +312,12 @@ export async function setUserPrediction(event: APIGatewayProxyEventV2): Promise<
             if (itemIndex != -1) {
                 // if the item was found in the user's inventory, remove it from the inventory and apply its effects.
                 if (inventory[itemIndex].itemType === "ExtraVoteAdvantage") {
+                    if (result.Item.episode === "E02") {
+                        return error({ message: "Not so fast! You can't use this yet." });
+                    }
+                    if (result.Item.options.length < 8) {
+                        return error({ message: "Invalid Request: extra vote advantage cannot be used with less than 8 survivors." });
+                    }
                     maxSelections += inventory[itemIndex].extraVotes;
                 } else if (inventory[itemIndex].itemType === "MultiplierAdvantage") {
                     // TODO: apply a multiplier to the userPrediction record, which is taken into account during scoring
