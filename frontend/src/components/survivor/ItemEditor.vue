@@ -8,6 +8,7 @@
     <FormField v-model="userSub" label="UserSub"/>
     <FormSelect v-model="itemType" :options="['ExtraVoteAdvantage', 'MultiplierAdvantage']" label="ItemType"/>
     <FormField v-if="itemType === 'ExtraVoteAdvantage'" v-model="extraVotes" label="ExtraVotes"/>
+    <FormField v-model="message" label="Message"/>
     <div class="buttons">
       <Button submit @press="submitItem">Submit</Button>
     </div>
@@ -29,6 +30,7 @@ export default {
       userSub: "",
       itemType: "",
       extraVotes: 1,
+      message: null,
     }
   },
   methods: {
@@ -38,6 +40,7 @@ export default {
         item: {
           itemType: this.itemType,
           extraVotes: parseInt(this.extraVotes), // TODO: accommodate more item types
+          message: this.message,
         }
       });
     }

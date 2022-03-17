@@ -43,6 +43,7 @@
       <template #header>
         <h2>Use your {{ selectedItem.itemType }} item?</h2>
         <p>{{ selectedItemDescription }}</p>
+        <p v-if="selectedItem.message">{{ selectedItem.message }}</p>
       </template>
       <div></div>
       <template #actions>

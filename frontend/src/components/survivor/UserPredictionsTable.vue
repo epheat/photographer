@@ -7,7 +7,7 @@
         <th>selections</th>
       </tr>
       <tr v-for="userPrediction in userPredictions" :key="`${userPrediction.entityId}-${userPrediction.resourceId}`">
-        <td>{{ userPrediction.username }}</td>
+        <td class="username">{{ userPrediction.username }}</td>
         <td>{{ userPrediction.predictionId }}</td>
         <td>
           <CastHead v-for="survivor in userPrediction.selections" :key="survivor" :id="survivor"/>
@@ -54,6 +54,10 @@ export default {
   .cast-head {
     width: 32px;
     margin-right: 5px;
+  }
+
+  .username {
+    word-break: break-all;
   }
 }
 </style>
