@@ -71,6 +71,7 @@
       <h2>Predictions</h2>
       <Button style="display: inline-block" @press="refreshPredictions">Refresh</Button>
       <p>Past and future predictions will show up here. You can only edit your predictions up until the day that the episode airs. Click on a prediction to make your selection.</p>
+      <h3 v-if="ongoingPredictions.length > 0">Active predictions</h3>
       <PredictionDisplay
         class="user-prediction-display"
         v-for="prediction in ongoingPredictions"
@@ -80,13 +81,21 @@
         :submitted="getUserSelectionsForPrediction(prediction).length > 0"
         :userSelections="getUserSelectionsForPrediction(prediction)"
       />
+      <h3 v-if="closedPredictions.length > 0">Closed predictions</h3>
+      <PredictionDisplay
+          class="user-prediction-display"
+          v-for="prediction in closedPredictions"
+          v-bind="prediction"
+          :key="prediction.id"
+          :submitted="getUserSelectionsForPrediction(prediction).length > 0"
+          :userSelections="getUserSelectionsForPrediction(prediction)"
+      />
       <h3 v-if="completedPredictions.length > 0">Past predictions</h3>
       <PredictionDisplay
           class="user-prediction-display"
           v-for="prediction in completedPredictions"
           v-bind="prediction"
           :key="prediction.id"
-          @click="openUserPredictionModal(prediction)"
           :submitted="getUserSelectionsForPrediction(prediction).length > 0"
           :userSelections="getUserSelectionsForPrediction(prediction)"
       />
@@ -205,7 +214,7 @@ export default {
       this.castEditorValue = e.target.value;
     },
     openUserPredictionModal(prediction) {
-      if (!prediction.results) {
+      if (!prediction.results && prediction.predictBefore > new Date().getTime()) {
         this.selectedPrediction = prediction;
         this.userPredictionSelections = this.getUserSelectionsForPrediction(prediction);
         this.showUserPredictionModal = true;
@@ -530,15 +539,20 @@ export default {
   computed: {
     // ALL user predictions (not just current user), filtered to only be completed ones
     filteredUserPredictions() {
-      return this.allUserPredictions.filter(userPrediction => {
+      let filteredPredictions = this.allUserPredictions.filter(userPrediction => {
         return this.predictions.find(prediction => prediction.resourceId === userPrediction.predictionId && ( this.showCurrentUserPredictions || prediction.results))
-      })
+      });
+      filteredPredictions.sort((p1, p2) => p1.predictionId > p2.predictionId ? -1 : 1);
+      return filteredPredictions;
     },
     completedPredictions() {
       return this.predictions.filter(prediction => prediction.results).sort((p1, p2) => p2 - p1);
     },
+    closedPredictions() {
+      return this.predictions.filter(prediction => !prediction.results && prediction.predictBefore < new Date().getTime());
+    },
     ongoingPredictions() {
-      return this.predictions.filter(prediction => !prediction.results);
+      return this.predictions.filter(prediction => !prediction.results && prediction.predictBefore > new Date().getTime());
     },
     selectedPredictionInstructions() {
       // ImmunityChallenge, TribalCouncil, Finalist
