@@ -85,7 +85,6 @@ export async function getPredictions(event: APIGatewayProxyEventV2): Promise<API
             KeyConditionExpression: "entityId = :entityId and begins_with(resourceId, :resourceType)",
             ExpressionAttributeValues: { ':entityId': 'FantasySurvivor-S42', ':resourceType': 'Prediction' },
             ScanIndexForward: false,
-            Limit: 10
         });
 
         return success({
