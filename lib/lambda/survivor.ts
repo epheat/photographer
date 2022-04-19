@@ -317,6 +317,9 @@ export async function setUserPrediction(event: APIGatewayProxyEventV2): Promise<
                     if (result.Item.options.length < 8) {
                         return error({ message: "Invalid Request: extra vote advantage cannot be used with less than 8 survivors." });
                     }
+                    if (result.Item.predictionType === "Finalist") {
+                        return error({ message: "Invalid Request: extra vote advantage cannot be used for Finalist predictions." });
+                    }
                     maxSelections += inventory[itemIndex].extraVotes;
                 } else if (inventory[itemIndex].itemType === "MultiplierAdvantage") {
                     // TODO: apply a multiplier to the userPrediction record, which is taken into account during scoring

@@ -104,6 +104,8 @@
       <h2>Rankings</h2>
       <Button @press="getLeaderboard">Refresh</Button>
       <Leaderboard :data="leaderboardData" />
+      <h2>Points over Time</h2>
+      <LeaderboardGraph :leaderboardData="leaderboardData" />
       <h2>User Predictions</h2>
       <p>View user predictions from previous rounds here. Use this information to help determine who to select in your future predictions.</p>
       <Button @press="getAllUserPredictions">Refresh</Button>
@@ -156,6 +158,7 @@ import Leaderboard from "@/components/survivor/Leaderboard";
 import UserPredictionsTable from "@/components/survivor/UserPredictionsTable";
 import InventoryItem from "@/components/survivor/InventoryItem";
 import ItemEditor from "@/components/survivor/ItemEditor";
+import LeaderboardGraph from "@/components/survivor/LeaderboardGraph";
 
 export default {
   name: "SurvivorGamePage",
@@ -591,6 +594,7 @@ export default {
     },
   },
   components: {
+    LeaderboardGraph,
     ItemEditor,
     InventoryItem,
     Leaderboard,
