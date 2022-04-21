@@ -4,6 +4,7 @@
     ika: tribe === 'Ika',
     vati: tribe === 'Vati',
     taku: tribe === 'Taku',
+    kulakula: tribe === 'Kula Kula',
   }"/>
 </template>
 
@@ -83,6 +84,9 @@ img {
   }
   &.vati {
     border: 3px solid $survivor-vati;
+  }
+  &.kulakula {
+    border: 3px solid $survivor-kulakula;
   }
 }
 </style>

@@ -5,11 +5,13 @@
       ika: tribe === 'Ika',
       vati: tribe === 'Vati',
       taku: tribe === 'Taku',
+      kulakula: tribe === 'Kula Kula',
     }"/>
     <h3>{{ name }}</h3>
     <p>Age: {{ age }}</p>
     <p>From: {{ hometown }}</p>
     <p>Occupation: {{ occupation }}</p>
+    <p>Starting Tribe: {{ startingTribe }}</p>
     <p>Tribe: {{ tribe }}</p>
   </div>
 </template>
@@ -42,6 +44,7 @@ export default {
     age: Number,
     hometown: String,
     occupation: String,
+    startingTribe: String,
     tribe: String,
     votedOut: Boolean,
   },
@@ -102,6 +105,9 @@ export default {
     }
     &.vati {
       border: 3px solid $survivor-vati;
+    }
+    &.kulakula {
+      border: 3px solid $survivor-kulakula;
     }
   }
 }
