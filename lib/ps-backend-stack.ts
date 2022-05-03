@@ -10,6 +10,7 @@ import * as route53 from "@aws-cdk/aws-route53";
 import * as targets from '@aws-cdk/aws-route53-targets';
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import { PSAuth } from "./constructs/ps-auth";
+import {Duration} from "@aws-cdk/core";
 
 
 export interface PSBackendStackProps extends cdk.StackProps {
@@ -141,6 +142,7 @@ export class PSBackendStack extends cdk.Stack {
       runtime: lambda.Runtime.NODEJS_14_X,
       entry: path.join(__dirname, "./lambda/survivor.ts"),
       handler: 'completePrediction',
+      timeout: Duration.seconds(10), // it can take a while to loop through all the players.
     });
     gameDataTable.grantReadWriteData(completePredictionLambda);
     const getLeaderboardLambda = new nodejs.NodejsFunction(this, 'get-leaderboard-func', {
