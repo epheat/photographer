@@ -1,0 +1,164 @@
+[
+  {
+    "hometown": "Weatherford, Texas",
+    "occupation": "Pharmacist",
+    "startingTribe": "Vesi",
+    "tribe": "Vesi",
+    "name": "Nneka Ejere",
+    "id": "NnekaEjere",
+    "age": 43
+  },
+  {
+    "hometown": "Houston, Texas",
+    "occupation": "Heart valve specialist",
+    "startingTribe": "Baka",
+    "tribe": "Baka",
+    "name": "Mike Gabler",
+    "id": "MikeGabler",
+    "age": 52
+  },
+  {
+    "hometown": "Londonderry, N.H.",
+    "occupation": "U.S. Paralympian",
+    "startingTribe": "Vesi",
+    "tribe": "Vesi",
+    "name": "Noelle Lambert",
+    "id": "NoelleLambert",
+    "age": 25
+  },
+  {
+    "hometown": "Bethesda, Md.",
+    "occupation": "College admissions director",
+    "startingTribe": "Baka",
+    "tribe": "Baka",
+    "name": "Owen Knight",
+    "id": "OwenKnight",
+    "age": 30
+  },
+  {
+    "hometown": "Sunnyvale, Calif.",
+    "occupation": "Cyber security sales",
+    "startingTribe": "Vesi",
+    "tribe": "Vesi",
+    "name": "Justine Brennan",
+    "id": "JustineBrennan",
+    "age": 29
+  },
+  {
+    "hometown": "Preston, Iowa",
+    "occupation": "Elevator sales",
+    "startingTribe": "Vesi",
+    "tribe": "Vesi",
+    "name": "Cody Assenmacher",
+    "id": "CodyAssenmacher",
+    "age": 35
+  },
+  {
+    "hometown": "Philadelphia, Pa.",
+    "occupation": "Teacher",
+    "startingTribe": "Baka",
+    "tribe": "Baka",
+    "name": "Morriah Young",
+    "id": "MorriahYoung",
+    "age": 28
+  },
+  {
+    "hometown": "Las Vegas, Nev.",
+    "occupation": "Pet cremator",
+    "startingTribe": "Baka",
+    "tribe": "Baka",
+    "name": "Sami Layadi",
+    "id": "SamiLayadi",
+    "age": 19
+  },
+  {
+    "hometown": "San Diego, Calif.",
+    "occupation": "Educational project manager",
+    "startingTribe": "Koka",
+    "tribe": "Koka",
+    "name": "Karla Cruz Godoy",
+    "id": "KarlaCruzGodoy",
+    "age": 28
+  },
+  {
+    "hometown": "Savannah, Ga.",
+    "occupation": "Warehouse associate",
+    "startingTribe": "Koka",
+    "tribe": "Koka",
+    "name": "Ryan Medrano",
+    "id": "RyanMedrano",
+    "age": 25
+  },
+  {
+    "hometown": "Greensboro, N.C.",
+    "occupation": "Pediatric nurse",
+    "startingTribe": "Koka",
+    "tribe": "Koka",
+    "name": "Lindsay Carmine",
+    "id": "LindsayCarmine",
+    "age": 42
+  },
+  {
+    "hometown": "South Hamilton, Mass.",
+    "occupation": "UX designer",
+    "startingTribe": "Baka",
+    "tribe": "Baka",
+    "name": "Jeanine Zheng",
+    "id": "JeanineZheng",
+    "age": 24
+  },
+  {
+    "hometown": "Venice, Calif.",
+    "occupation": "Political science Ph.D.",
+    "startingTribe": "Vesi",
+    "tribe": "Vesi",
+    "name": "Jesse Lopez",
+    "id": "JesseLopez",
+    "age": 30
+  },
+  {
+    "hometown": "Plano, Texas",
+    "occupation": "Designer",
+    "startingTribe": "Koka",
+    "tribe": "Koka",
+    "name": "Cassidy Clark",
+    "id": "CassidyClark",
+    "age": 26
+  },
+  {
+    "hometown": "Philadelphia, Pa.",
+    "occupation": "Event planner",
+    "startingTribe": "Koka",
+    "tribe": "Koka",
+    "name": "James Jones",
+    "id": "JamesJones",
+    "age": 37
+  },
+  {
+    "hometown": "Miami, Fla.",
+    "occupation": "Project manager",
+    "startingTribe": "Koka",
+    "tribe": "Koka",
+    "name": "Geo Bustamante",
+    "id": "GeoBustamante",
+    "age": 36
+  },
+  {
+    "hometown": "Atlanta, Ga.",
+    "occupation": "Clinical psychologist",
+    "startingTribe": "Baka",
+    "tribe": "Baka",
+    "name": "Elisabeth \"Elie\" Scott",
+    "id": "ElieScott",
+    "age": 31
+  },
+  {
+    "hometown": "Palo Alto, Calif.",
+    "occupation": "Graduate student",
+    "startingTribe": "Vesi",
+    "tribe": "Vesi",
+    "name": "Dwight Moore",
+    "id": "DwightMoore",
+    "age": 22
+  }
+]

@@ -1,0 +1,179 @@
+[
+  {
+    "hometown": "Fredericksburg, VA",
+    "occupation": "Waitress",
+    "startingTribe": "Vati",
+    "tribe": "Vati",
+    "name": "Lydia Meredith",
+    "votedOut": true,
+    "id": "LydiaMeredith",
+    "age": 22
+  },
+  {
+    "hometown": "New York, NY",
+    "occupation": "Creative director",
+    "startingTribe": "Vati",
+    "tribe": "Vati",
+    "name": "Jenny Kim",
+    "votedOut": true,
+    "id": "JennyKim",
+    "age": 43
+  },
+  {
+    "hometown": "Cincinnati, OH",
+    "occupation": "Law clerk",
+    "startingTribe": "Vati",
+    "tribe": "Vati",
+    "name": "Daniel Strunk",
+    "votedOut": true,
+    "id": "DanielStrunk",
+    "age": 30
+  },
+  {
+    "hometown": "Lansing, MI",
+    "occupation": "Stay-at-home mom",
+    "startingTribe": "Taku",
+    "tribe": "Taku",
+    "name": "Marya Sherron",
+    "votedOut": true,
+    "id": "MaryaSherron",
+    "age": 47
+  },
+  {
+    "hometown": "Pasadena, TX",
+    "occupation": "Healthcare worker",
+    "startingTribe": "Taku",
+    "tribe": "Taku",
+    "name": "Jackson Fox",
+    "votedOut": true,
+    "id": "JacksonFox",
+    "age": 48
+  },
+  {
+    "hometown": "Atlanta, GA / Gia Rai, Vietnam",
+    "occupation": "Data scientist",
+    "startingTribe": "Vati",
+    "tribe": "Kula Kula",
+    "name": "Hai Giang",
+    "votedOut": true,
+    "id": "HaiGiang",
+    "age": 29
+  },
+  {
+    "hometown": "Hoboken, NJ",
+    "occupation": "Retired firefighter",
+    "startingTribe": "Vati",
+    "tribe": "Kula Kula",
+    "name": "Mike Turner",
+    "id": "MikeTurner",
+    "age": 58
+  },
+  {
+    "hometown": "Gadsden, AL",
+    "occupation": "Beach service company owner",
+    "startingTribe": "Taku",
+    "tribe": "Kula Kula",
+    "name": "Jonathan Young",
+    "votedOut": true,
+    "id": "JonathanYoung",
+    "age": 29
+  },
+  {
+    "hometown": "Kitchener, Ontario",
+    "occupation": "Veterinarian",
+    "startingTribe": "Taku",
+    "tribe": "Kula Kula",
+    "name": "Omar Zaheer",
+    "votedOut": true,
+    "id": "OmarZaheer",
+    "age": 31
+  },
+  {
+    "hometown": "Morganville, NJ",
+    "occupation": "Dietitian",
+    "startingTribe": "Taku",
+    "tribe": "Kula Kula",
+    "name": "Lindsay Dolashewich",
+    "votedOut": true,
+    "id": "LindsayDolashewich",
+    "age": 31
+  },
+  {
+    "hometown": "Ajax, Ontario",
+    "occupation": "Seminary student",
+    "startingTribe": "Taku",
+    "tribe": "Kula Kula",
+    "name": "Maryanne Oketch",
+    "id": "MaryanneOketch",
+    "age": 24
+  },
+  {
+    "hometown": "Hamden, CT",
+    "occupation": "Executive recruiter",
+    "startingTribe": "Vati",
+    "tribe": "Kula Kula",
+    "name": "Chanelle Howell",
+    "votedOut": true,
+    "id": "ChanelleHowell",
+    "age": 29
+  },
+  {
+    "hometown": "Los Angeles, CA",
+    "occupation": "Pageant coach",
+    "startingTribe": "Ika",
+    "tribe": "Kula Kula",
+    "name": "Romeo Escobar",
+    "id": "RomeoEscobar",
+    "age": 37
+  },
+  {
+    "hometown": "Tulsa, OK",
+    "occupation": "Therapist",
+    "startingTribe": "Ika",
+    "tribe": "Kula Kula",
+    "name": "Tori Meehan",
+    "votedOut": true,
+    "id": "ToriMeehan",
+    "age": 25
+  },
+  {
+    "hometown": "Brooklyn, NY",
+    "occupation": "Stay-at-home dad",
+    "startingTribe": "Ika",
+    "tribe": "Kula Kula",
+    "name": "Rocksroy Bailey",
+    "votedOut": true,
+    "id": "RocksroyBailey",
+    "age": 44
+  },
+  {
+    "hometown": "San Antonio, TX",
+    "occupation": "Fitness consultant",
+    "startingTribe": "Ika",
+    "tribe": "Kula Kula",
+    "name": "Drea Wheeler",
+    "votedOut": true,
+    "id": "DreaWheeler",
+    "age": 35
+  },
+  {
+    "hometown": "Palo Alto, CA",
+    "occupation": "Ivy league student",
+    "startingTribe": "Ika",
+    "tribe": "Ika",
+    "name": "Swati Goel",
+    "votedOut": true,
+    "id": "SwatiGoel",
+    "age": 19
+  },
+  {
+    "hometown": "Weston, FL",
+    "occupation": "Student",
+    "startingTribe": "Ika",
+    "tribe": "Ika",
+    "name": "Zach Wurtenberger",
+    "votedOut": true,
+    "id": "ZachWurtenberger",
+    "age": 22
+  }
+]

@@ -221,7 +221,7 @@ export class PSBackendStack extends cdk.Stack {
     });
 
     httpApi.addRoutes({
-      path: '/games/survivor42/cast',
+      path: '/games/survivor/cast',
       methods: [apigateway.HttpMethod.GET],
       integration: new integrations.LambdaProxyIntegration({
         handler: getCastLambda,
@@ -229,7 +229,7 @@ export class PSBackendStack extends cdk.Stack {
       authorizer: authorizer,
     })
     httpApi.addRoutes({
-      path: '/games/survivor42/cast',
+      path: '/games/survivor/cast',
       methods: [apigateway.HttpMethod.POST],
       integration: new integrations.LambdaProxyIntegration({
         handler: setCastLambda,
@@ -238,7 +238,7 @@ export class PSBackendStack extends cdk.Stack {
     })
 
     httpApi.addRoutes({
-      path: '/games/survivor42/predictions',
+      path: '/games/survivor/predictions',
       methods: [apigateway.HttpMethod.GET],
       integration: new integrations.LambdaProxyIntegration({
         handler: getPredictionsLambda,
@@ -246,7 +246,7 @@ export class PSBackendStack extends cdk.Stack {
       authorizer: authorizer,
     })
     httpApi.addRoutes({
-      path: '/games/survivor42/predictions',
+      path: '/games/survivor/predictions',
       methods: [apigateway.HttpMethod.POST],
       integration: new integrations.LambdaProxyIntegration({
         handler: setPredictionLambda,
@@ -254,7 +254,7 @@ export class PSBackendStack extends cdk.Stack {
       authorizer: authorizer,
     })
     httpApi.addRoutes({
-      path: '/games/survivor42/predictions/delete',
+      path: '/games/survivor/predictions/delete',
       methods: [apigateway.HttpMethod.POST],
       integration: new integrations.LambdaProxyIntegration({
         handler: deletePredictionLambda,
@@ -262,7 +262,7 @@ export class PSBackendStack extends cdk.Stack {
       authorizer: authorizer,
     })
     httpApi.addRoutes({
-      path: '/games/survivor42/userPredictions',
+      path: '/games/survivor/userPredictions',
       methods: [apigateway.HttpMethod.GET],
       integration: new integrations.LambdaProxyIntegration({
         handler: getUserPredictionsLambda,
@@ -270,7 +270,7 @@ export class PSBackendStack extends cdk.Stack {
       authorizer: authorizer,
     })
     httpApi.addRoutes({
-      path: '/games/survivor42/userPredictions/{sub}',
+      path: '/games/survivor/userPredictions/{sub}',
       methods: [apigateway.HttpMethod.GET],
       integration: new integrations.LambdaProxyIntegration({
         handler: getUserPredictionLambda,
@@ -278,7 +278,7 @@ export class PSBackendStack extends cdk.Stack {
       authorizer: authorizer,
     })
     httpApi.addRoutes({
-      path: '/games/survivor42/userPredictions',
+      path: '/games/survivor/userPredictions',
       methods: [apigateway.HttpMethod.POST],
       integration: new integrations.LambdaProxyIntegration({
         handler: setUserPredictionLambda,
@@ -286,7 +286,7 @@ export class PSBackendStack extends cdk.Stack {
       authorizer: authorizer,
     })
     httpApi.addRoutes({
-      path: '/games/survivor42/predictions/complete',
+      path: '/games/survivor/predictions/complete',
       methods: [apigateway.HttpMethod.POST],
       integration: new integrations.LambdaProxyIntegration({
         handler: completePredictionLambda,
@@ -294,7 +294,7 @@ export class PSBackendStack extends cdk.Stack {
       authorizer: authorizer,
     })
     httpApi.addRoutes({
-      path: '/games/survivor42/leaderboard',
+      path: '/games/survivor/leaderboard',
       methods: [apigateway.HttpMethod.GET],
       integration: new integrations.LambdaProxyIntegration({
         handler: getLeaderboardLambda,
@@ -302,7 +302,7 @@ export class PSBackendStack extends cdk.Stack {
       authorizer: authorizer,
     });
     httpApi.addRoutes({
-      path: '/games/survivor42/userInventory/{sub}',
+      path: '/games/survivor/userInventory/{sub}',
       methods: [apigateway.HttpMethod.GET],
       integration: new integrations.LambdaProxyIntegration({
         handler: getUserInventoryLambda,
@@ -310,7 +310,7 @@ export class PSBackendStack extends cdk.Stack {
       authorizer: authorizer,
     });
     httpApi.addRoutes({
-      path: '/games/survivor42/items/{sub}',
+      path: '/games/survivor/items/{sub}',
       methods: [apigateway.HttpMethod.POST],
       integration: new integrations.LambdaProxyIntegration({
         handler: putItemLambda,

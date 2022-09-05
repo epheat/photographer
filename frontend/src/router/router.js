@@ -13,7 +13,7 @@ const routes = [
   { path: '/posts', component: PostsPage },
   { path: '/posts/:postId', component: PostPage, props: true },
   { path: '/games', component: GamesPage },
-  { path: '/games/FantasySurvivor-S42', component: SurvivorGamePage },
+  { path: '/games/FantasySurvivor', component: SurvivorGamePage },
   { path: '/music', component: MusicPage },
   { path: '/auth/:flowRoute', component: AuthPage, props: true },
   { path: '/posts/new', component: EditorPage },

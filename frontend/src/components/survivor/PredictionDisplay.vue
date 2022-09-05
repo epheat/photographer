@@ -73,7 +73,7 @@ export default {
       if (this.predictionType === "ImmunityChallenge") {
         return `Select ${this.select} survivors. Earn points for each selected survivor that wins the immunity challenge.`;
       } else if (this.predictionType === "TribalCouncil") {
-        return `Select ${this.select} survivors. Earn points if any of them get voted out this episode.`;
+        return `Select ${this.select} survivors. Earn points for each one that gets voted out this episode.`;
       } else {
         return `Select ${this.select} survivors. Earn points for each one that makes it to final tribal.`;
       }

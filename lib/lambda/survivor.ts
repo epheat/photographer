@@ -12,15 +12,16 @@ const client = new DynamoDBClient({ region: "us-east-1" });
 const ddb = DynamoDBDocument.from(client);
 
 /**
- * GET games/survivor42/cast
+ * GET games/survivor/cast
  *
- * returns the survivor season 42 cast
+ * returns the survivor cast for the current seasonId.
  */
 export async function getCast(event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> {
+    const seasonId = await getActiveSeason();
     try {
         const results = await ddb.get({
             TableName: tableName,
-            Key: { entityId: "FantasySurvivor-S42", resourceId: "Cast" }
+            Key: { entityId: `FantasySurvivor-${seasonId}`, resourceId: "Cast" }
         });
 
         return success({
@@ -33,9 +34,9 @@ export async function getCast(event: APIGatewayProxyEventV2): Promise<APIGateway
 }
 
 /**
- * POST games/survivor42/cast
+ * POST games/survivor/cast
  *
- * updates the survivor season 42 cast
+ * updates the survivor cast for the active season.
  */
 export async function setCast(event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> {
     if (!userHasGroup(event, "Admins")) {
@@ -53,12 +54,13 @@ export async function setCast(event: APIGatewayProxyEventV2): Promise<APIGateway
             return error({ message: `Invalid Request: survivor ${survivor} does not match schema.` });
         }
     }
+    const seasonId = await getActiveSeason();
 
     try {
         const result = await ddb.put({
             TableName: tableName,
             Item: {
-                entityId: "FantasySurvivor-S42",
+                entityId: `FantasySurvivor-${seasonId}`,
                 resourceId: "Cast",
                 survivors: request.survivors,
                 resourceType: "Cast"
@@ -74,16 +76,17 @@ export async function setCast(event: APIGatewayProxyEventV2): Promise<APIGateway
 }
 
 /**
- * GET /games/survivor42/predictions
+ * GET /games/survivor/predictions
  *
  * get all game-predictions, sorted by most recent Episode
  */
 export async function getPredictions(event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> {
+    const seasonId = await getActiveSeason();
     try {
         const results = await ddb.query({
             TableName: tableName,
             KeyConditionExpression: "entityId = :entityId and begins_with(resourceId, :resourceType)",
-            ExpressionAttributeValues: { ':entityId': 'FantasySurvivor-S42', ':resourceType': 'Prediction' },
+            ExpressionAttributeValues: { ':entityId': `FantasySurvivor-${seasonId}`, ':resourceType': 'Prediction' },
             ScanIndexForward: false,
         });
 
@@ -97,7 +100,7 @@ export async function getPredictions(event: APIGatewayProxyEventV2): Promise<API
 }
 
 /**
- * POST /games/survivor42/predictions
+ * POST /games/survivor/predictions
  *
  * edit or put a new game-prediction
  */
@@ -108,12 +111,13 @@ export async function setPrediction(event: APIGatewayProxyEventV2): Promise<APIG
     if (!request?.prediction || !request?.prediction?.episode || !request?.prediction?.predictionType || !request?.prediction?.reward || !request?.prediction?.select || !request?.prediction?.predictBefore || !request?.prediction?.options) {
         return error({ message: "Invalid Request: missing required fields." });
     }
+    const seasonId = await getActiveSeason();
 
     try {
         const result = await ddb.put({
             TableName: tableName,
             Item: {
-                entityId: "FantasySurvivor-S42",
+                entityId: `FantasySurvivor-${seasonId}`,
                 resourceId: `Prediction-${request.prediction.episode}-${request.prediction.predictionType}`,
                 episode: request.prediction.episode,
                 reward: request.prediction.reward,
@@ -135,7 +139,7 @@ export async function setPrediction(event: APIGatewayProxyEventV2): Promise<APIG
 }
 
 /**
- * POST /games/survivor42/predictions/delete
+ * POST /games/survivor/predictions/delete
  *
  * deletes a prediction. Revokes
  */
@@ -146,7 +150,8 @@ export async function deletePrediction(event: APIGatewayProxyEventV2): Promise<A
     if (!request?.prediction || !request?.prediction?.episode || !request?.prediction?.predictionType || !request?.revokePoints) {
         return error({ message: "Invalid Request: missing required fields." });
     }
-    const resourceId = `FantasySurvivor-S42-UserPrediction-${request.prediction.episode}-${request.prediction.predictionType}`;
+    const seasonId = await getActiveSeason();
+    const resourceId = `FantasySurvivor-${seasonId}-UserPrediction-${request.prediction.episode}-${request.prediction.predictionType}`;
     if (request.revokePoints) {
         try {
             const userPoints = await ddb.query({
@@ -154,7 +159,7 @@ export async function deletePrediction(event: APIGatewayProxyEventV2): Promise<A
                 IndexName: "pointsIndex",
                 KeyConditionExpression: "resourceId = :resourceId",
                 ExpressionAttributeValues: {
-                    ':resourceId': 'FantasySurvivor-S42-UserPoints',
+                    ':resourceId': `FantasySurvivor-${seasonId}-UserPoints`,
                 },
             });
             // for each userPoints record
@@ -202,7 +207,7 @@ export async function deletePrediction(event: APIGatewayProxyEventV2): Promise<A
         const result = await ddb.delete({
             TableName: tableName,
             Key: {
-                entityId: "FantasySurvivor-S42",
+                entityId: `FantasySurvivor-${seasonId}`,
                 resourceId: `Prediction-${request.prediction.episode}-${request.prediction.predictionType}`,
             }
         });
@@ -216,17 +221,18 @@ export async function deletePrediction(event: APIGatewayProxyEventV2): Promise<A
 }
 
 /**
- * GET /games/survivor42/userPredictions
+ * GET /games/survivor/userPredictions
  *
  * get all userPredictions
  */
 export async function getUserPredictions(event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> {
+    const seasonId = await getActiveSeason();
     try {
         const results = await ddb.query({
             TableName: tableName,
             IndexName: "resourceTypeIndex",
-            KeyConditionExpression: "resourceType = :resourceType",
-            ExpressionAttributeValues: { ':resourceType': "UserPrediction" },
+            KeyConditionExpression: "resourceType = :resourceType and begins_with(resourceId, :resourceId)",
+            ExpressionAttributeValues: { ':resourceType': "UserPrediction", ':resourceId': `FantasySurvivor-${seasonId}` },
         });
         return success({
             message: "Success.",
@@ -238,7 +244,7 @@ export async function getUserPredictions(event: APIGatewayProxyEventV2): Promise
 }
 
 /**
- * GET /games/survivor42/userPrediction/:sub
+ * GET /games/survivor/userPrediction/{sub}
  *
  * get a specific user's userPredictions
  */
@@ -246,11 +252,12 @@ export async function getUserPrediction(event: APIGatewayProxyEventV2): Promise<
     if (!event.pathParameters?.sub) {
         return error({ message: "Invalid Request: Missing sub path parameter." });
     }
+    const seasonId = await getActiveSeason();
     try {
         const results = await ddb.query({
             TableName: tableName,
             KeyConditionExpression: "entityId = :entityId and begins_with(resourceId, :resourceType)",
-            ExpressionAttributeValues: { ':entityId': event.pathParameters?.sub, ':resourceType': 'FantasySurvivor-S42-UserPrediction' },
+            ExpressionAttributeValues: { ':entityId': event.pathParameters?.sub, ':resourceType': `FantasySurvivor-${seasonId}-UserPrediction` },
         });
         return success({
             message: "Success.",
@@ -263,7 +270,7 @@ export async function getUserPrediction(event: APIGatewayProxyEventV2): Promise<
 
 
 /**
- * POST /games/survivor42/userPredictions
+ * POST /games/survivor/userPredictions
  *
  * submit/edit your user prediction
  */
@@ -276,6 +283,7 @@ export async function setUserPrediction(event: APIGatewayProxyEventV2): Promise<
         return error({ message: "Invalid Request: missing required fields." });
     }
     const requestTime = new Date().getTime();
+    const seasonId = await getActiveSeason();
     let inventory = undefined;
     // based on the request episode+predictionType, fetch the prediction from game data. We need to make sure the
     // prediction is still ongoing, and the user's selections are even eligible for the prediction
@@ -283,7 +291,7 @@ export async function setUserPrediction(event: APIGatewayProxyEventV2): Promise<
         const result = await ddb.get({
             TableName: tableName,
             Key: {
-                entityId: "FantasySurvivor-S42",
+                entityId: `FantasySurvivor-${seasonId}`,
                 resourceId: `Prediction-${request.userPrediction.episode}-${request.userPrediction.predictionType}`
             }
         });
@@ -303,7 +311,7 @@ export async function setUserPrediction(event: APIGatewayProxyEventV2): Promise<
                 TableName: tableName,
                 Key: {
                     entityId: sub,
-                    resourceId: 'FantasySurvivor-S42-UserInventory'
+                    resourceId: `FantasySurvivor-${seasonId}-UserInventory`
                 }
             });
             inventory = userInventory.Item?.items ?? [];
@@ -311,9 +319,6 @@ export async function setUserPrediction(event: APIGatewayProxyEventV2): Promise<
             if (itemIndex != -1) {
                 // if the item was found in the user's inventory, remove it from the inventory and apply its effects.
                 if (inventory[itemIndex].itemType === "ExtraVoteAdvantage") {
-                    if (result.Item.episode === "E02") {
-                        return error({ message: "Not so fast! You can't use this yet." });
-                    }
                     if (result.Item.options.length < 8) {
                         return error({ message: "Invalid Request: extra vote advantage cannot be used with less than 8 survivors." });
                     }
@@ -344,7 +349,7 @@ export async function setUserPrediction(event: APIGatewayProxyEventV2): Promise<
             TableName: tableName,
             Item: {
                 entityId: sub,
-                resourceId: `FantasySurvivor-S42-UserPrediction-${request.userPrediction.episode}-${request.userPrediction.predictionType}`,
+                resourceId: `FantasySurvivor-${seasonId}-UserPrediction-${request.userPrediction.episode}-${request.userPrediction.predictionType}`,
                 predictionId: `Prediction-${request.userPrediction.episode}-${request.userPrediction.predictionType}`,
                 episode: request.userPrediction.episode,
                 predictionType: request.userPrediction.predictionType,
@@ -361,7 +366,7 @@ export async function setUserPrediction(event: APIGatewayProxyEventV2): Promise<
                 TableName: tableName,
                 Item: {
                     entityId: sub,
-                    resourceId: 'FantasySurvivor-S42-UserInventory',
+                    resourceId: `FantasySurvivor-${seasonId}-UserInventory`,
                     items: inventory,
                     lastUpdatedDate: requestTime,
                 }
@@ -378,7 +383,7 @@ export async function setUserPrediction(event: APIGatewayProxyEventV2): Promise<
 }
 
 /**
- * POST /games/survivor42/predictions/complete
+ * POST /games/survivor/predictions/complete
  *
  * complete a prediction by providing the results, awarding points to users.
  */
@@ -391,13 +396,14 @@ export async function completePrediction(event: APIGatewayProxyEventV2): Promise
         return error({ message: "Invalid Request: missing required fields." });
     }
     const requestTime = new Date().getTime();
+    const seasonId = await getActiveSeason();
     // first, fetch the prediction record and make sure the prediction window has ended, and the results match the prediction options
     let prediction;
     try {
         const result = await ddb.get({
             TableName: tableName,
             Key: {
-                entityId: "FantasySurvivor-S42",
+                entityId: `FantasySurvivor-${seasonId}`,
                 resourceId: `Prediction-${request.prediction.episode}-${request.prediction.predictionType}`,
             }
         });
@@ -420,7 +426,7 @@ export async function completePrediction(event: APIGatewayProxyEventV2): Promise
     }
     // for each user-prediction record for this resourceId, match the user selections with the prediction results to compute points
     const userPoints: { userSub: string; username: string; pointsToAward: number; points: number; }[] = [];
-    const resourceId = `FantasySurvivor-S42-UserPrediction-${request.prediction.episode}-${request.prediction.predictionType}`;
+    const resourceId = `FantasySurvivor-${seasonId}-UserPrediction-${request.prediction.episode}-${request.prediction.predictionType}`;
     try {
         const results = await ddb.query({
             TableName: tableName,
@@ -452,7 +458,7 @@ export async function completePrediction(event: APIGatewayProxyEventV2): Promise
             IndexName: "pointsIndex",
             KeyConditionExpression: "resourceId = :resourceId",
             ExpressionAttributeValues: {
-                ':resourceId': 'FantasySurvivor-S42-UserPoints'
+                ':resourceId': `FantasySurvivor-${seasonId}-UserPoints`
             },
             ScanIndexForward: false,
         });
@@ -497,7 +503,7 @@ export async function completePrediction(event: APIGatewayProxyEventV2): Promise
                 // if this user has no points, create a fresh record.
                 userPointsRecord = {
                     entityId: userSub,
-                    resourceId: "FantasySurvivor-S42-UserPoints",
+                    resourceId: `FantasySurvivor-${seasonId}-UserPoints`,
                     pointHistory: [
                         { event: resourceId, pointsAdded: pointsToAward, points: pointsToAward, timestamp: requestTime }
                     ],
@@ -560,18 +566,19 @@ export async function completePrediction(event: APIGatewayProxyEventV2): Promise
 }
 
 /**
- * GET /games/survivor42/leaderboard
+ * GET /games/survivor/leaderboard
  *
  * get points for all users, to populate the leaderboard.
  */
 export async function getLeaderboard(event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> {
+    const seasonId = await getActiveSeason();
     try {
         const result = await ddb.query({
             TableName: tableName,
             IndexName: "pointsIndex",
             KeyConditionExpression: "resourceId = :resourceId",
             ExpressionAttributeValues: {
-                ':resourceId': 'FantasySurvivor-S42-UserPoints'
+                ':resourceId': `FantasySurvivor-${seasonId}-UserPoints`
             },
             ScanIndexForward: false,
         });
@@ -586,7 +593,7 @@ export async function getLeaderboard(event: APIGatewayProxyEventV2): Promise<API
 }
 
 /**
- * GET /games/survivor42/userInventory/:sub
+ * GET /games/survivor/userInventory/:sub
  *
  * get a specific user's inventory
  */
@@ -594,12 +601,13 @@ export async function getUserInventory(event: APIGatewayProxyEventV2): Promise<A
     if (!event.pathParameters?.sub) {
         return error({ message: "Invalid Request: Missing sub path parameter." });
     }
+    const seasonId = await getActiveSeason();
     try {
         const results = await ddb.get({
             TableName: tableName,
             Key: {
                 entityId: event.pathParameters?.sub,
-                resourceId: 'FantasySurvivor-S42-UserInventory'
+                resourceId: `FantasySurvivor-${seasonId}-UserInventory`
             }
         });
         return success({
@@ -612,7 +620,7 @@ export async function getUserInventory(event: APIGatewayProxyEventV2): Promise<A
 }
 
 /**
- * POST /games/survivor42/items/:sub
+ * POST /games/survivor/items/:sub
  *
  * update a user's inventory
  */
@@ -628,17 +636,18 @@ export async function putItem(event: APIGatewayProxyEventV2): Promise<APIGateway
         return error({ message: "Invalid Request: missing required fields." });
     }
     const requestTime = new Date().getTime();
+    const seasonId = await getActiveSeason();
     try {
         const getResult = await ddb.get({
             TableName: tableName,
             Key: {
                 entityId: event.pathParameters?.sub,
-                resourceId: 'FantasySurvivor-S42-UserInventory'
+                resourceId: `FantasySurvivor-${seasonId}-UserInventory`
             }
         });
         let inventory = getResult.Item ?? {
             entityId: event.pathParameters.sub,
-            resourceId: 'FantasySurvivor-S42-UserInventory',
+            resourceId: `FantasySurvivor-${seasonId}-UserInventory`,
             items: []
         }
         inventory.lastUpdatedDate = requestTime;
@@ -693,7 +702,6 @@ function optionsContainSelections(options: string[], selections: string[]) {
     return true;
 }
 
-
 export interface Survivor {
     name: string,
     age: number,
@@ -717,5 +725,26 @@ function isSurvivor(s: any): s is Survivor {
         return true;
     } else {
         return false;
+    }
+}
+
+/**
+ * Get the current active season.
+ */
+async function getActiveSeason(): Promise<String> {
+    try {
+        const results = await ddb.query({
+            TableName: tableName,
+            KeyConditionExpression: "entityId = :entityId",
+            ExpressionAttributeValues: { ':entityId': 'FantasySurvivor-Season'},
+        });
+        if (!results.Items) {
+            console.log("No items found for FantasySurvivor-Season. Returning default S43.");
+            return "S43";
+        }
+        return results.Items.filter(item => item.active)[0].resourceId;
+    } catch (err) {
+        console.log("Error getting active season. Returning default S43.", err);
+        return "S43";
     }
 }

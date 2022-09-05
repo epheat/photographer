@@ -2,11 +2,11 @@
   <div class="ps-music-page page">
     <h1>Games</h1>
     <p>Click on a game to join (must be signed in to play).</p>
-    <div class="game-container" @click="onClickGame('FantasySurvivor-S42')">
+    <div class="game-container" @click="onClickGame('FantasySurvivor')">
       <img class="game-image" alt="survivor logo" src="@/assets/survivor_logo.png"/>
       <div class="game-text">
-        <div class="game-title">FantasySurvivor-S42</div>
-        <p class="game-description">Follow along with Survivor season 42 as you predict each week who will win challenges, who will lose, and who will get voted out. In this game, fire represents your life. When your fire's gone, so are you. Requires an account to play.</p>
+        <div class="game-title">FantasySurvivor</div>
+        <p class="game-description">Follow along with the latest Survivor season as you predict each week who will win challenges, who will lose, and who will get voted out. In this game, fire represents your life. When your fire's gone, so are you. Requires an account to play.</p>
       </div>
     </div>
     <Footer></Footer>

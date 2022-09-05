@@ -1,6 +1,6 @@
 <template>
   <div class="page survivor-page">
-    <h1>FantasySurvivor-S42</h1>
+    <h1>FantasySurvivor</h1>
     <div class="tabs">
       <div class="tab" :class="{active: currentTab === 0}" @click="setTab(0)">Predictions</div>
       <div class="tab" :class="{active: currentTab === 1}" @click="setTab(1)">Leaderboard</div>
@@ -245,13 +245,18 @@ export default {
       try {
         let token = (await Auth.currentSession()).getAccessToken().getJwtToken();
         this.loading = true;
-        let response = await API.get('ps-api', '/games/survivor42/cast', {
+        let response = await API.get('ps-api', '/games/survivor/cast', {
           headers: {
             Authorization: `Bearer ${token}`,
           }
         });
-        this.cast = response.items.sort((s1, s2) => s1.tribe < s2.tribe);
-        this.castEditorValue = JSON.stringify(response.items, null, 2);
+        if (response.items) {
+          this.cast = response.items.sort((s1, s2) => s1.tribe < s2.tribe);
+          this.castEditorValue = JSON.stringify(response.items, null, 2);
+        } else {
+          this.cast = [];
+          this.castEditorValue = "[]";
+        }
         this.loading = false;
       } catch (err) {
         this.errorMessage = err.message;
@@ -264,7 +269,7 @@ export default {
         const survivors = JSON.parse(this.castEditorValue);
         let token = (await Auth.currentSession()).getAccessToken().getJwtToken();
         this.loading = true;
-        let response = await API.post('ps-api', '/games/survivor42/cast', {
+        let response = await API.post('ps-api', '/games/survivor/cast', {
           body: {
             survivors: survivors,
           },
@@ -284,7 +289,7 @@ export default {
       try {
         let token = (await Auth.currentSession()).getAccessToken().getJwtToken();
         this.loading = true;
-        let response = await API.get('ps-api', '/games/survivor42/leaderboard', {
+        let response = await API.get('ps-api', '/games/survivor/leaderboard', {
           headers: {
             Authorization: `Bearer ${token}`,
           }
@@ -300,7 +305,7 @@ export default {
       this.resetMessages();
       try {
         let token = (await Auth.currentSession()).getAccessToken().getJwtToken();
-        let response = await API.get('ps-api', '/games/survivor42/predictions', {
+        let response = await API.get('ps-api', '/games/survivor/predictions', {
           headers: {
             Authorization: `Bearer ${token}`,
           }
@@ -318,7 +323,7 @@ export default {
       try {
         let token = (await Auth.currentSession()).getAccessToken().getJwtToken();
         this.loading = true;
-        let response = await API.post('ps-api', '/games/survivor42/predictions', {
+        let response = await API.post('ps-api', '/games/survivor/predictions', {
           body: {
             prediction: prediction,
           },
@@ -338,7 +343,7 @@ export default {
       try {
         let token = (await Auth.currentSession()).getAccessToken().getJwtToken();
         this.loading = true;
-        let response = await API.post('ps-api', `/games/survivor42/items/${itemEvent.userSub}`, {
+        let response = await API.post('ps-api', `/games/survivor/items/${itemEvent.userSub}`, {
           body: {
             item: itemEvent.item,
           },
@@ -358,7 +363,7 @@ export default {
       try {
         let session = await Auth.currentSession();
         let jwt = session.getAccessToken().getJwtToken();
-        let response = await API.get('ps-api', `/games/survivor42/userPredictions/${session.getIdToken().payload.sub}`, {
+        let response = await API.get('ps-api', `/games/survivor/userPredictions/${session.getIdToken().payload.sub}`, {
           headers: {
             Authorization: `Bearer ${jwt}`,
           }
@@ -375,7 +380,7 @@ export default {
       this.resetMessages();
       try {
         let token = (await Auth.currentSession()).getAccessToken().getJwtToken();
-        let response = await API.get('ps-api', '/games/survivor42/userPredictions', {
+        let response = await API.get('ps-api', '/games/survivor/userPredictions', {
           headers: {
             Authorization: `Bearer ${token}`,
           }
@@ -393,7 +398,7 @@ export default {
       try {
         let token = (await Auth.currentSession()).getAccessToken().getJwtToken();
         this.loading = true;
-        let response = await API.post('ps-api', '/games/survivor42/userPredictions', {
+        let response = await API.post('ps-api', '/games/survivor/userPredictions', {
           body: {
             userPrediction: {
               episode: this.selectedPrediction.episode,
@@ -445,7 +450,7 @@ export default {
       try {
         let token = (await Auth.currentSession()).getAccessToken().getJwtToken();
         this.loading = true;
-        let response = await API.post('ps-api', '/games/survivor42/predictions/delete', {
+        let response = await API.post('ps-api', '/games/survivor/predictions/delete', {
           body: {
             prediction: {
               episode: this.adminSelectedPrediction.episode,
@@ -471,7 +476,7 @@ export default {
       try {
         let token = (await Auth.currentSession()).getAccessToken().getJwtToken();
         this.loading = true;
-        let response = await API.post('ps-api', '/games/survivor42/predictions/complete', {
+        let response = await API.post('ps-api', '/games/survivor/predictions/complete', {
           body: {
             prediction: {
               episode: this.adminSelectedPrediction.episode,
@@ -497,12 +502,12 @@ export default {
       try {
         let session = await Auth.currentSession();
         let jwt = session.getAccessToken().getJwtToken();
-        let response = await API.get('ps-api', `/games/survivor42/userInventory/${session.getIdToken().payload.sub}`, {
+        let response = await API.get('ps-api', `/games/survivor/userInventory/${session.getIdToken().payload.sub}`, {
           headers: {
             Authorization: `Bearer ${jwt}`,
           }
         })
-        this.userInventory = response.item.items;
+        this.userInventory = response.item?.items | [];
         this.successMessage = response.message;
         this.loading = false;
       } catch (err) {
