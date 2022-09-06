@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
-import * as cdk from '@aws-cdk/core';
 import { PSPipelineStack } from '../lib/ps-pipeline-stack';
 import { PSAppStage } from '../lib/ps-app-stage';
+import { App } from 'aws-cdk-lib';
 
-const app = new cdk.App();
+const app = new App();
 
 const defaultEnv = {
   account: process.env.CDK_DEFAULT_ACCOUNT,

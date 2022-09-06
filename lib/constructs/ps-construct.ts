@@ -1,11 +1,11 @@
-import * as cdk from "@aws-cdk/core";
+import { Construct } from "constructs";
 
 export interface PSConstructProps {
   
 }
 
-export class PSConstruct extends cdk.Construct {
-  constructor(scope: cdk.Construct, id: string, props?: PSConstructProps) {
+export class PSConstruct extends Construct {
+  constructor(scope: Construct, id: string, props?: PSConstructProps) {
     super(scope, id);
 
 

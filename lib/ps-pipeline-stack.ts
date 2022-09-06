@@ -1,14 +1,15 @@
-import * as cdk from '@aws-cdk/core';
-import * as pipelines from '@aws-cdk/pipelines'
+import { pipelines as pipelines } from 'aws-cdk-lib'
+import { Stack, StackProps } from 'aws-cdk-lib';
+import { Construct } from 'constructs';
 
-export interface PSPipelineStackProps extends cdk.StackProps {
+export interface PSPipelineStackProps extends StackProps {
   name: string;
 }
 
-export class PSPipelineStack extends cdk.Stack {
+export class PSPipelineStack extends Stack {
   public readonly pipeline: pipelines.CodePipeline;
 
-  constructor(scope: cdk.Construct, id: string, props: PSPipelineStackProps) {
+  constructor(scope: Construct, id: string, props: PSPipelineStackProps) {
     super(scope, id, props);
 
     this.pipeline = new pipelines.CodePipeline(this, 'ps-pipeline', {

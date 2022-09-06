@@ -1,24 +1,26 @@
-import * as cdk from "@aws-cdk/core";
-import * as dynamodb from "@aws-cdk/aws-dynamodb";
-import * as lambda from "@aws-cdk/aws-lambda";
-import * as nodejs from '@aws-cdk/aws-lambda-nodejs';
+import {
+  aws_dynamodb as dynamodb,
+  aws_lambda as lambda,
+  aws_lambda_nodejs as nodejs,
+  aws_route53 as route53,
+  CfnOutput,
+  Duration,
+  Stack,
+  StackProps 
+} from "aws-cdk-lib";
+import * as apigateway from "@aws-cdk/aws-apigatewayv2-alpha";
+import * as integrations from "@aws-cdk/aws-apigatewayv2-integrations-alpha";
+import * as authorizers from "@aws-cdk/aws-apigatewayv2-authorizers-alpha";
+import { Construct } from "constructs";
 import * as path from "path";
-import * as apigateway from "@aws-cdk/aws-apigatewayv2";
-import * as integrations from "@aws-cdk/aws-apigatewayv2-integrations";
-import * as authorizers from "@aws-cdk/aws-apigatewayv2-authorizers";
-import * as route53 from "@aws-cdk/aws-route53";
-import * as targets from '@aws-cdk/aws-route53-targets';
-import * as acm from '@aws-cdk/aws-certificatemanager';
 import { PSAuth } from "./constructs/ps-auth";
-import {Duration} from "@aws-cdk/core";
 
-
-export interface PSBackendStackProps extends cdk.StackProps {
+export interface PSBackendStackProps extends StackProps {
   domain: String,
 }
 
-export class PSBackendStack extends cdk.Stack {
-  constructor(scope: cdk.Construct, id: string, props: PSBackendStackProps) {
+export class PSBackendStack extends Stack {
+  constructor(scope: Construct, id: string, props: PSBackendStackProps) {
     super(scope, id, props);
 
     // Website hosted at evanheaton.com
@@ -191,8 +193,7 @@ export class PSBackendStack extends cdk.Stack {
     //   certificate: acm.Certificate.fromCertificateArn(this, 'api-certificate', 'arn:aws:acm:us-east-1:854299661720:certificate/5236d810-165d-43b7-8e1e-46e701a61673'),
     // })
 
-    const authorizer = new authorizers.HttpUserPoolAuthorizer({
-      userPool: auth.userPool,
+    const authorizer = new authorizers.HttpUserPoolAuthorizer('userpool-authorizer', auth.userPool, {
       userPoolClients: [auth.client],
       identitySource: ['$request.header.Authorization'],
     })
@@ -200,121 +201,91 @@ export class PSBackendStack extends cdk.Stack {
     httpApi.addRoutes({
       path: '/posts',
       methods: [apigateway.HttpMethod.GET],
-      integration: new integrations.LambdaProxyIntegration({
-        handler: getPostsLambda,
-      }),
+      integration: new integrations.HttpLambdaIntegration('get-posts-integration', getPostLambda),
     });
     httpApi.addRoutes({
       path: '/posts/{postId}',
       methods: [apigateway.HttpMethod.GET],
-      integration: new integrations.LambdaProxyIntegration({
-        handler: getPostLambda,
-      })
+      integration: new integrations.HttpLambdaIntegration('get-post-integration', getPostLambda),
     });
     httpApi.addRoutes({
       path: '/posts/new',
       methods: [apigateway.HttpMethod.POST],
-      integration: new integrations.LambdaProxyIntegration({
-        handler: createPostLambda,
-      }),
+      integration: new integrations.HttpLambdaIntegration('create-post-integration', createPostLambda),
       authorizer: authorizer,
     });
 
     httpApi.addRoutes({
       path: '/games/survivor/cast',
       methods: [apigateway.HttpMethod.GET],
-      integration: new integrations.LambdaProxyIntegration({
-        handler: getCastLambda,
-      }),
+      integration: new integrations.HttpLambdaIntegration('get-cast-integration', getCastLambda),
       authorizer: authorizer,
     })
     httpApi.addRoutes({
       path: '/games/survivor/cast',
       methods: [apigateway.HttpMethod.POST],
-      integration: new integrations.LambdaProxyIntegration({
-        handler: setCastLambda,
-      }),
+      integration: new integrations.HttpLambdaIntegration('set-cast-integration', setCastLambda),
       authorizer: authorizer,
     })
 
     httpApi.addRoutes({
       path: '/games/survivor/predictions',
       methods: [apigateway.HttpMethod.GET],
-      integration: new integrations.LambdaProxyIntegration({
-        handler: getPredictionsLambda,
-      }),
+      integration: new integrations.HttpLambdaIntegration('get-predictions-integration', getPredictionsLambda),
       authorizer: authorizer,
     })
     httpApi.addRoutes({
       path: '/games/survivor/predictions',
       methods: [apigateway.HttpMethod.POST],
-      integration: new integrations.LambdaProxyIntegration({
-        handler: setPredictionLambda,
-      }),
+      integration: new integrations.HttpLambdaIntegration('set-prediction-integration', setPredictionLambda),
       authorizer: authorizer,
     })
     httpApi.addRoutes({
       path: '/games/survivor/predictions/delete',
       methods: [apigateway.HttpMethod.POST],
-      integration: new integrations.LambdaProxyIntegration({
-        handler: deletePredictionLambda,
-      }),
+      integration: new integrations.HttpLambdaIntegration('delete-prediction-integration', deletePredictionLambda),
       authorizer: authorizer,
     })
     httpApi.addRoutes({
       path: '/games/survivor/userPredictions',
       methods: [apigateway.HttpMethod.GET],
-      integration: new integrations.LambdaProxyIntegration({
-        handler: getUserPredictionsLambda,
-      }),
+      integration: new integrations.HttpLambdaIntegration('get-user-predictions-integration', getUserPredictionsLambda),
       authorizer: authorizer,
     })
     httpApi.addRoutes({
       path: '/games/survivor/userPredictions/{sub}',
       methods: [apigateway.HttpMethod.GET],
-      integration: new integrations.LambdaProxyIntegration({
-        handler: getUserPredictionLambda,
-      }),
+      integration: new integrations.HttpLambdaIntegration('get-user-prediction-integration', getUserPredictionLambda),
       authorizer: authorizer,
     })
     httpApi.addRoutes({
       path: '/games/survivor/userPredictions',
       methods: [apigateway.HttpMethod.POST],
-      integration: new integrations.LambdaProxyIntegration({
-        handler: setUserPredictionLambda,
-      }),
+      integration: new integrations.HttpLambdaIntegration('set-user-prediction-integration', setUserPredictionLambda),
       authorizer: authorizer,
     })
     httpApi.addRoutes({
       path: '/games/survivor/predictions/complete',
       methods: [apigateway.HttpMethod.POST],
-      integration: new integrations.LambdaProxyIntegration({
-        handler: completePredictionLambda,
-      }),
+      integration: new integrations.HttpLambdaIntegration('complete-prediction-integration', completePredictionLambda),
       authorizer: authorizer,
     })
     httpApi.addRoutes({
       path: '/games/survivor/leaderboard',
       methods: [apigateway.HttpMethod.GET],
-      integration: new integrations.LambdaProxyIntegration({
-        handler: getLeaderboardLambda,
-      }),
+      integration: new integrations.HttpLambdaIntegration('get-leaderboard-integration', getLeaderboardLambda),
       authorizer: authorizer,
     });
     httpApi.addRoutes({
       path: '/games/survivor/userInventory/{sub}',
       methods: [apigateway.HttpMethod.GET],
-      integration: new integrations.LambdaProxyIntegration({
-        handler: getUserInventoryLambda,
-      }),
+      integration: new integrations.HttpLambdaIntegration('get-user-inventory-integration', getUserInventoryLambda),
       authorizer: authorizer,
     });
     httpApi.addRoutes({
       path: '/games/survivor/items/{sub}',
       methods: [apigateway.HttpMethod.POST],
-      integration: new integrations.LambdaProxyIntegration({
-        handler: putItemLambda,
-      }),
+      integration: new integrations.HttpLambdaIntegration('put-item-integration', putItemLambda),
       authorizer: authorizer,
     });
 
@@ -324,17 +295,17 @@ export class PSBackendStack extends cdk.Stack {
     // });
     
     // Outputs - e.g. userpoolId, clientId, apiUrls, to be fed into the website stack
-    new cdk.CfnOutput(this, 'user-pool-id-output', {
+    new CfnOutput(this, 'user-pool-id-output', {
       value: auth.userPool.userPoolId,
       description: 'The id for the created user pool',
       exportName: `userPoolId-${props.domain}`,
     });
-    new cdk.CfnOutput(this, 'user-pool-client-id-output', {
+    new CfnOutput(this, 'user-pool-client-id-output', {
       value: auth.client.userPoolClientId,
       description: 'The client id for the photographer website app',
       exportName: `userPoolClientId-${props.domain}`,
     });
-    new cdk.CfnOutput(this, 'api-url-output', {
+    new CfnOutput(this, 'api-url-output', {
       value: httpApi.url!,
       description: 'The base URL for the photographer API',
       exportName: `apiUrl-${props.domain}`,

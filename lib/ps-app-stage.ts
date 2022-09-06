@@ -1,16 +1,17 @@
-import * as cdk from '@aws-cdk/core';
+import { Stage, StageProps } from 'aws-cdk-lib';
+import { Construct } from 'constructs';
 import { PSBackendStack } from './ps-backend-stack';
 import { PSWebsiteStack } from './ps-website-stack';
 
-export interface PSAppStageProps extends cdk.StageProps {
+export interface PSAppStageProps extends StageProps {
   domain: String
 }
 const defaultProps: PSAppStageProps = {
   domain: "Dev",
 }
 
-export class PSAppStage extends cdk.Stage {
-  constructor(scope: cdk.Construct, id: string, props: PSAppStageProps = defaultProps) {
+export class PSAppStage extends Stage {
+  constructor(scope: Construct, id: string, props: PSAppStageProps = defaultProps) {
     super(scope, id, props);
     const backendStack = new PSBackendStack(this, 'ps-backend', {
       domain: props.domain,

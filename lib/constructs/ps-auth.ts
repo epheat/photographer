@@ -1,5 +1,5 @@
-import { Construct } from "@aws-cdk/core";
-import * as cognito from "@aws-cdk/aws-cognito";
+import { Construct } from "constructs";
+import { aws_cognito as cognito } from "aws-cdk-lib";
 
 export interface PSAuthProps {
   stage?: String
