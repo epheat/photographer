@@ -1,7 +1,9 @@
 // Auth-related functions. These can only be use on authorized APIs (i.e. ones that require an access token).
 // These functions can inspect the JWT further, and allow/deny access based on its contents.
 
-import { APIGatewayProxyEventV2 } from "aws-lambda";
+import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from "aws-lambda";
+import middy from '@middy/core';
+import { deny } from "./responses";
 
 export interface UserInfo {
     username: string,

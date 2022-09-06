@@ -4,6 +4,9 @@ import { DynamoDBDocument } from "@aws-sdk/lib-dynamodb";
 import { fault, success, error, deny } from './responses';
 import { v4 as uuidv4 } from "uuid";
 import { getUserInfo, userHasGroup } from "./auth";
+import middy from '@middy/core';
+import cloudwatchMetrics, { Context } from '@middy/cloudwatch-metrics';
+import { requireGroup } from './middleware';
 
 // TODO: environment variables for constants like table name
 const tableName = "PSPosts";
@@ -18,7 +21,8 @@ const ddb = DynamoDBDocument.from(client);
  * Returns latest 20 posts
  * TODO: pagination
  */
-export async function get(event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> {
+async function getPosts(event: APIGatewayProxyEventV2, context: Context): Promise<APIGatewayProxyResultV2> {
+  context.metrics.setProperty("RequestId", context.awsRequestId);
   // get the first 10 posts, sorted by timestamp by querying on the "postTypeTimeSorted" index.
   try {
     const results = await ddb.query({
@@ -43,7 +47,8 @@ export async function get(event: APIGatewayProxyEventV2): Promise<APIGatewayProx
  * 
  * Returns the post with postId={postId}
  */
-export async function getPost(event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> {
+async function getPost(event: APIGatewayProxyEventV2, context: Context): Promise<APIGatewayProxyResultV2> {
+  context.metrics.setProperty("RequestId", context.awsRequestId);
   if (!event.pathParameters?.postId) {
     return error({ message: "Invalid Request: Missing postId path parameter." });
   }
@@ -67,10 +72,8 @@ export async function getPost(event: APIGatewayProxyEventV2): Promise<APIGateway
  * 
  * Creates a new post.
  */
-export async function put(event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> {
-  if (!userHasGroup(event, "Admins")) {
-    return deny();
-  }
+async function putPost(event: APIGatewayProxyEventV2, context: Context): Promise<APIGatewayProxyResultV2> {
+  context.metrics.setProperty("RequestId", context.awsRequestId);
   if (!event.body) {
     return error({ message: "Invalid Request: Missing post body." });
   }
@@ -108,10 +111,8 @@ export async function put(event: APIGatewayProxyEventV2): Promise<APIGatewayProx
  *
  * Edits a post.
  */
-export async function edit(event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> {
-  if (!userHasGroup(event, "Admins")) {
-    return deny();
-  }
+async function editPost(event: APIGatewayProxyEventV2, context: Context): Promise<APIGatewayProxyResultV2> {
+  context.metrics.setProperty("RequestId", context.awsRequestId);
   if (!event.body) {
     return error({ message: "Invalid Request: Missing post body." });
   }
@@ -164,10 +165,8 @@ export async function edit(event: APIGatewayProxyEventV2): Promise<APIGatewayPro
  * 
  * Deletes a post.
  */
-export async function del(event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> {
-  if (!userHasGroup(event, "Admins")) {
-    return deny();
-  }
+async function deletePost(event: APIGatewayProxyEventV2, context: Context): Promise<APIGatewayProxyResultV2> {
+  context.metrics.setProperty("RequestId", context.awsRequestId);
   if (!event.pathParameters?.postId) {
     return error({ message: "Invalid Request: Missing postId path parameter." });
   }
@@ -184,3 +183,18 @@ export async function del(event: APIGatewayProxyEventV2): Promise<APIGatewayProx
     return fault({ message: err })
   }
 }
+
+function getMetricsOptions(operation: string) {
+  return {
+    namespace: "PS-Posts-API",
+    dimensions: [
+      { "Operation": operation }
+    ]
+  }
+}
+
+export const getAll = middy(getPosts).use(cloudwatchMetrics(getMetricsOptions("GetAllPosts")));
+export const get = middy(getPost).use(cloudwatchMetrics(getMetricsOptions("GetPost")));
+export const put = middy(putPost).use(requireGroup("Admins")).use(cloudwatchMetrics(getMetricsOptions("PutPost")));
+export const edit = middy(editPost).use(requireGroup("Admins")).use(cloudwatchMetrics(getMetricsOptions("EditPost")));
+export const del = middy(deletePost).use(requireGroup("Admins")).use(cloudwatchMetrics(getMetricsOptions("DeletePost")));

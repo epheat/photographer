@@ -73,17 +73,17 @@ export class PSBackendStack extends Stack {
     const getPostsLambda = new nodejs.NodejsFunction(this, 'get-posts-func', {
       runtime: lambda.Runtime.NODEJS_14_X,
       entry: path.join(__dirname, "./lambda/posts.ts"),
-      handler: 'get',
+      handler: 'getAll',
     });
     postsTable.grantReadData(getPostsLambda);
     const getPostLambda = new nodejs.NodejsFunction(this, 'get-post-func', {
       runtime: lambda.Runtime.NODEJS_14_X,
       entry: path.join(__dirname, "./lambda/posts.ts"),
-      handler: 'getPost',
+      handler: 'get',
     });
     postsTable.grantReadData(getPostLambda);
 
-    const createPostLambda = new nodejs.NodejsFunction(this, 'put-posts-func', {
+    const createPostLambda = new nodejs.NodejsFunction(this, 'put-post-func', {
       runtime: lambda.Runtime.NODEJS_14_X,
       entry: path.join(__dirname, "./lambda/posts.ts"),
       handler: 'put',
@@ -201,7 +201,7 @@ export class PSBackendStack extends Stack {
     httpApi.addRoutes({
       path: '/posts',
       methods: [apigateway.HttpMethod.GET],
-      integration: new integrations.HttpLambdaIntegration('get-posts-integration', getPostLambda),
+      integration: new integrations.HttpLambdaIntegration('get-posts-integration', getPostsLambda),
     });
     httpApi.addRoutes({
       path: '/posts/{postId}',
