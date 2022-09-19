@@ -3,17 +3,20 @@ import {
   aws_lambda as lambda,
   aws_lambda_nodejs as nodejs,
   aws_route53 as route53,
+  aws_s3 as s3,
+  aws_iam as iam,
   CfnOutput,
   Duration,
+  RemovalPolicy,
   Stack,
-  StackProps 
+  StackProps
 } from "aws-cdk-lib";
 import * as apigateway from "@aws-cdk/aws-apigatewayv2-alpha";
 import * as integrations from "@aws-cdk/aws-apigatewayv2-integrations-alpha";
 import * as authorizers from "@aws-cdk/aws-apigatewayv2-authorizers-alpha";
-import { Construct } from "constructs";
+import {Construct} from "constructs";
 import * as path from "path";
-import { PSAuth } from "./constructs/ps-auth";
+import {PSAuth} from "./constructs/ps-auth";
 
 export interface PSBackendStackProps extends StackProps {
   domain: String,
@@ -62,14 +65,47 @@ export class PSBackendStack extends Stack {
       partitionKey: { name: 'resourceId', type: dynamodb.AttributeType.STRING },
       sortKey: { name: 'points', type: dynamodb.AttributeType.NUMBER },
       projectionType: dynamodb.ProjectionType.ALL,
-    })
+    });
+
+    const imageMetadataTable = new dynamodb.Table(this, 'image-metadata-table', {
+      tableName: `${props.domain}-EHImageMetadata`,
+      billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
+      partitionKey: { name: 'imageId', type: dynamodb.AttributeType.STRING },
+      pointInTimeRecovery: true,
+    });
+    // TODO: GSIs for image metadata
+
+    // S3 Storage
+    const staticDataBucket = new s3.Bucket(this, 'eh-website-static-data', {
+      bucketName: `${props.domain.toLowerCase()}-eh-website-static-data`,
+      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ACLS,
+      encryption: s3.BucketEncryption.S3_MANAGED,
+      enforceSSL: true,
+      removalPolicy: RemovalPolicy.DESTROY,
+    });
+    staticDataBucket.addCorsRule({
+      allowedMethods: [
+        s3.HttpMethods.GET,
+        s3.HttpMethods.HEAD,
+        s3.HttpMethods.PUT,
+      ],
+      allowedOrigins: [ "*" ], // TODO: better cors
+      allowedHeaders: [ "*" ],
+      exposedHeaders: [],
+    });
+    staticDataBucket.addToResourcePolicy(new iam.PolicyStatement({
+      sid: "AllowPublicAccessForImagesPath",
+      effect: iam.Effect.ALLOW,
+      principals: [ new iam.AnyPrincipal() ],
+      actions: [ 's3:GetObject' ],
+      resources: [ `${staticDataBucket.bucketArn}/images/*` ]
+    }));
 
     // AuthN
     // a cognito userpool for vending JWTs, and associated IAM roles
     const auth = new PSAuth(this, 'ps-auth');
 
     // Lambda functions
-    // for now just a default logging function
     const getPostsLambda = new nodejs.NodejsFunction(this, 'get-posts-func', {
       runtime: lambda.Runtime.NODEJS_14_X,
       entry: path.join(__dirname, "./lambda/posts.ts"),
@@ -166,6 +202,28 @@ export class PSBackendStack extends Stack {
     });
     gameDataTable.grantReadWriteData(putItemLambda);
 
+    // images functions
+    const getImageUploadUrl = new nodejs.NodejsFunction(this, 'get-image-upload-url-func', {
+      runtime: lambda.Runtime.NODEJS_14_X,
+      entry: path.join(__dirname, "./lambda/images.ts"),
+      handler: 'getUploadUrl',
+      environment: {
+        imageDataBucketName: staticDataBucket.bucketName,
+        imageMetadataTableName: imageMetadataTable.tableName,
+      }
+    });
+    imageMetadataTable.grantReadWriteData(getImageUploadUrl);
+    staticDataBucket.grantReadWrite(getImageUploadUrl);
+    const putImageMetadata = new nodejs.NodejsFunction(this, 'put-image-metadata-func', {
+      runtime: lambda.Runtime.NODEJS_14_X,
+      entry: path.join(__dirname, "./lambda/images.ts"),
+      handler: 'putImageMetadata',
+      environment: {
+        imageDataBucketName: staticDataBucket.bucketName,
+        imageMetadataTableName: imageMetadataTable.tableName,
+      }
+    });
+    imageMetadataTable.grantReadWriteData(putImageMetadata);
 
     // APIG HTTP API
     // for setting up API routes to Lambdas
@@ -286,6 +344,20 @@ export class PSBackendStack extends Stack {
       path: '/games/survivor/items/{sub}',
       methods: [apigateway.HttpMethod.POST],
       integration: new integrations.HttpLambdaIntegration('put-item-integration', putItemLambda),
+      authorizer: authorizer,
+    });
+
+    // Image API routes
+    httpApi.addRoutes({
+      path: '/images/uploadUrl/{imageFileName}',
+      methods: [apigateway.HttpMethod.GET],
+      integration: new integrations.HttpLambdaIntegration('get-image-upload-url-integration', getImageUploadUrl),
+      authorizer: authorizer,
+    });
+    httpApi.addRoutes({
+      path: '/images/metadata',
+      methods: [apigateway.HttpMethod.POST],
+      integration: new integrations.HttpLambdaIntegration('put-image-metadata-integration', putImageMetadata),
       authorizer: authorizer,
     });
 

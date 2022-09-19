@@ -730,6 +730,8 @@ function isSurvivor(s: any): s is Survivor {
 
 /**
  * Get the current active season.
+ *
+ * TODO: make season a parameter in API calls, instead of always defaulting to the active one.
  */
 async function getActiveSeason(): Promise<String> {
     try {

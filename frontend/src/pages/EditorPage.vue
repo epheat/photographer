@@ -12,6 +12,13 @@
     <div class="actions">
       <button @click="submit">Submit</button>
     </div>
+    <h1>Image Upload 📷</h1>
+    <div class="options">
+      <input style="margin-bottom: 10px" type="file" @change="onFileChange"/>
+      <form-field v-model="imageTitle" label="Title"/>
+      <form-field v-model="imageDescription" label="Description"/>
+      <button @click="submitImage" :disabled="!imageData">Upload</button>
+    </div>
     <p class="error-message" v-if="errorMessage">{{ errorMessage }}</p>
     <Footer></Footer>
   </div>
@@ -22,7 +29,7 @@ import Footer from '@/components/Footer.vue';
 import { marked } from 'marked';
 import FormField from '@/components/FormField.vue';
 import { API, Auth } from 'aws-amplify';
-import {authStore} from "@/auth/store";
+import { authStore } from "@/auth/store";
 
 export default {
   name: 'EditorPage',
@@ -33,6 +40,12 @@ export default {
     return {
       title: "",
       content: "",
+      imageTitle: "",
+      imageDescription: "",
+      imageData: undefined,
+      imageFileName: undefined,
+      uploadUrl: undefined,
+      imageId: undefined,
       successMessage: undefined,
       errorMessage: undefined,
     }
@@ -55,15 +68,54 @@ export default {
               content: this.content,
             }
           },
-          headers: {
-            Authorization: `Bearer ${token}`,
-          }
+          headers: { Authorization: `Bearer ${token}` }
         });
         this.successMessage = response.message;
       } catch (err) {
         this.errorMessage = err.message;
       }
     },
+    onFileChange(event) {
+      this.imageData = event.target.files[0];
+      this.imageFileName = event.target.files[0].name;
+    },
+    async submitImage() {
+      try {
+        if (!authStore.state.loggedIn) {
+          this.errorMessage = "Error: not logged in.";
+          return;
+        }
+        let token = (await Auth.currentSession()).getAccessToken().getJwtToken();
+        let getUploadUrlResponse = await API.get('ps-api', `/images/uploadUrl/${this.imageFileName}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        this.uploadUrl = getUploadUrlResponse.uploadUrl;
+        this.imageId = getUploadUrlResponse.imageId;
+        this.successMessage = getUploadUrlResponse.message;
+
+        // now that we have the presigned url, make a put request directly there.
+        const uploadResponse = await fetch(this.uploadUrl, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          body: this.imageData,
+        });
+        console.log(uploadResponse);
+
+        let putImageMetadataResponse = await API.post('ps-api', '/images/metadata', {
+          body: {
+            imageId: this.imageId,
+            title: this.imageTitle,
+            description: this.imageDescription,
+          },
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        this.successMessage = putImageMetadataResponse.message;
+      } catch (err) {
+        this.errorMessage = err.message;
+      }
+    }
   },
   computed: {
     compiledMarkdown() {
