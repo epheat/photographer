@@ -1,14 +1,19 @@
 <template>
   <div class="ps-post-page page">
-    <spinner v-if="isLoading"></spinner>
+    <template v-if="isLoading">
+      <h1>Title</h1>
+      <p>content loading...</p>
+      <spinner></spinner>
+    </template>
     <template v-else>
       <h1>{{ post.title }}</h1>
-      <h2>by {{ post.author }}</h2>
+      <h2><span class="by">by</span> {{ post.author }}</h2>
       <h3>{{ localeDateString }}</h3>
-      <div v-html="renderedContent" />
+      <div class="content" v-html="renderedContent" />
     </template>
     <div class="controls">
-      <!-- TODO: previous/next controls -->
+      <a href="#">⬅️ previous</a>
+      <a href="#">next ➡️</a>
     </div>
     <Footer></Footer>
   </div>
@@ -63,5 +68,24 @@ export default {
 @import '../scss/colors.scss';
 .ps-post-page {
 
+  h2 {
+    text-align: center;
+    .by {
+      font-size: 0.8em;
+      font-weight: normal;
+    }
+  }
+
+  .content ::v-deep(img) {
+    margin: 0 auto;
+    max-height: 400px;
+    display: block;
+    max-width: 100%;
+  }
+
+  .controls {
+    display: flex;
+    justify-content: space-between;
+  }
 }
 </style>
