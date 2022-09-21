@@ -4,6 +4,7 @@
 
 <script>
 import ExtraVoteAdvantage from "@/assets/advantage.png";
+import PointMultiplierAdvantage from "@/assets/advantage_multiplier.png";
 
 export default {
   name: "InventoryItem",
@@ -16,6 +17,7 @@ export default {
     return {
       images: {
         ExtraVoteAdvantage: ExtraVoteAdvantage,
+        PointMultiplierAdvantage: PointMultiplierAdvantage,
       }
     }
   },

@@ -507,7 +507,7 @@ export default {
             Authorization: `Bearer ${jwt}`,
           }
         })
-        this.userInventory = response.item?.items | [];
+        this.userInventory = response.item?.items ?? [];
         this.successMessage = response.message;
         this.loading = false;
       } catch (err) {
@@ -578,6 +578,8 @@ export default {
       if (this.selectedItem?.itemType === "ExtraVoteAdvantage") {
         return `This advantage allows you to select ${this.selectedItem.extraVotes} extra survivors on your next prediction. You will earn points as normal for each survivor that wins the prediction.
         Use it wisely! The last time this can be used is when there are 8 survivors remaining.`;
+      } else if (this.selectedItem?.itemType ==="PointMultiplierAdvantage") {
+        return `This advantage will multiply the reward points for your next prediction by ${this.selectedItem.multiplier}x. Use it wisely! The last time this can be used is when there are 8 survivors remaining.`;
       } else {
         return "";
       }

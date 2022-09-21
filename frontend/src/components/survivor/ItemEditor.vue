@@ -6,8 +6,9 @@
       </div>
     </div>
     <FormField v-model="userSub" label="UserSub"/>
-    <FormSelect v-model="itemType" :options="['ExtraVoteAdvantage', 'MultiplierAdvantage']" label="ItemType"/>
+    <FormSelect v-model="itemType" :options="['ExtraVoteAdvantage', 'PointMultiplierAdvantage']" label="ItemType"/>
     <FormField v-if="itemType === 'ExtraVoteAdvantage'" v-model="extraVotes" label="ExtraVotes"/>
+    <FormField v-if="itemType === 'PointMultiplierAdvantage'" v-model="multiplier" label="Multiplier"/>
     <FormField v-model="message" label="Message"/>
     <div class="buttons">
       <Button submit @press="submitItem">Submit</Button>
@@ -30,18 +31,24 @@ export default {
       userSub: "",
       itemType: "",
       extraVotes: 1,
+      multiplier: 1.5,
       message: null,
     }
   },
   methods: {
     submitItem() {
+      let item = {
+        itemType: this.itemType,
+        message: this.message,
+      };
+      if (this.itemType === 'ExtraVoteAdvantage') {
+        item.extraVotes = parseInt(this.extraVotes);
+      } else if (this.itemType === 'PointMultiplierAdvantage') {
+        item.multiplier = parseFloat(this.multiplier);
+      }
       this.$emit('submitItem', {
         userSub: this.userSub,
-        item: {
-          itemType: this.itemType,
-          extraVotes: parseInt(this.extraVotes), // TODO: accommodate more item types
-          message: this.message,
-        }
+        item: item,
       });
     }
   },

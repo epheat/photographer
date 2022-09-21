@@ -23,8 +23,11 @@ export default {
   },
   methods: {
     changeClass(row) {
+      if (row.placementHistory.length === 0 || row.pointHistory.length === 0) {
+        return { line: true };
+      }
       const mostRecentEvent = row.placementHistory.find(placementEvent =>
-          placementEvent.timestamp === row.lastUpdatedDate).event;
+          placementEvent.timestamp === row.lastUpdatedDate)?.event;
       const mostRecentEpisode = mostRecentEvent.split("-")[3];
       const placements = row.placementHistory.filter(placementEvent => !placementEvent.event.includes(mostRecentEpisode))
           .sort((a, b) => b.timestamp - a.timestamp);

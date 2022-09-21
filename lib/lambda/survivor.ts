@@ -285,6 +285,8 @@ export async function setUserPrediction(event: APIGatewayProxyEventV2): Promise<
     const requestTime = new Date().getTime();
     const seasonId = await getActiveSeason();
     let inventory = undefined;
+    let multiplier = 1.0;
+    let usedItem = false;
     // based on the request episode+predictionType, fetch the prediction from game data. We need to make sure the
     // prediction is still ongoing, and the user's selections are even eligible for the prediction
     try {
@@ -317,19 +319,20 @@ export async function setUserPrediction(event: APIGatewayProxyEventV2): Promise<
             inventory = userInventory.Item?.items ?? [];
             const itemIndex = inventory.findIndex((item: { id: string; }) => item.id === request.userPrediction.item);
             if (itemIndex != -1) {
+                if (result.Item.options.length < 8) {
+                    return error({ message: "Invalid Request: advantage cannot be used with less than 8 survivors." });
+                }
+                if (result.Item.predictionType === "Finalist") {
+                    return error({ message: "Invalid Request: advantage cannot be used for Finalist predictions." });
+                }
                 // if the item was found in the user's inventory, remove it from the inventory and apply its effects.
                 if (inventory[itemIndex].itemType === "ExtraVoteAdvantage") {
-                    if (result.Item.options.length < 8) {
-                        return error({ message: "Invalid Request: extra vote advantage cannot be used with less than 8 survivors." });
-                    }
-                    if (result.Item.predictionType === "Finalist") {
-                        return error({ message: "Invalid Request: extra vote advantage cannot be used for Finalist predictions." });
-                    }
                     maxSelections += inventory[itemIndex].extraVotes;
-                } else if (inventory[itemIndex].itemType === "MultiplierAdvantage") {
-                    // TODO: apply a multiplier to the userPrediction record, which is taken into account during scoring
+                } else if (inventory[itemIndex].itemType === "PointMultiplierAdvantage") {
+                    multiplier = inventory[itemIndex].multiplier;
                 }
                 inventory.splice(itemIndex, 1);
+                usedItem = true;
             } else {
                 return error({ message: "Invalid Request: tried to use invalid item." });
             }
@@ -354,6 +357,7 @@ export async function setUserPrediction(event: APIGatewayProxyEventV2): Promise<
                 episode: request.userPrediction.episode,
                 predictionType: request.userPrediction.predictionType,
                 selections: request.userPrediction.selections,
+                multiplier: multiplier,
                 resourceType: "UserPrediction",
                 lastUpdatedDate: requestTime,
                 username: username,
@@ -361,7 +365,7 @@ export async function setUserPrediction(event: APIGatewayProxyEventV2): Promise<
         });
 
         // if the user used an advantage as part of this request, commit that change back to the inventory.
-        if (inventory !== undefined) {
+        if (usedItem) {
             await ddb.put({
                 TableName: tableName,
                 Item: {
@@ -674,7 +678,7 @@ function isValidItem(item: any): boolean {
     // add any new item types here
     if (item.itemType === "ExtraVoteAdvantage") {
         return item.extraVotes;
-    } else if (item.itemType === "MultiplierAdvantage") {
+    } else if (item.itemType === "PointMultiplierAdvantage") {
         return item.multiplier;
     } else {
         return false;
@@ -686,7 +690,7 @@ function calculatePoints(resultSelections: any, reward: number, userPrediction: 
     for (const id of resultSelections) {
         for (const userSelectionId of userPrediction.selections) {
             if (userSelectionId === id) {
-                pointsToAward += reward;
+                pointsToAward += Math.round(reward * userPrediction.multiplier ?? 1.0);
             }
         }
     }
