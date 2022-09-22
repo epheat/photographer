@@ -690,7 +690,7 @@ function calculatePoints(resultSelections: any, reward: number, userPrediction: 
     for (const id of resultSelections) {
         for (const userSelectionId of userPrediction.selections) {
             if (userSelectionId === id) {
-                pointsToAward += Math.round(reward * userPrediction.multiplier ?? 1.0);
+                pointsToAward += Math.round(reward * (userPrediction.multiplier ?? 1.0));
             }
         }
     }
