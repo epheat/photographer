@@ -29,7 +29,7 @@ export default {
   methods: {
     getTribe(survivorId) {
       if (this.cast) {
-        return this.cast.filter(survivor => survivor.id === survivorId)[0].tribe;
+        return this.cast.filter(survivor => survivor.id === survivorId)[0]?.tribe ?? null;
       } else {
         return null;
       }

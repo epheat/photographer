@@ -6,7 +6,7 @@
       <p>{{ reward }} points - <span class="time-remaining">{{ timeRemaining }}</span></p>
       <p>{{ instructions }}</p>
       <p class="user-selections" v-if="submitted">
-        {{ selectionsText }}
+        <span class="hide-phone">{{ selectionsText }}</span>
         <CastHead v-for="survivor in userSelections" :key="survivor" :id="survivor" :tribe="getTribe(survivor)"/>
       </p>
       <p class="result-instructions" v-if="results">{{ resultText }}</p>
@@ -54,7 +54,7 @@ export default {
   methods: {
     getTribe(survivorId) {
       if (this.cast) {
-        return this.cast.filter(survivor => survivor.id === survivorId)[0].tribe;
+        return this.cast.filter(survivor => survivor.id === survivorId)[0]?.tribe ?? null;
       } else {
         return null;
       }
@@ -162,6 +162,12 @@ export default {
   background-color: $ps-prediction-in-progress;
 
   cursor: pointer;
+
+  .hide-phone {
+    @media screen and (max-width: $phone) {
+      display: none;
+    }
+  }
   &.completed {
     cursor: default;
     filter: opacity(0.75);
@@ -208,6 +214,13 @@ export default {
 
   .user-selections {
     margin-top: 10px;
+    display: flex;
+    align-items: center;
+
+    @media screen and (max-width: $phone) {
+      display: block;
+      text-align: center;
+    }
 
     .cast-head {
       display: inline-block;
