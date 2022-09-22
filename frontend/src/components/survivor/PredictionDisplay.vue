@@ -7,7 +7,7 @@
       <p>{{ instructions }}</p>
       <p class="user-selections" v-if="submitted">
         {{ selectionsText }}
-        <CastHead v-for="survivor in userSelections" :key="survivor" :id="survivor"/>
+        <CastHead v-for="survivor in userSelections" :key="survivor" :id="survivor" :tribe="getTribe(survivor)"/>
       </p>
       <p class="result-instructions" v-if="results">{{ resultText }}</p>
     </div>
@@ -27,6 +27,7 @@ export default {
   name: "Prediction",
   components: {CastHead},
   props: {
+    cast: Array,
     episode: String,
     predictionType: String,
     reward: Number,
@@ -49,6 +50,15 @@ export default {
   },
   unmounted() {
     clearInterval(this.timer);
+  },
+  methods: {
+    getTribe(survivorId) {
+      if (this.cast) {
+        return this.cast.filter(survivor => survivor.id === survivorId)[0].tribe;
+      } else {
+        return null;
+      }
+    }
   },
   computed: {
     icon() {

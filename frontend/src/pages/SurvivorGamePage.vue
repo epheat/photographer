@@ -79,6 +79,7 @@
         :key="prediction.id"
         @click="openUserPredictionModal(prediction)"
         :submitted="getUserSelectionsForPrediction(prediction).length > 0"
+        :cast="filterCastForSelections(this.cast, getUserSelectionsForPrediction(prediction))"
         :userSelections="getUserSelectionsForPrediction(prediction)"
       />
       <h3 v-if="closedPredictions.length > 0">Closed predictions</h3>
@@ -88,6 +89,7 @@
           v-bind="prediction"
           :key="prediction.id"
           :submitted="getUserSelectionsForPrediction(prediction).length > 0"
+          :cast="filterCastForSelections(this.cast, getUserSelectionsForPrediction(prediction))"
           :userSelections="getUserSelectionsForPrediction(prediction)"
       />
       <h3 v-if="completedPredictions.length > 0">Past predictions</h3>
@@ -97,6 +99,7 @@
           v-bind="prediction"
           :key="prediction.id"
           :submitted="getUserSelectionsForPrediction(prediction).length > 0"
+          :cast="filterCastForSelections(this.cast, getUserSelectionsForPrediction(prediction))"
           :userSelections="getUserSelectionsForPrediction(prediction)"
       />
     </div>
@@ -111,7 +114,7 @@
       <Button @press="getAllUserPredictions">Refresh</Button>
       <input id="userPredictionCheck" type="checkbox" v-if="shouldShowAdminPage" v-model="showCurrentUserPredictions"/>
       <label for="userPredictionCheck" v-if="shouldShowAdminPage">Show current</label>
-      <UserPredictionsTable :userPredictions="filteredUserPredictions" />
+      <UserPredictionsTable :userPredictions="filteredUserPredictions" :cast="cast"/>
     </div>
     <div class="tab-content cast" v-if="currentTab === 2">
       <div class="cast-container">
@@ -543,6 +546,9 @@ export default {
     filterCast(cast, prediction) {
       return cast.filter(survivor => prediction.options.includes(survivor.id));
     },
+    filterCastForSelections(cast, selections) {
+      return cast.filter(survivor => selections.includes(survivor.id));
+    }
   },
   computed: {
     // ALL user predictions (not just current user), filtered to only be completed ones

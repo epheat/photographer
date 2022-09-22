@@ -10,7 +10,7 @@
         <td class="username">{{ userPrediction.username }}</td>
         <td>{{ userPrediction.predictionId }}</td>
         <td>
-          <CastHead v-for="survivor in userPrediction.selections" :key="survivor" :id="survivor"/>
+          <CastHead v-for="survivor in userPrediction.selections" :key="survivor" :id="survivor" :tribe="getTribe(survivor)"/>
         </td>
       </tr>
     </table>
@@ -23,7 +23,17 @@ export default {
   name: "PredictionTable",
   components: {CastHead},
   props: {
+    cast: Array,
     userPredictions: Array,
+  },
+  methods: {
+    getTribe(survivorId) {
+      if (this.cast) {
+        return this.cast.filter(survivor => survivor.id === survivorId)[0].tribe;
+      } else {
+        return null;
+      }
+    }
   }
 }
 </script>
