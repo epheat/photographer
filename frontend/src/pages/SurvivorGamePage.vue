@@ -114,7 +114,7 @@
       <Button @press="getAllUserPredictions">Refresh</Button>
       <input id="userPredictionCheck" type="checkbox" v-if="shouldShowAdminPage" v-model="showCurrentUserPredictions"/>
       <label for="userPredictionCheck" v-if="shouldShowAdminPage">Show current</label>
-      <UserPredictionsTable :userPredictions="filteredUserPredictions" :cast="cast"/>
+      <UserPredictionsTable :userPredictions="filteredUserPredictions" :predictions="predictions" :cast="cast"/>
     </div>
     <div class="tab-content cast" v-if="currentTab === 2">
       <div class="cast-container">

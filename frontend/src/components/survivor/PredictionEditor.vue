@@ -39,7 +39,7 @@ export default {
       select: 1,
       airDate: "",
       airTime: "",
-      survivorSelections: this.cast.map(s => s.id),
+      survivorSelections: this.cast.filter(s => !s.votedOut).map(s => s.id),
     }
   },
   methods: {

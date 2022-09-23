@@ -1,14 +1,22 @@
 <template>
-  <img :src="getImgUrl()" :alt="id" :title="id" class="cast-head" :class="{
-    grey: votedOut,
-    ika: tribe === 'Ika',
-    vati: tribe === 'Vati',
-    taku: tribe === 'Taku',
-    kulakula: tribe === 'Kula Kula',
-    koka: tribe === 'Koka',
-    vesi: tribe === 'Vesi',
-    baka: tribe === 'Baka',
-  }"/>
+  <div class="cast-head-container">
+    <img :src="getImgUrl()" :alt="id" :title="id" class="cast-head" :class="{
+      grey: votedOut,
+      ika: tribe === 'Ika',
+      vati: tribe === 'Vati',
+      taku: tribe === 'Taku',
+      kulakula: tribe === 'Kula Kula',
+      koka: tribe === 'Koka',
+      vesi: tribe === 'Vesi',
+      baka: tribe === 'Baka',
+    }"/>
+    <div class="cover" v-if="correct || incorrect" :title="id" :class="{
+      correct: correct,
+      incorrect: incorrect
+    }">
+      {{ coverText }}
+    </div>
+  </div>
 </template>
 
 <script>
@@ -55,6 +63,8 @@ export default {
     id: String,
     votedOut: Boolean,
     tribe: String,
+    correct: Boolean,
+    incorrect: Boolean,
   },
   data() {
     return {
@@ -100,6 +110,17 @@ export default {
       }
     }
   },
+  computed: {
+    coverText() {
+      if (this.correct) {
+        return "✅";
+      } else if (this.incorrect) {
+        return "❌";
+      } else {
+        return "";
+      }
+    }
+  },
   methods: {
     getImgUrl() {
       return this.survivorImages[this.id];
@@ -110,9 +131,15 @@ export default {
 
 <style lang="scss" scoped>
 @import "../../scss/colors.scss";
+.cast-head-container {
+  position: relative;
+  display: inline-block;
+}
 
 img {
   object-fit: cover;
+  width: 100%;
+  box-sizing: border-box;
 
   &.grey {
     filter: grayscale(100%);
@@ -139,4 +166,24 @@ img {
     border: 3px solid $survivor-baka;
   }
 }
+
+.cover {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  box-sizing: border-box;
+  padding: 5px;
+  opacity: 0.5;
+
+  &.correct {
+    background-color: $ps-green;
+  }
+  &.incorrect {
+    background-color: $ps-red;
+  }
+}
+
 </style>

@@ -222,10 +222,10 @@ export default {
       text-align: center;
     }
 
-    .cast-head {
+    .cast-head-container {
       display: inline-block;
-      width: 30px;
-      margin-right: 4px;
+      width: 34px;
+      margin-right: 5px;
     }
   }
 

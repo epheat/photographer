@@ -116,8 +116,8 @@ export default {
       cursor: not-allowed;
     }
   }
-  img {
-    width: 30px;
+  .cast-head-container {
+    width: 34px;
     margin-right: 5px;
   }
 }
