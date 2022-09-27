@@ -6,7 +6,7 @@
         <th>username</th>
         <th>points</th>
       </tr>
-      <tr v-for="row in data" :key="row.resourceId">
+      <tr v-for="row in data" :key="row.resourceId" :class="{me: row.entityId === userSub}">
         <td><div class="place"><div>{{ row.placement }}</div><i class="medal" v-if="row.placement <= 3" :class="medalClass(row)"></i><i class="arrow" :class="changeClass(row)"></i></div></td>
         <td>{{ row.username }}</td>
         <td>{{ row.points }}</td>
@@ -20,6 +20,7 @@ export default {
   name: "Leaderboard",
   props: {
     data: Array,
+    userSub: String,
   },
   methods: {
     changeClass(row) {
@@ -78,6 +79,10 @@ export default {
   tr:nth-child(even) {
     background-color: $ps-lightest-grey;
   }
+  tr.me {
+    background-color: $ps-highlight;
+  }
+
   .place {
     display: flex;
     justify-content: space-between;

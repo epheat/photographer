@@ -5,6 +5,7 @@
         <th>username</th>
         <th>prediction</th>
         <th>selections</th>
+        <th>points</th>
       </tr>
       <tr v-for="userPrediction in userPredictions" :key="`${userPrediction.entityId}-${userPrediction.resourceId}`">
         <td class="username">{{ userPrediction.username }}</td>
@@ -22,6 +23,9 @@
               :tribe="getTribe(survivor)"
               :correct="isCorrect(survivor, userPrediction.predictionId)"
           />
+        </td>
+        <td>
+          {{ getPoints(userPrediction) }}
         </td>
       </tr>
     </table>
@@ -41,6 +45,7 @@ export default {
     cast: Array,
     userPredictions: Array,
     predictions: Array,
+    leaderboardData: Array,
   },
   methods: {
     getTribe(survivorId) {
@@ -67,6 +72,17 @@ export default {
       const results = this.predictions.find(pred => pred.resourceId === predictionId)?.results;
       return results?.includes(survivorId);
     },
+    getPoints(userPrediction) {
+      const pointHistoryForUser = this.leaderboardData.find(entry => entry.entityId === userPrediction.entityId).pointHistory;
+      if (!pointHistoryForUser) {
+        return 0;
+      }
+      const points = pointHistoryForUser.find(entry => entry.event === userPrediction.resourceId);
+      if (!points) {
+        return 0;
+      }
+      return points.pointsAdded;
+    },
   }
 }
 </script>
@@ -82,7 +98,7 @@ export default {
   }
 
   th:first-child {
-    width: 100px;
+    width: 90px;
   }
   th:nth-child(2) {
     width: 70px;
@@ -92,6 +108,10 @@ export default {
     display: flex;
     align-items: center;
     justify-content: space-around;
+  }
+
+  th {
+    font-size: 0.9em;
   }
 
   td, th {
@@ -122,6 +142,7 @@ export default {
 
   .username {
     word-break: break-all;
+    font-size: 0.8em;
   }
 }
 </style>
