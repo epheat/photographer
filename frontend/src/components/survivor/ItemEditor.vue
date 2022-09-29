@@ -1,12 +1,14 @@
 <template>
   <div class="item-editor">
-    <div class="users">
-      <div v-for="user in users" :key="user.userSub">
-        <strong>{{ user.username }}</strong> - <span>{{ user.userSub }}</span>
-      </div>
-    </div>
-    <FormField v-model="userSub" label="UserSub"/>
-    <FormSelect v-model="itemType" :options="['ExtraVoteAdvantage', 'PointMultiplierAdvantage']" label="ItemType"/>
+    <FormSelect
+        v-model="userSub"
+        :options="users.map(user => { return { value: user.userSub, label: user.username }})"
+        label="User"
+    />
+    <FormSelect v-model="itemType" :options="[
+        { value: 'ExtraVoteAdvantage', label: 'Extra vote advantage' },
+        { value: 'PointMultiplierAdvantage', label: 'Point multiplier advantage' },
+    ]" label="ItemType"/>
     <FormField v-if="itemType === 'ExtraVoteAdvantage'" v-model="extraVotes" label="ExtraVotes"/>
     <FormField v-if="itemType === 'PointMultiplierAdvantage'" v-model="multiplier" label="Multiplier"/>
     <FormField v-model="message" label="Message"/>

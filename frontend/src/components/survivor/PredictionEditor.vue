@@ -2,7 +2,11 @@
   <div class="prediction-editor">
     <div class="prediction-properties">
       <FormField v-model="episode" label="Episode"/>
-      <FormSelect v-model="predictionType" :options="['ImmunityChallenge', 'TribalCouncil', 'Finalist']" label="PredictionType"/>
+      <FormSelect v-model="predictionType" :options="[
+          { value: 'ImmunityChallenge', label: 'Immunity Challenge' },
+          { value: 'TribalCouncil', label: 'Tribal Council' },
+          { value: 'Finalist', label: 'Finalist' },
+      ]" label="PredictionType"/>
       <FormField v-model="reward" label="Reward"/>
       <FormField v-model="select" label="Select"/>
     </div>

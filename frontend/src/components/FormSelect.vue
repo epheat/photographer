@@ -3,7 +3,7 @@
     <label>{{ label }}</label>
     <select :value="modelValue" @input="onInput">
       <option disabled value="">Please select one:</option>
-      <option v-for="option in options" :key="option">{{ option }}</option>
+      <option v-for="option in options" :key="option" :value="option.value">{{ option.label }}</option>
     </select>
   </div>
 </template>
@@ -16,7 +16,7 @@ export default {
     // https://v3.vuejs.org/guide/migration/v-model.html#_3-x-syntax
     modelValue: String,
     label: String,
-    options: Array,
+    options: Array, // [{ value: String, label: String }]
   },
   methods: {
     onInput(e) {
