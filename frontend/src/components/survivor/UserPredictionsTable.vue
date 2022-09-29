@@ -73,7 +73,7 @@ export default {
       return results?.includes(survivorId);
     },
     getPoints(userPrediction) {
-      const pointHistoryForUser = this.leaderboardData.find(entry => entry.entityId === userPrediction.entityId).pointHistory;
+      const pointHistoryForUser = this.leaderboardData.find(entry => entry.entityId === userPrediction.entityId)?.pointHistory;
       if (!pointHistoryForUser) {
         return 0;
       }

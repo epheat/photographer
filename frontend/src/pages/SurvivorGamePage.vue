@@ -121,7 +121,7 @@
         :userPredictions="filteredUserPredictions"
         :predictions="predictions"
         :cast="cast"
-        :leaderboard-data="leaderboardData"
+        :leaderboardData="gleaderboardData"
       />
     </div>
     <div class="tab-content cast" v-if="currentTab === 2">
