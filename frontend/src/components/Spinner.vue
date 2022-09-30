@@ -18,7 +18,7 @@ export default {
   width: 30px;
   height: 30px;
   animation: spin 1s linear infinite;
-  margin: 0 auto;
+  margin: 0 auto 20px auto;
 }
 
 @keyframes spin {

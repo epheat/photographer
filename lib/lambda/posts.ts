@@ -56,11 +56,36 @@ async function getPost(event: APIGatewayProxyEventV2, context: Context): Promise
     const result = await ddb.get({
       TableName: tableName,
       Key: { postId: event.pathParameters.postId }
-    })
+    });
+
+    if (!result.Item) {
+      return error({ message: "Post does not exist." });
+    }
+
+    const previous = await ddb.query({
+      TableName: tableName,
+      IndexName: "postTypeTimeSorted",
+      KeyConditionExpression: "postType = :postType and createdDate < :createdDate",
+      ExpressionAttributeValues: { ':postType': 'TEXT', ':createdDate': result.Item.createdDate },
+      ScanIndexForward: false,
+      Limit: 1,
+    });
+
+    const next = await ddb.query({
+      TableName: tableName,
+      IndexName: "postTypeTimeSorted",
+      KeyConditionExpression: "postType = :postType and createdDate > :createdDate",
+      ExpressionAttributeValues: { ':postType': 'TEXT', ':createdDate': result.Item.createdDate },
+      Limit: 1,
+    });
 
     return success({
       message: "Success.",
-      post: result.Item,
+      post: {
+        ...result.Item,
+        previous: previous.Items?.length === 1 ? previous.Items[0] : null,
+        next: next.Items?.length === 1 ? next.Items[0] : null,
+      },
     });
   } catch (err) {
     return fault({ message: err });

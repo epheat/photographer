@@ -1,5 +1,5 @@
 <template>
-  <div class="ps-button" :class="{submit: submit, cancel: cancel}" @click="onClick()">
+  <div class="ps-button" :class="{submit: submit, cancel: cancel, info: info}" @click="onClick()">
     <slot></slot>
   </div>
 </template>
@@ -10,7 +10,8 @@ export default {
   props: {
     icon: String,
     submit: Boolean,
-    cancel: Boolean
+    cancel: Boolean,
+    info: Boolean,
   },
   methods: {
     onClick() {
@@ -39,6 +40,11 @@ export default {
   &.cancel {
     background-color: $ps-button-red;
     box-shadow: 0px 2px 0px $ps-button-red-shadow;
+  }
+  &.info {
+    background-color: $ps-button-light-grey;
+    box-shadow: 0px 2px 0px $ps-button-light-grey-shadow;
+    color: $ps-text-default;
   }
 }
 </style>

@@ -12,6 +12,7 @@ export const authStore = {
   state: reactive({
     loggedIn: false,
     user: undefined,
+    isAdmin: false,
   }),
 
   setLoggedOut() {
@@ -20,6 +21,7 @@ export const authStore = {
     }
     this.state.loggedIn = false;
     this.state.user = undefined;
+    this.state.isAdmin = false;
   },
 
   setLoggedIn(user) {
@@ -29,6 +31,7 @@ export const authStore = {
     }
     this.state.loggedIn = true;
     this.state.user = user;
+    this.state.isAdmin = user.signInUserSession.idToken.payload["cognito:groups"]?.includes("Admins") ?? false;
   },
 
   isMember(group) {

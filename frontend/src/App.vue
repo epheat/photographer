@@ -32,7 +32,7 @@ export default {
 @import "scss/_colors.scss";
 
 #app {
-  color: #2c3e50;
+  color: $ps-text-default;
   font-family: sans-serif;
 }
 

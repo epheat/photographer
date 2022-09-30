@@ -1,6 +1,6 @@
 <template>
   <div class="footer">
-    <p>© Evan Heaton 2021</p>
+    <p>© Evan Heaton 2022</p>
   </div>
 </template>
 <script>

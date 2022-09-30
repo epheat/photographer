@@ -1,6 +1,6 @@
 <template>
   <div class="ps-post-page page">
-    <template v-if="isLoading">
+    <template v-if="loading">
       <h1>Title</h1>
       <p>content loading...</p>
       <spinner></spinner>
@@ -8,20 +8,24 @@
     <template v-else>
       <h1>{{ post.title }}</h1>
       <h2><span class="by">by</span> {{ post.author }}</h2>
+      <div class="actions">
+        <router-link to="/posts">Back to posts</router-link>
+      </div>
       <h3>{{ localeDateString }}</h3>
       <div class="content" v-html="renderedContent" />
     </template>
     <div class="controls">
-      <a href="#">⬅️ previous</a>
-      <a href="#">next ➡️</a>
+      <Button info v-if="post?.previous" @press="goToPost(post?.previous.postId)">⬅️ Previous</Button><div v-else></div>
+      <Button info v-if="post?.next" @press="goToPost(post?.next.postId)">Next ➡️</Button><div v-else></div>
     </div>
     <Footer></Footer>
   </div>
 </template>
 
 <script>
-import Footer from '../components/Footer.vue';
-import Spinner from '../components/Spinner.vue';
+import Footer from '@/components/Footer.vue';
+import Spinner from '@/components/Spinner.vue';
+import Button from '@/components/Button.vue';
 import { API } from 'aws-amplify';
 import { marked } from 'marked';
 
@@ -32,19 +36,29 @@ export default {
   },
   data() {
     return {
-      isLoading: true,
+      loading: true,
       post: null
     }
   },
-  async mounted() {
+  mounted() {
+    this.loadPost(this.$route.params.postId);
+  },
+  methods: {
+    goToPost(postId) {
+      this.$router.push(`/posts/${postId}`);
+      this.loadPost(postId);
+    },
+    async loadPost(postId) {
+      this.loading = true;
       try {
-        const response = await API.get('ps-api', `/posts/${this.$route.params.postId}`);
+        const response = await API.get('ps-api', `/posts/${postId}`);
         this.post = response.post;
-        this.isLoading = false;
+        this.loading = false;
       } catch (err) {
-        this.isLoading = false;
+        this.loading = false;
         console.log(err);
       }
+    }
   },
   computed: {
     localeDateString() {
@@ -61,6 +75,7 @@ export default {
   components: {
     Footer,
     Spinner,
+    Button,
   }
 }
 </script>
@@ -85,6 +100,7 @@ export default {
 
   .controls {
     display: flex;
+    gap: 20px;
     justify-content: space-between;
   }
 }

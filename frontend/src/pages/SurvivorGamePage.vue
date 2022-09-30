@@ -197,7 +197,7 @@ export default {
       confirmedItem: null,
 
       // admin only
-      shouldShowAdminPage: false,
+      shouldShowAdminPage: authStore.state.isAdmin,
       castEditorValue: "",
       showPredictionCompleteModal: false,
       adminSelectedPrediction: null,
@@ -206,12 +206,6 @@ export default {
     }
   },
   mounted() {
-    if (!authStore.state.loggedIn) {
-      this.errorMessage = "Error: not logged in.";
-      return;
-    } else {
-      this.shouldShowAdminPage = authStore.isMember("Admins");
-    }
     this.getCast();
     this.getPredictions();
     this.getUserPredictions();
