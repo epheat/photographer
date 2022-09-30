@@ -149,7 +149,7 @@
       <h3>New Prediction:</h3>
       <PredictionEditor :cast="cast" @submitPrediction="putPrediction" />
       <h3>Grant an item:</h3>
-      <ItemEditor :users="activePlayers" @submitItem="putItem" />
+      <ItemEditor :users="activePlayers" />
     </div>
     <Footer></Footer>
   </div>
@@ -337,26 +337,6 @@ export default {
         let response = await API.post('ps-api', '/games/survivor/predictions', {
           body: {
             prediction: prediction,
-          },
-          headers: {
-            Authorization: `Bearer ${token}`,
-          }
-        });
-        this.successMessage = response.message;
-        this.loading = false;
-      } catch (err) {
-        this.errorMessage = err.message;
-        this.loading = false;
-      }
-    },
-    async putItem(itemEvent) {
-      this.resetMessages();
-      try {
-        let token = (await Auth.currentSession()).getAccessToken().getJwtToken();
-        this.loading = true;
-        let response = await API.post('ps-api', `/games/survivor/items/${itemEvent.userSub}`, {
-          body: {
-            item: itemEvent.item,
           },
           headers: {
             Authorization: `Bearer ${token}`,

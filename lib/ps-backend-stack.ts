@@ -195,6 +195,12 @@ export class PSBackendStack extends Stack {
       handler: 'getUserInventory',
     });
     gameDataTable.grantReadData(getUserInventoryLambda);
+    const getAllUserInventoriesLambda = new nodejs.NodejsFunction(this, 'get-all-user-inventories-func', {
+      runtime: lambda.Runtime.NODEJS_14_X,
+      entry: path.join(__dirname, "./lambda/survivor.ts"),
+      handler: 'getAllInventories',
+    });
+    gameDataTable.grantReadData(getAllUserInventoriesLambda);
     const putItemLambda = new nodejs.NodejsFunction(this, 'put-item-func', {
       runtime: lambda.Runtime.NODEJS_14_X,
       entry: path.join(__dirname, "./lambda/survivor.ts"),
@@ -338,6 +344,12 @@ export class PSBackendStack extends Stack {
       path: '/games/survivor/userInventory/{sub}',
       methods: [apigateway.HttpMethod.GET],
       integration: new integrations.HttpLambdaIntegration('get-user-inventory-integration', getUserInventoryLambda),
+      authorizer: authorizer,
+    });
+    httpApi.addRoutes({
+      path: '/games/survivor/userInventory',
+      methods: [apigateway.HttpMethod.GET],
+      integration: new integrations.HttpLambdaIntegration('get-all-user-inventories-integration', getAllUserInventoriesLambda),
       authorizer: authorizer,
     });
     httpApi.addRoutes({

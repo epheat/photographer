@@ -623,6 +623,25 @@ export async function getUserInventory(event: APIGatewayProxyEventV2): Promise<A
     }
 }
 
+export async function getAllInventories(event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> {
+    if (!userHasGroup(event, "Admins")) { return deny(); }
+    const seasonId = await getActiveSeason();
+    try {
+        const results = await ddb.query({
+            TableName: tableName,
+            IndexName: "resourceTypeIndex",
+            KeyConditionExpression: "resourceType = :resourceType and begins_with(resourceId, :resourceId)",
+            ExpressionAttributeValues: { ':resourceType': "UserInventory", ':resourceId': `FantasySurvivor-${seasonId}` },
+        });
+        return success({
+            message: "Success.",
+            items: results.Items,
+        });
+    } catch (err) {
+        return fault({ message: err });
+    }
+}
+
 /**
  * POST /games/survivor/items/:sub
  *
@@ -652,6 +671,7 @@ export async function putItem(event: APIGatewayProxyEventV2): Promise<APIGateway
         let inventory = getResult.Item ?? {
             entityId: event.pathParameters.sub,
             resourceId: `FantasySurvivor-${seasonId}-UserInventory`,
+            resourceType: "UserInventory",
             items: []
         }
         inventory.lastUpdatedDate = requestTime;

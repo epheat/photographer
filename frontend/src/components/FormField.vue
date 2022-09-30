@@ -5,6 +5,7 @@
       :type="inputType"
       :value="modelValue"
       @input="onInput"
+      :disabled="disabled"
     />
   </div>
 </template>
@@ -19,6 +20,7 @@ export default {
     },
     label: String,
     secret: Boolean,
+    disabled: Boolean,
   },
   methods: {
     onInput(e) {
