@@ -9,6 +9,7 @@
       koka: tribe === 'Koka',
       vesi: tribe === 'Vesi',
       baka: tribe === 'Baka',
+      gaia: tribe === 'Gaia',
     }"/>
     <div class="cover" v-if="correct || incorrect" :title="id" :class="{
       correct: correct,
@@ -164,6 +165,9 @@ img {
   }
   &.baka {
     border: 3px solid $survivor-baka;
+  }
+  &.gaia {
+    border: 3px solid $survivor-gaia;
   }
 }
 

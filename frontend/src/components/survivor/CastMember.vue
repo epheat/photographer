@@ -9,6 +9,7 @@
       koka: tribe === 'Koka',
       vesi: tribe === 'Vesi',
       baka: tribe === 'Baka',
+      gaia: tribe === 'Gaia',
     }"/>
     <h3>{{ name }}</h3>
     <p>Age: {{ age }}</p>
@@ -158,6 +159,9 @@ export default {
     }
     &.baka {
       border: 3px solid $survivor-baka;
+    }
+    &.gaia {
+      border: 3px solid $survivor-gaia;
     }
   }
 }
