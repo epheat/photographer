@@ -655,6 +655,7 @@ export async function putItem(event: APIGatewayProxyEventV2): Promise<APIGateway
     if (!event.body) { return error({ message: "Invalid Request: Missing body." }); }
     const request = JSON.parse(event.body);
     console.log(`putItem request - ${event.body}`);
+    console.log(`userSub: ${event.pathParameters.sub}`);
     if (!request?.item || !isValidItem(request.item)) {
         return error({ message: "Invalid Request: missing required fields." });
     }
@@ -685,6 +686,7 @@ export async function putItem(event: APIGatewayProxyEventV2): Promise<APIGateway
             TableName: tableName,
             Item: {
                 ...inventory,
+                resourceType: "UserInventory",
             }
         })
     } catch (err) {
