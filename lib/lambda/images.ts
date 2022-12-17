@@ -69,7 +69,6 @@ async function getUploadUrlActivity(event: APIGatewayProxyEventV2, context: Cont
 
 /**
  * POST images/metadata
- *
  */
 async function putImageMetadataActivity(event: APIGatewayProxyEventV2, context: Context): Promise<APIGatewayProxyResultV2> {
   context.metrics.setProperty("RequestId", context.awsRequestId);
@@ -99,6 +98,25 @@ async function putImageMetadataActivity(event: APIGatewayProxyEventV2, context: 
       }
     });
     return success();
+  } catch (err) {
+    console.log(err);
+    return fault({ message: err });
+  }
+}
+
+/**
+ * GET images
+ */
+async function getAllImages(event: APIGatewayProxyEventV2, context: Context): Promise<APIGatewayProxyResultV2> {
+  context.metrics.setProperty("RequestId", context.awsRequestId);
+  try {
+    const getResult = await ddb.scan({
+      TableName: tableName,
+    });
+    return success({
+      message: "Success.",
+      items: getResult.Items,
+    });
   } catch (err) {
     console.log(err);
     return fault({ message: err });
