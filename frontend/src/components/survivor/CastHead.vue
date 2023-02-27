@@ -10,6 +10,9 @@
       vesi: tribe === 'Vesi',
       baka: tribe === 'Baka',
       gaia: tribe === 'Gaia',
+      ratu: tribe === 'Ratu',
+      soka: tribe === 'Soka',
+      tika: tribe === 'Tika',
     }"/>
     <div class="cover" v-if="correct || incorrect" :title="id" :class="{
       correct: correct,
@@ -57,6 +60,24 @@ import NoelleLambertHead from "@/assets/survivors/S43/NoelleLambertHead.jpg";
 import OwenKnightHead from "@/assets/survivors/S43/OwenKnightHead.jpg";
 import RyanMedranoHead from "@/assets/survivors/S43/RyanMedranoHead.jpg";
 import SamiLayadiHead from "@/assets/survivors/S43/SamiLayadiHead.jpg";
+import BrandonCottomHead from "@/assets/survivors/S44/BrandonCottomHead.jpg";
+import BrucePerreaultHead from "@/assets/survivors/S44/BrucePerreaultHead.jpg";
+import CarolynWigerHead from "@/assets/survivors/S44/CarolynWigerHead.jpg";
+import CarsonGarrettHead from "@/assets/survivors/S44/CarsonGarrettHead.jpg";
+import ClaireRafsonHead from "@/assets/survivors/S44/ClaireRafsonHead.jpg";
+import DannyMassaHead from "@/assets/survivors/S44/DannyMassaHead.jpg";
+import FrannieMarinHead from "@/assets/survivors/S44/FrannieMarinHead.jpg";
+import HeidiLagaresGreenblattHead from "@/assets/survivors/S44/HeidiLagaresGreenblattHead.jpg";
+import HelenLiHead from "@/assets/survivors/S44/HelenLiHead.jpg";
+import JaimeLynnRuizHead from "@/assets/survivors/S44/JaimeLynnRuizHead.jpg";
+import JoshWilderHead from "@/assets/survivors/S44/JoshWilderHead.jpg";
+import KaneFritzlerHead from "@/assets/survivors/S44/KaneFritzlerHead.jpg";
+import LaurenHarpeHead from "@/assets/survivors/S44/LaurenHarpeHead.jpg";
+import MaddyPomillaHead from "@/assets/survivors/S44/MaddyPomillaHead.jpg";
+import MattBlankinshipHead from "@/assets/survivors/S44/MattBlankinshipHead.jpg";
+import MatthewGrinsteadMayleHead from "@/assets/survivors/S44/MatthewGrinsteadMayleHead.jpg";
+import SarahWadeHead from "@/assets/survivors/S44/SarahWadeHead.jpg";
+import YamilArochoHead from "@/assets/survivors/S44/YamilArochoHead.jpg";
 
 export default {
   name: "CastHead",
@@ -108,6 +129,25 @@ export default {
         OwenKnight: OwenKnightHead,
         RyanMedrano: RyanMedranoHead,
         SamiLayadi: SamiLayadiHead,
+        // S44
+        BrandonCottom: BrandonCottomHead,
+        BrucePerreault: BrucePerreaultHead,
+        CarolynWiger: CarolynWigerHead,
+        CarsonGarrett: CarsonGarrettHead,
+        ClaireRafson: ClaireRafsonHead,
+        DannyMassa: DannyMassaHead,
+        FrannieMarin: FrannieMarinHead,
+        HeidiLagaresGreenblatt: HeidiLagaresGreenblattHead,
+        HelenLi: HelenLiHead,
+        JaimeLynnRuiz: JaimeLynnRuizHead,
+        JoshWilder: JoshWilderHead,
+        KaneFritzler: KaneFritzlerHead,
+        LaurenHarpe: LaurenHarpeHead,
+        MaddyPomilla: MaddyPomillaHead,
+        MattBlankinship: MattBlankinshipHead,
+        MatthewGrinsteadMayle: MatthewGrinsteadMayleHead,
+        SarahWade: SarahWadeHead,
+        YamilArocho: YamilArochoHead,
       }
     }
   },
@@ -168,6 +208,15 @@ img {
   }
   &.gaia {
     border: 3px solid $survivor-gaia;
+  }
+  &.ratu {
+    border: 3px solid $survivor-ratu;
+  }
+  &.soka {
+    border: 3px solid $survivor-soka;
+  }
+  &.tika {
+    border: 3px solid $survivor-tika;
   }
 }
 

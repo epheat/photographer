@@ -10,6 +10,9 @@
       vesi: tribe === 'Vesi',
       baka: tribe === 'Baka',
       gaia: tribe === 'Gaia',
+      ratu: tribe === 'Ratu',
+      soka: tribe === 'Soka',
+      tika: tribe === 'Tika',
     }"/>
     <h3>{{ name }}</h3>
     <p>Age: {{ age }}</p>
@@ -57,6 +60,24 @@ import NoelleLambert from "@/assets/survivors/S43/NoelleLambert.jpg";
 import OwenKnight from "@/assets/survivors/S43/OwenKnight.jpg";
 import RyanMedrano from "@/assets/survivors/S43/RyanMedrano.jpg";
 import SamiLayadi from "@/assets/survivors/S43/SamiLayadi.jpg";
+import BrandonCottom from "@/assets/survivors/S44/BrandonCottom.jpg";
+import BrucePerreault from "@/assets/survivors/S44/BrucePerreault.jpg";
+import CarolynWiger from "@/assets/survivors/S44/CarolynWiger.jpg";
+import CarsonGarrett from "@/assets/survivors/S44/CarsonGarrett.jpg";
+import ClaireRafson from "@/assets/survivors/S44/ClaireRafson.jpg";
+import DannyMassa from "@/assets/survivors/S44/DannyMassa.jpg";
+import FrannieMarin from "@/assets/survivors/S44/FrannieMarin.jpg";
+import HeidiLagaresGreenblatt from "@/assets/survivors/S44/HeidiLagaresGreenblatt.jpg";
+import HelenLi from "@/assets/survivors/S44/HelenLi.jpg";
+import JaimeLynnRuiz from "@/assets/survivors/S44/JaimeLynnRuiz.jpg";
+import JoshWilder from "@/assets/survivors/S44/JoshWilder.jpg";
+import KaneFritzler from "@/assets/survivors/S44/KaneFritzler.jpg";
+import LaurenHarpe from "@/assets/survivors/S44/LaurenHarpe.jpg";
+import MaddyPomilla from "@/assets/survivors/S44/MaddyPomilla.jpg";
+import MattBlankinship from "@/assets/survivors/S44/MattBlankinship.jpg";
+import MatthewGrinsteadMayle from "@/assets/survivors/S44/MatthewGrinsteadMayle.jpg";
+import SarahWade from "@/assets/survivors/S44/SarahWade.jpg";
+import YamilArocho from "@/assets/survivors/S44/YamilArocho.jpg";
 
 export default {
   name: "CastMember",
@@ -111,6 +132,25 @@ export default {
         OwenKnight: OwenKnight,
         RyanMedrano: RyanMedrano,
         SamiLayadi: SamiLayadi,
+        // S44
+        BrandonCottom: BrandonCottom,
+        BrucePerreault: BrucePerreault,
+        CarolynWiger: CarolynWiger,
+        CarsonGarrett: CarsonGarrett,
+        ClaireRafson: ClaireRafson,
+        DannyMassa: DannyMassa,
+        FrannieMarin: FrannieMarin,
+        HeidiLagaresGreenblatt: HeidiLagaresGreenblatt,
+        HelenLi: HelenLi,
+        JaimeLynnRuiz: JaimeLynnRuiz,
+        JoshWilder: JoshWilder,
+        KaneFritzler: KaneFritzler,
+        LaurenHarpe: LaurenHarpe,
+        MaddyPomilla: MaddyPomilla,
+        MattBlankinship: MattBlankinship,
+        MatthewGrinsteadMayle: MatthewGrinsteadMayle,
+        SarahWade: SarahWade,
+        YamilArocho: YamilArocho,
       }
     }
   },
@@ -162,6 +202,15 @@ export default {
     }
     &.gaia {
       border: 3px solid $survivor-gaia;
+    }
+    &.ratu {
+      border: 3px solid $survivor-ratu;
+    }
+    &.soka {
+      border: 3px solid $survivor-soka;
+    }
+    &.tika {
+      border: 3px solid $survivor-tika;
     }
   }
 }
