@@ -33,6 +33,8 @@ export default {
   background-color: $ps-button-default;
   box-shadow: 0px 2px 0px $ps-button-default-shadow;
 
+  transition: all 0.05s;
+
   &.submit {
     background-color: $ps-button-green;
     box-shadow: 0px 2px 0px $ps-button-green-shadow;
@@ -45,6 +47,13 @@ export default {
     background-color: $ps-button-light-grey;
     box-shadow: 0px 2px 0px $ps-button-light-grey-shadow;
     color: $ps-text-default;
+  }
+  &:hover {
+    filter: brightness(110%);
+  }
+  &:hover:active {
+    box-shadow: none;
+    transform: translate(0px, 2px);
   }
 }
 </style>

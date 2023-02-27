@@ -69,8 +69,8 @@ export default {
 
 .prediction-editor {
   padding: 10px;
-  background-color: $ps-lighter-grey;
-
+  background-color: $ps-prediction-in-progress;
+  border-radius: 4px;
 }
 
 .prediction-properties {
