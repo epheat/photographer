@@ -1,6 +1,7 @@
 <template>
   <div class="ps-post">
     <router-link :to="`/posts/${postId}`" class="image">
+      <img :src="textPostIcon" alt="textPostIcon"/>
     </router-link>
     <div class="details">
       <h2><router-link :to="`/posts/${postId}`">{{ title }}</router-link></h2>
@@ -11,6 +12,7 @@
 </template>
 <script>
 import { marked } from 'marked';
+import TextPostIcon from '@/assets/TextPostIcon.png';
 
 export default {
   props: {
@@ -23,7 +25,7 @@ export default {
   },
   data() {
     return {
-
+      textPostIcon: TextPostIcon,
     }
   },
   computed: {
@@ -57,7 +59,10 @@ export default {
   .image {
     flex: 0 0 60px;
     height: 60px;
-    background-color: $ps-lighter-grey;
+
+    img {
+      max-height: 100%;
+    }
 
     @media screen and (max-width: $phone) {
       display: none;

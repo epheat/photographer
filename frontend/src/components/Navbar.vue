@@ -2,7 +2,7 @@
   <div class="ps-navbar-container">
     <div class="ps-navbar">
       <div class="title" @click="onClickTitle">
-        <a>photographer</a>
+        <a>evanheaton</a>
         <div class="triangle" :class="{ extended: navExtended }" v-if="isMobile" />
       </div>
       <div class="navs" v-if="!isMobile">
@@ -13,9 +13,9 @@
     </div>
     <Transition name="mobile">
       <div class="mobile-navs" v-show="isMobile && navExtended" :class="{ retracted: !navExtended }">
-        <router-link to="/">Home</router-link>
-        <router-link to="/posts">Posts</router-link>
-        <router-link to="/games">Games</router-link>
+        <a @click="navTo('/')">Home</a>
+        <a @click="navTo('/posts')">Posts</a>
+        <a @click="navTo('/games')">Games</a>
       </div>
     </Transition>
   </div>
@@ -47,6 +47,10 @@ export default {
       } else {
         this.navExtended = !this.navExtended;
       }
+    },
+    navTo(path) {
+      this.$router.push(path);
+      this.navExtended = false;
     }
   },
   computed: {
@@ -84,6 +88,7 @@ export default {
   a {
     color: white;
     text-decoration: none;
+    cursor: pointer;
   }
 }
 
