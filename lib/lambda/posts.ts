@@ -29,6 +29,7 @@ async function getPosts(event: APIGatewayProxyEventV2, context: Context): Promis
       TableName: tableName,
       IndexName: "postTypeTimeSorted",
       KeyConditionExpression: "postType = :postType",
+      ScanIndexForward: false,
       ExpressionAttributeValues: { ':postType': 'TEXT' },
     });
     
