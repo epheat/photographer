@@ -13,6 +13,7 @@
       ratu: tribe === 'Ratu',
       soka: tribe === 'Soka',
       tika: tribe === 'Tika',
+      vava: tribe === 'Vava',
     }"/>
     <div class="cover" v-if="correct || incorrect" :title="id" :class="{
       correct: correct,
@@ -217,6 +218,10 @@ img {
   }
   &.tika {
     border: 3px solid $survivor-tika;
+  }
+  &.vava {
+    border: 3px solid $survivor-vava;
+    border-image: linear-gradient(to left top, $survivor-vava, $survivor-vava-2) 3;
   }
 }
 

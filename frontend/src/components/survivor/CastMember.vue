@@ -13,6 +13,7 @@
       ratu: tribe === 'Ratu',
       soka: tribe === 'Soka',
       tika: tribe === 'Tika',
+      vava: tribe === 'Vava',
     }"/>
     <h3>{{ name }}</h3>
     <p>Age: {{ age }}</p>
@@ -211,6 +212,10 @@ export default {
     }
     &.tika {
       border: 3px solid $survivor-tika;
+    }
+    &.vava {
+      border: 3px solid $survivor-vava;
+      border-image: linear-gradient(to left top, $survivor-vava, $survivor-vava-2) 3;
     }
   }
 }

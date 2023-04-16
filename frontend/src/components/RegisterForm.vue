@@ -1,6 +1,6 @@
 <template>
   <div class="ps-register-form form">
-    <p>Welcome to the photographer website! Please register with your desired username, email, and a password that you don't use anywhere else.</p>
+    <p>Welcome to the evanheaton website! Please register with your desired username, email, and a password that you don't use anywhere else.</p>
     <form-field v-model="username" label="Username"/>
     <form-field v-model="email" label="Email"/>
     <p>Password requirements: one upper case, one symbol, one number, one lowercase, at least 8 characters.</p>
