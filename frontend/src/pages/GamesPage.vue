@@ -9,6 +9,14 @@
         <p class="game-description">Follow along with the latest Survivor season as you predict each week who will win challenges, who will lose, and who will get voted out. In this game, fire represents your life. When your fire's gone, so are you. Requires an account to play.</p>
       </div>
     </div>
+    <div class="game-container" @click="onClickGame('BattleTD')">
+      <img class="game-image" alt="survivor logo" src="@/assets/BattleTD.png"/>
+      <div class="game-text">
+        <div class="game-title">BattleTD</div>
+        <p class="game-description">Protect your castle from increasingly strong waves of monsters in this tower-defense auto-battler game. Requires an account to play.</p>
+      </div>
+    </div>
+
     <Footer></Footer>
   </div>
 </template>
@@ -38,7 +46,7 @@ export default {
 
 .game-container {
   display: flex;
-  margin: 5px;
+  margin: 5px 5px 10px;
   padding: 10px;
   background-color: $ps-lighter-grey;
   box-shadow: 0px 4px 4px #777777;

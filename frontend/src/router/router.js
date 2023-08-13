@@ -7,6 +7,7 @@ import AuthPage from "@/pages/AuthPage.vue";
 import EditorPage from "@/pages/EditorPage.vue";
 import GamesPage from "@/pages/GamesPage";
 import SurvivorGamePage from "@/pages/SurvivorGamePage";
+import BattleTDPage from "@/pages/BattleTDPage";
 
 const routes = [
   { path: '/', component: Home },
@@ -14,6 +15,7 @@ const routes = [
   { path: '/posts/:postId', component: PostPage, props: true },
   { path: '/games', component: GamesPage },
   { path: '/games/FantasySurvivor', component: SurvivorGamePage },
+  { path: '/games/BattleTD', component: BattleTDPage },
   { path: '/music', component: MusicPage },
   { path: '/auth/:flowRoute', component: AuthPage, props: true },
   { path: '/posts/new', component: EditorPage },

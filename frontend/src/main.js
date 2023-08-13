@@ -1,7 +1,7 @@
 import { createApp } from 'vue'
 import { router } from './router/router.js';
 import App from './App.vue'
-import Amplify from 'aws-amplify';
+import { Amplify } from 'aws-amplify';
 
 // see: https://docs.amplify.aws/lib/auth/start/q/platform/js/#re-use-existing-authentication-resource
 Amplify.configure({
