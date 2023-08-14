@@ -1,7 +1,7 @@
 import Phaser from 'phaser'
 import GameScene from './scenes/GameScene'
 
-function launch(containerId) {
+function launch(containerId: string) {
     const config = {
         type: Phaser.AUTO,
         width: 800,

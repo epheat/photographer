@@ -6,7 +6,7 @@ import { Amplify } from 'aws-amplify';
 // see: https://docs.amplify.aws/lib/auth/start/q/platform/js/#re-use-existing-authentication-resource
 Amplify.configure({
     Auth: {
-        region: process.env.VUE_APP_COGNITO_REGION | "us-east-1",
+        region: process.env.VUE_APP_COGNITO_REGION || "us-east-1",
         userPoolId: process.env.VUE_APP_COGNITO_USERPOOL_ID,
         userPoolWebClientId: process.env.VUE_APP_COGNITO_CLIENT_ID
     },
@@ -21,7 +21,6 @@ Amplify.configure({
 })
 
 const app = createApp(App)
-app.config.devtools = true;
 
 app.use(router)
 app.mount('#app')
