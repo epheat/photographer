@@ -5,7 +5,11 @@ import forestTileset from "@/phaser/battletd/assets/tiles/Forest BETA V3/Forest 
 import waterTileset from "@/phaser/battletd/assets/tiles/Forest BETA V3/Water Tileset.png";
 import settlementTileset from "@/phaser/battletd/assets/tiles/Forest BETA V3/Settlement.png";
 import forestPropsTileset from "@/phaser/battletd/assets/tiles/Forest BETA V3/Forest Props.png";
-import map2 from "@/phaser/battletd/tiled/map1.json";
+import miniTerrainTileset from "@/phaser/battletd/assets/tiles/miniworld/terrain.png";
+import miniBuildingsTileset from "@/phaser/battletd/assets/tiles/miniworld/buildings.png";
+import miniNatureTileset from "@/phaser/battletd/assets/tiles/miniworld/nature.png";
+import map1 from "@/phaser/battletd/tiled/map1.json";
+import map2 from "@/phaser/battletd/tiled/map2.json";
 import ComponentSystem from "@/phaser/battletd/system/ComponentSystem";
 import Image = Phaser.GameObjects.Image;
 import SpriteWithDynamicBody = Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
@@ -29,7 +33,12 @@ export default class GameScene extends Phaser.Scene {
         this.load.image('water', waterTileset);
         this.load.image('settlement', settlementTileset);
         this.load.image('props', forestPropsTileset);
-        this.load.tilemapTiledJSON('map', map2);
+        this.load.tilemapTiledJSON('map1', map1);
+
+        this.load.image('terrain', miniTerrainTileset);
+        this.load.image('nature', miniNatureTileset);
+        this.load.image('buildings', miniBuildingsTileset);
+        this.load.tilemapTiledJSON('map2', map2);
 
         this.components = new ComponentSystem();
         this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
@@ -40,17 +49,7 @@ export default class GameScene extends Phaser.Scene {
     }
 
     create() {
-        const map = this.make.tilemap({ key: 'map', tileWidth: 16, tileHeight: 16 });
-        const forestTileset = map.addTilesetImage('Forest Tileset', 'forest');
-        const waterTileset = map.addTilesetImage('Water Tileset', 'water');
-        const settlementTileset = map.addTilesetImage('Settlement', 'settlement');
-        const forestPropsTileset = map.addTilesetImage('Forest Props', 'props');
-        const baseLayer = map.createLayer(0, forestTileset!, 0, 0);
-        const waterLayer = map.createLayer(1, waterTileset!, 0, 0);
-        const grassLayer = map.createLayer(2, forestTileset!, 0, 0);
-        const pathLayer = map.createLayer(3, settlementTileset!, 0, 0);
-        const rocksLayer = map.createLayer(4, forestPropsTileset!, 0, 0);
-        const castleLayer = map.createLayer(5, settlementTileset!, 0, 0);
+        this.createMap2();
 
         const woolly = this.physics.add.sprite(100, 100, 'woolly');
         this.createWoollyAnimations(woolly)
@@ -67,6 +66,32 @@ export default class GameScene extends Phaser.Scene {
 
     update(time: number, delta: number) {
         this.components.update(delta);
+    }
+
+    private createMap1() {
+        const map = this.make.tilemap({ key: 'map1', tileWidth: 16, tileHeight: 16 });
+        const forestTileset = map.addTilesetImage('Forest Tileset', 'forest');
+        const waterTileset = map.addTilesetImage('Water Tileset', 'water');
+        const settlementTileset = map.addTilesetImage('Settlement', 'settlement');
+        const forestPropsTileset = map.addTilesetImage('Forest Props', 'props');
+        const baseLayer = map.createLayer(0, forestTileset!, 0, 0);
+        const waterLayer = map.createLayer(1, waterTileset!, 0, 0);
+        const grassLayer = map.createLayer(2, forestTileset!, 0, 0);
+        const pathLayer = map.createLayer(3, settlementTileset!, 0, 0);
+        const rocksLayer = map.createLayer(4, forestPropsTileset!, 0, 0);
+        const castleLayer = map.createLayer(5, settlementTileset!, 0, 0);
+    }
+
+    private createMap2() {
+        const map = this.make.tilemap({ key: 'map2', tileWidth: 16, tileHeight: 16 });
+        const terrainTileset = map.addTilesetImage('terrain', 'terrain');
+        const buildingsTileset = map.addTilesetImage('buildings', 'buildings');
+        const natureTileset = map.addTilesetImage('nature', 'nature');
+        const waterLayer = map.createLayer('Water', terrainTileset!, 0, 0);
+        const sandLayer = map.createLayer('Sand', terrainTileset!, 0, 0);
+        const grassLayer = map.createLayer('Grass', terrainTileset!, 0, 0);
+        const propsLayer = map.createLayer('Props', natureTileset!, 0, 0);
+        const castleLayer = map.createLayer('Castle', buildingsTileset!, 0, 0);
     }
 
 
