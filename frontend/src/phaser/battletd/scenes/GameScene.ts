@@ -1,26 +1,24 @@
 import Phaser from 'phaser'
 
 import woolly from "@/phaser/battletd/assets/tiles/miniworld/woolly.png";
-import forestTileset from "@/phaser/battletd/assets/tiles/Forest BETA V3/Forest Tilesett.png";
-import waterTileset from "@/phaser/battletd/assets/tiles/Forest BETA V3/Water Tileset.png";
-import settlementTileset from "@/phaser/battletd/assets/tiles/Forest BETA V3/Settlement.png";
-import forestPropsTileset from "@/phaser/battletd/assets/tiles/Forest BETA V3/Forest Props.png";
 import miniTerrainTileset from "@/phaser/battletd/assets/tiles/miniworld/terrain.png";
 import miniBuildingsTileset from "@/phaser/battletd/assets/tiles/miniworld/buildings.png";
 import miniNatureTileset from "@/phaser/battletd/assets/tiles/miniworld/nature.png";
-import map1 from "@/phaser/battletd/tiled/map1.json";
+import tower from "@/phaser/battletd/assets/tiles/miniworld/tower.png";
+import plot from "@/phaser/battletd/assets/tiles/miniworld/plot.png";
+import bomb from "@/phaser/battletd/assets/bomb.png";
 import map2 from "@/phaser/battletd/tiled/map2.json";
 import ComponentSystem from "@/phaser/battletd/system/ComponentSystem";
-import Image = Phaser.GameObjects.Image;
 import SpriteWithDynamicBody = Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
+import { TowerPlot } from "@/phaser/battletd/gameobjects/TowerPlot";
 import { KeyboardMovementComponent } from "@/phaser/battletd/components/KeyboardMovementComponent";
 import { CardinalAnimationComponent } from "@/phaser/battletd/components/CardinalAnimationComponent";
+import { Monster } from "@/phaser/battletd/gameobjects/Monster";
 
 export default class GameScene extends Phaser.Scene {
 
     private components!: ComponentSystem;
     private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
-    private star!: Image;
 
     constructor() {
         super('game-scene')
@@ -29,12 +27,9 @@ export default class GameScene extends Phaser.Scene {
     preload() {
         this.load.spritesheet('woolly_frames', woolly, { frameWidth: 16, frameHeight: 16 } );
 
-        this.load.image('forest', forestTileset);
-        this.load.image('water', waterTileset);
-        this.load.image('settlement', settlementTileset);
-        this.load.image('props', forestPropsTileset);
-        this.load.tilemapTiledJSON('map1', map1);
-
+        this.load.image('bomb', bomb);
+        this.load.image('plot', plot);
+        this.load.image('tower', tower);
         this.load.image('terrain', miniTerrainTileset);
         this.load.image('nature', miniNatureTileset);
         this.load.image('buildings', miniBuildingsTileset);
@@ -92,6 +87,16 @@ export default class GameScene extends Phaser.Scene {
         const grassLayer = map.createLayer('Grass', terrainTileset!, 0, 0);
         const propsLayer = map.createLayer('Props', natureTileset!, 0, 0);
         const castleLayer = map.createLayer('Castle', buildingsTileset!, 0, 0);
+        const pathLayer = map.getObjectLayer('MonsterPath');
+        const pathStart = map.findObject(pathLayer!, object => object.name == "PathStart");
+        const pathEnd = map.findObject(pathLayer!, object => object.name == "PathEnd");
+        const monsterPath = new Phaser.Curves.Path(pathStart!.x!, pathStart!.y!).lineTo(pathEnd!.x!, pathEnd!.y!);
+
+        const monster = new Monster(this, monsterPath, pathStart!.x!, pathStart!.y!);
+        monster.startFollow(10000);
+
+        // https://newdocs.phaser.io/docs/3.60.0/focus/Phaser.Tilemaps.Tilemap-createFromObjects
+        const plots = map.createFromObjects('Towers', { classType: TowerPlot, key: 'plot' });
     }
 
 

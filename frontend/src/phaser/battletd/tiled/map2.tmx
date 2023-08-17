@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="left-down" width="20" height="30" tilewidth="16" tileheight="16" infinite="0" nextlayerid="7" nextobjectid="9">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="left-down" width="20" height="30" tilewidth="16" tileheight="16" infinite="0" nextlayerid="8" nextobjectid="28">
  <editorsettings>
   <export target="map2.json" format="json"/>
  </editorsettings>
@@ -183,11 +183,19 @@
 </data>
  </layer>
  <objectgroup id="5" name="Towers">
-  <object id="2" x="192" y="96" width="16" height="16"/>
-  <object id="3" x="128" y="96" width="16" height="16"/>
-  <object id="4" x="128" y="224" width="16" height="16"/>
-  <object id="5" x="192" y="224" width="16" height="16"/>
-  <object id="6" x="192" y="352" width="16" height="16"/>
-  <object id="7" x="128" y="352" width="16" height="16"/>
+  <object id="15" x="128" y="96" width="16" height="16"/>
+  <object id="16" x="192" y="96" width="16" height="16"/>
+  <object id="18" x="128" y="224" width="16" height="16"/>
+  <object id="19" x="192" y="224" width="16" height="16"/>
+  <object id="20" x="128" y="352" width="16" height="16"/>
+  <object id="21" x="192" y="352" width="16" height="16"/>
+ </objectgroup>
+ <objectgroup id="7" name="MonsterPath">
+  <object id="26" name="PathStart" x="168" y="0">
+   <point/>
+  </object>
+  <object id="27" name="PathEnd" x="168" y="424">
+   <point/>
+  </object>
  </objectgroup>
 </map>

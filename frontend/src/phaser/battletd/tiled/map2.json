@@ -214,18 +214,7 @@
          "objects":[
                 {
                  "height":16,
-                 "id":2,
-                 "name":"",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":16,
-                 "x":192,
-                 "y":96
-                }, 
-                {
-                 "height":16,
-                 "id":3,
+                 "id":15,
                  "name":"",
                  "rotation":0,
                  "type":"",
@@ -236,7 +225,18 @@
                 }, 
                 {
                  "height":16,
-                 "id":4,
+                 "id":16,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":192,
+                 "y":96
+                }, 
+                {
+                 "height":16,
+                 "id":18,
                  "name":"",
                  "rotation":0,
                  "type":"",
@@ -247,7 +247,7 @@
                 }, 
                 {
                  "height":16,
-                 "id":5,
+                 "id":19,
                  "name":"",
                  "rotation":0,
                  "type":"",
@@ -258,24 +258,24 @@
                 }, 
                 {
                  "height":16,
-                 "id":6,
+                 "id":20,
                  "name":"",
                  "rotation":0,
                  "type":"",
                  "visible":true,
                  "width":16,
-                 "x":192,
+                 "x":128,
                  "y":352
                 }, 
                 {
                  "height":16,
-                 "id":7,
+                 "id":21,
                  "name":"",
                  "rotation":0,
                  "type":"",
                  "visible":true,
                  "width":16,
-                 "x":128,
+                 "x":192,
                  "y":352
                 }],
          "opacity":1,
@@ -283,9 +283,44 @@
          "visible":true,
          "x":0,
          "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":7,
+         "name":"MonsterPath",
+         "objects":[
+                {
+                 "height":0,
+                 "id":26,
+                 "name":"PathStart",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":168,
+                 "y":0
+                }, 
+                {
+                 "height":0,
+                 "id":27,
+                 "name":"PathEnd",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":168,
+                 "y":424
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
         }],
- "nextlayerid":7,
- "nextobjectid":9,
+ "nextlayerid":8,
+ "nextobjectid":28,
  "orientation":"orthogonal",
  "renderorder":"left-down",
  "tiledversion":"1.10.2",

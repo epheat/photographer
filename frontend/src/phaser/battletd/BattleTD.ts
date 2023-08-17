@@ -1,5 +1,6 @@
 import Phaser from 'phaser'
 import GameScene from './scenes/GameScene'
+import GameUI from './scenes/GameUI';
 
 function launch(containerId: string) {
     const config = {
@@ -10,7 +11,7 @@ function launch(containerId: string) {
         physics: {
             default: 'arcade',
         },
-        scene: [GameScene]
+        scene: [GameScene, GameUI]
     }
     return new Phaser.Game(config);
 }
