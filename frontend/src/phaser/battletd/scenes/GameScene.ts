@@ -7,9 +7,9 @@ import miniNatureTileset from "@/phaser/battletd/assets/tiles/miniworld/nature.p
 import tower from "@/phaser/battletd/assets/tiles/miniworld/tower.png";
 import plot from "@/phaser/battletd/assets/tiles/miniworld/plot.png";
 import bomb from "@/phaser/battletd/assets/bomb.png";
+import range from "@/phaser/battletd/assets/range.png";
 import map2 from "@/phaser/battletd/tiled/map2.json";
 import ComponentSystem from "@/phaser/battletd/system/ComponentSystem";
-import SpriteWithDynamicBody = Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
 import { TowerPlot } from "@/phaser/battletd/gameobjects/TowerPlot";
 import { KeyboardMovementComponent } from "@/phaser/battletd/components/KeyboardMovementComponent";
 import { CardinalAnimationComponent } from "@/phaser/battletd/components/CardinalAnimationComponent";
@@ -19,6 +19,9 @@ export default class GameScene extends Phaser.Scene {
 
     private components!: ComponentSystem;
     private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
+    private woolly!: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
+    public monsters!: Phaser.GameObjects.Group;
+    public towers!: Phaser.GameObjects.Group;
 
     constructor() {
         super('game-scene')
@@ -30,6 +33,7 @@ export default class GameScene extends Phaser.Scene {
         this.load.image('bomb', bomb);
         this.load.image('plot', plot);
         this.load.image('tower', tower);
+        this.load.image('range_indicator', range)
         this.load.image('terrain', miniTerrainTileset);
         this.load.image('nature', miniNatureTileset);
         this.load.image('buildings', miniBuildingsTileset);
@@ -44,23 +48,29 @@ export default class GameScene extends Phaser.Scene {
     }
 
     create() {
+        this.monsters = this.add.group();
+        this.towers = this.add.group({ runChildUpdate: true });
         this.createMap2();
 
-        const woolly = this.physics.add.sprite(100, 100, 'woolly');
-        this.createWoollyAnimations(woolly)
-        this.components.addComponent(woolly, new KeyboardMovementComponent(this.cursors));
-        this.components.addComponent(woolly, new CardinalAnimationComponent({
+        this.woolly = this.physics.add.sprite(100, 100, 'woolly');
+        this.createWoollyAnimations(this.woolly)
+        this.components.addComponent(this.woolly, new KeyboardMovementComponent(this.cursors));
+        this.components.addComponent(this.woolly, new CardinalAnimationComponent({
             lAnim: 'walk-left',
             rAnim: 'walk-right',
             uAnim: 'walk-up',
             dAnim: 'walk-down'
         }));
 
-        woolly.play('walk-right');
+        this.physics.add.overlap(this.woolly, this.monsters);
+
+        this.woolly.play('walk-right');
     }
 
     update(time: number, delta: number) {
         this.components.update(delta);
+
+        this.woolly.body.debugBodyColor = this.woolly.body.touching.none ? 0x0099ff : 0xff9900;
     }
 
     private createMap1() {
@@ -94,13 +104,14 @@ export default class GameScene extends Phaser.Scene {
 
         const monster = new Monster(this, monsterPath, pathStart!.x!, pathStart!.y!);
         monster.startFollow(10000);
+        this.monsters.add(monster);
 
         // https://newdocs.phaser.io/docs/3.60.0/focus/Phaser.Tilemaps.Tilemap-createFromObjects
         const plots = map.createFromObjects('Towers', { classType: TowerPlot, key: 'plot' });
     }
 
 
-    private createWoollyAnimations(woolly: SpriteWithDynamicBody) {
+    private createWoollyAnimations(woolly: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody) {
         woolly.anims.create({
             key: 'walk-right',
             frameRate: 6,

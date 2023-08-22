@@ -53,15 +53,15 @@
             "expandedObjectLayers": [
                 5
             ],
-            "scale": 0.9702,
-            "selectedLayer": 5,
+            "scale": 1.2631,
+            "selectedLayer": 6,
             "viewCenter": {
-                "x": 220.5730777159348,
-                "y": 199.95877138734284
+                "x": 178.92486738975538,
+                "y": 209.40543108225796
             }
         },
         "map2.tmx#buildings": {
-            "scaleInDock": 1.2715
+            "scaleInDock": 2.79
         },
         "map2.tmx#nature": {
             "scaleInDock": 0.6794
