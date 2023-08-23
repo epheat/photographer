@@ -8,6 +8,7 @@ import tower from "@/phaser/battletd/assets/tiles/miniworld/tower.png";
 import plot from "@/phaser/battletd/assets/tiles/miniworld/plot.png";
 import bomb from "@/phaser/battletd/assets/bomb.png";
 import range from "@/phaser/battletd/assets/range.png";
+import star from "@/phaser/battletd/assets/star.png";
 import map2 from "@/phaser/battletd/tiled/map2.json";
 import ComponentSystem from "@/phaser/battletd/system/ComponentSystem";
 import { TowerPlot } from "@/phaser/battletd/gameobjects/TowerPlot";
@@ -20,7 +21,7 @@ export default class GameScene extends Phaser.Scene {
     private components!: ComponentSystem;
     private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
     private woolly!: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
-    public monsters!: Phaser.GameObjects.Group;
+    public monsters!: Phaser.Physics.Arcade.Group;
     public towers!: Phaser.GameObjects.Group;
 
     constructor() {
@@ -31,6 +32,7 @@ export default class GameScene extends Phaser.Scene {
         this.load.spritesheet('woolly_frames', woolly, { frameWidth: 16, frameHeight: 16 } );
 
         this.load.image('bomb', bomb);
+        this.load.image('star', star);
         this.load.image('plot', plot);
         this.load.image('tower', tower);
         this.load.image('range_indicator', range)
@@ -48,7 +50,7 @@ export default class GameScene extends Phaser.Scene {
     }
 
     create() {
-        this.monsters = this.add.group();
+        this.monsters = this.physics.add.group({ runChildUpdate: true });
         this.towers = this.add.group({ runChildUpdate: true });
         this.createMap2();
 

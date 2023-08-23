@@ -1,13 +1,14 @@
 import { Monster } from "@/phaser/battletd/gameobjects/Monster";
+import GameScene from "@/phaser/battletd/scenes/GameScene";
 
 export interface TowerOptions {
   readonly reloadTime?: number,
   readonly range?: number,
+  readonly projectileSpeed?: number,
 }
 
 export interface TowerProps extends TowerOptions {
-  // group of Monster GameObjects which the tower will use to track aggro
-  readonly monsters: Phaser.GameObjects.Group,
+
 }
 
 export class Tower extends Phaser.GameObjects.Container {
@@ -16,7 +17,8 @@ export class Tower extends Phaser.GameObjects.Container {
   private readonly reloadIndicator: Phaser.GameObjects.Rectangle;
   private readonly reloadTime: number;
   private readonly range: number;
-  private readonly monsters: Phaser.GameObjects.Group;
+  private readonly projectiles: Phaser.Physics.Arcade.Group;
+  private readonly projectileSpeed: number;
   private reloading: boolean = false;
 
   constructor(scene: Phaser.Scene, x: number, y: number, props: TowerProps) {
@@ -27,10 +29,12 @@ export class Tower extends Phaser.GameObjects.Container {
     this.add([this.rangeIndicator, this.towerSprite, this.reloadIndicator]);
     this.reloadTime = props.reloadTime ?? 2000;
     this.range = props.range ?? 100;
-    this.monsters = props.monsters;
+    this.projectileSpeed = props.projectileSpeed ?? 200;
 
     this.setSize(16, 16).setInteractive().on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, this.reload);
     this.scene.add.existing(this);
+    this.projectiles = this.scene.physics.add.group();
+    this.scene.physics.add.overlap(this.projectiles, (this.scene as GameScene).monsters, this.hitMonster);
   }
 
   protected createRangeIndicator(): Phaser.GameObjects.Image {
@@ -49,7 +53,7 @@ export class Tower extends Phaser.GameObjects.Container {
   // should be called every frame. To do this, add towers to a group with runChildUpdate=true
   // https://newdocs.phaser.io/docs/3.60.0/Phaser.GameObjects.Group#runChildUpdate
   update() {
-    const monsterToAttack = this.getAggro(this.monsters);
+    const monsterToAttack = this.getAggro((this.scene as GameScene).monsters);
     if (monsterToAttack) {
       this.fireAt(monsterToAttack);
     }
@@ -86,8 +90,22 @@ export class Tower extends Phaser.GameObjects.Container {
     });
   }
 
-  protected fireAt(monster: Phaser.GameObjects.GameObject) {
-    console.log("firing at " + monster.name);
+  protected fireAt(monster: Monster) {
+    if (this.reloading) {
+      return;
+    }
+
+    const projectile = this.scene.physics.add.sprite( this.x, this.y, 'star')
+    this.projectiles.add(projectile);
+    const angle = Phaser.Math.RadToDeg(Phaser.Math.Angle.Between(this.x, this.y, monster.x, monster.y));
+    this.scene.physics.velocityFromAngle(angle, this.projectileSpeed, projectile.body.velocity);
+    console.log("fired at " + monster.name);
+    this.reload();
+  }
+
+  protected hitMonster(projectile: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
+                       monster: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile) {
+    projectile.destroy();
   }
 
 }

@@ -27,9 +27,7 @@ export class TowerPlot extends Phaser.GameObjects.Container {
     this.highlight.setVisible(false);
     this.image.setVisible(false);
 
-    const tower = new Tower(this.scene, this.x, this.y, {
-      monsters: (this.scene as GameScene).monsters,
-    });
+    const tower = new Tower(this.scene, this.x, this.y, {});
 
     this.scene.add.existing(tower);
     (this.scene as GameScene).towers.add(tower);
