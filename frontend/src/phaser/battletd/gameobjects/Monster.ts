@@ -2,7 +2,7 @@ export class Monster extends Phaser.GameObjects.PathFollower {
   public velocity: Phaser.Math.Vector2 = new Phaser.Math.Vector2();
 
   constructor(scene: Phaser.Scene, path: Phaser.Curves.Path, x: number, y: number) {
-    super(scene, path, x, y, 'bomb');
+    super(scene, path, x, y, 'orc');
     this.scene.add.existing(this);
     this.scene.physics.add.existing(this);
     (this.body as Phaser.Physics.Arcade.Body).setImmovable(true);

@@ -6,6 +6,7 @@ import miniBuildingsTileset from "@/phaser/battletd/assets/tiles/miniworld/build
 import miniNatureTileset from "@/phaser/battletd/assets/tiles/miniworld/nature.png";
 import tower from "@/phaser/battletd/assets/tiles/miniworld/tower.png";
 import plot from "@/phaser/battletd/assets/tiles/miniworld/plot.png";
+import orc from "@/phaser/battletd/assets/tiles/miniworld/orc.png";
 import bomb from "@/phaser/battletd/assets/bomb.png";
 import range from "@/phaser/battletd/assets/range.png";
 import star from "@/phaser/battletd/assets/star.png";
@@ -35,6 +36,7 @@ export default class GameScene extends Phaser.Scene {
         this.load.image('star', star);
         this.load.image('plot', plot);
         this.load.image('tower', tower);
+        this.load.image('orc', orc);
         this.load.image('range_indicator', range)
         this.load.image('terrain', miniTerrainTileset);
         this.load.image('nature', miniNatureTileset);
@@ -54,25 +56,23 @@ export default class GameScene extends Phaser.Scene {
         this.towers = this.add.group({ runChildUpdate: true });
         this.createMap2();
 
-        this.woolly = this.physics.add.sprite(100, 100, 'woolly');
-        this.createWoollyAnimations(this.woolly)
-        this.components.addComponent(this.woolly, new KeyboardMovementComponent(this.cursors));
-        this.components.addComponent(this.woolly, new CardinalAnimationComponent({
-            lAnim: 'walk-left',
-            rAnim: 'walk-right',
-            uAnim: 'walk-up',
-            dAnim: 'walk-down'
-        }));
+        // this.woolly = this.physics.add.sprite(100, 100, 'woolly');
+        // this.createWoollyAnimations(this.woolly)
+        // this.components.addComponent(this.woolly, new KeyboardMovementComponent(this.cursors));
+        // this.components.addComponent(this.woolly, new CardinalAnimationComponent({
+        //     lAnim: 'walk-left',
+        //     rAnim: 'walk-right',
+        //     uAnim: 'walk-up',
+        //     dAnim: 'walk-down'
+        // }));
 
-        this.physics.add.overlap(this.woolly, this.monsters);
+        // this.physics.add.overlap(this.woolly, this.monsters);
 
-        this.woolly.play('walk-right');
+        // this.woolly.play('walk-right');
     }
 
     update(time: number, delta: number) {
         this.components.update(delta);
-
-        this.woolly.body.debugBodyColor = this.woolly.body.touching.none ? 0x0099ff : 0xff9900;
     }
 
     private createMap1() {
@@ -105,7 +105,7 @@ export default class GameScene extends Phaser.Scene {
         const monsterPath = new Phaser.Curves.Path(pathStart!.x!, pathStart!.y!).lineTo(pathEnd!.x!, pathEnd!.y!);
 
         const monster = new Monster(this, monsterPath, pathStart!.x!, pathStart!.y!);
-        monster.startFollow(10000);
+        monster.startFollow(8000);
         this.monsters.add(monster);
 
         // https://newdocs.phaser.io/docs/3.60.0/focus/Phaser.Tilemaps.Tilemap-createFromObjects

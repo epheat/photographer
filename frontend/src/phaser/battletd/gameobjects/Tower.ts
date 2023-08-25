@@ -27,9 +27,9 @@ export class Tower extends Phaser.GameObjects.Container {
     this.towerSprite = this.createTowerSprite();
     this.reloadIndicator = this.createReloadIndicator();
     this.add([this.rangeIndicator, this.towerSprite, this.reloadIndicator]);
-    this.reloadTime = props.reloadTime ?? 2000;
-    this.range = props.range ?? 100;
-    this.projectileSpeed = props.projectileSpeed ?? 200;
+    this.reloadTime = props.reloadTime ?? 400;
+    this.range = props.range ?? 120;
+    this.projectileSpeed = props.projectileSpeed ?? 100;
 
     this.setSize(16, 16).setInteractive().on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, this.reload);
     this.scene.add.existing(this);
@@ -95,7 +95,7 @@ export class Tower extends Phaser.GameObjects.Container {
       return;
     }
 
-    const projectile = this.scene.physics.add.sprite( this.x, this.y, 'star')
+    const projectile = this.scene.physics.add.sprite( this.x, this.y, 'bomb')
     this.projectiles.add(projectile);
     const angle = this.getLeadingAngleToFire(monster);
     this.scene.physics.velocityFromRotation(angle, this.projectileSpeed, projectile.body.velocity);
@@ -119,10 +119,9 @@ export class Tower extends Phaser.GameObjects.Container {
     const t_minus = (-b - Math.sqrt(b * b - 4*a*c)) / 2 / a;
 
     if (t_plus > 0) {
-
-      return new Phaser.Math.Vector2(monster.x, monster.y).add(monster.velocity.scale(t_plus).subtract(new Phaser.Math.Vector2(this.x, this.y))).scale(1/this.projectileSpeed/t_plus).angle();
+      return new Phaser.Math.Vector2(monster.x, monster.y).add(monster.velocity.clone().scale(t_plus).subtract(new Phaser.Math.Vector2(this.x, this.y))).angle();
     } else if (t_minus > 0) {
-      return new Phaser.Math.Vector2(monster.x, monster.y).add(monster.velocity.scale(t_minus).subtract(new Phaser.Math.Vector2(this.x, this.y))).scale(1/this.projectileSpeed/t_minus).angle();
+      return new Phaser.Math.Vector2(monster.x, monster.y).add(monster.velocity.clone().scale(t_minus).subtract(new Phaser.Math.Vector2(this.x, this.y))).angle();
     } else {
       return directAngle;
     }
