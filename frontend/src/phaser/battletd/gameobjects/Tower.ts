@@ -97,10 +97,40 @@ export class Tower extends Phaser.GameObjects.Container {
 
     const projectile = this.scene.physics.add.sprite( this.x, this.y, 'star')
     this.projectiles.add(projectile);
-    const angle = Phaser.Math.RadToDeg(Phaser.Math.Angle.Between(this.x, this.y, monster.x, monster.y));
-    this.scene.physics.velocityFromAngle(angle, this.projectileSpeed, projectile.body.velocity);
+    const angle = this.getLeadingAngleToFire(monster);
+    this.scene.physics.velocityFromRotation(angle, this.projectileSpeed, projectile.body.velocity);
     console.log("fired at " + monster.name);
     this.reload();
+  }
+
+  // inspiration from https://www.reddit.com/r/gamedev/comments/3hgxs7/projectile_interception_how_ai_lead_their_shots/cu7lg92/
+  protected getLeadingAngleToFire(monster: Monster): number {
+    // in case the tower can't actually hit the monster based on its current path/speed and the projectile speed, we'll
+    // fire directly toward the monster's current location.
+    const directAngle = this.getDirectFireVector(monster).angle();
+
+    const deltaX = monster.x - this.x;
+    const deltaY = monster.y - this.y;
+    const a = monster.velocity.x + monster.velocity.x + monster.velocity.y * monster.velocity.y - this.projectileSpeed * this.projectileSpeed;
+    const b = 2 * deltaX * monster.velocity.x + 2 * deltaY * monster.velocity.y;
+    const c = deltaX * deltaX + deltaY * deltaY;
+
+    const t_plus = (-b + Math.sqrt(b * b - 4*a*c)) / 2 / a;
+    const t_minus = (-b - Math.sqrt(b * b - 4*a*c)) / 2 / a;
+
+    if (t_plus > 0) {
+
+      return new Phaser.Math.Vector2(monster.x, monster.y).add(monster.velocity.scale(t_plus).subtract(new Phaser.Math.Vector2(this.x, this.y))).scale(1/this.projectileSpeed/t_plus).angle();
+    } else if (t_minus > 0) {
+      return new Phaser.Math.Vector2(monster.x, monster.y).add(monster.velocity.scale(t_minus).subtract(new Phaser.Math.Vector2(this.x, this.y))).scale(1/this.projectileSpeed/t_minus).angle();
+    } else {
+      return directAngle;
+    }
+  }
+
+  protected getDirectFireVector(monster: Monster): Phaser.Math.Vector2 {
+    const angle = Phaser.Math.RadToDeg(Phaser.Math.Angle.Between(this.x, this.y, monster.x, monster.y));
+    return this.scene.physics.velocityFromAngle(angle, this.projectileSpeed);
   }
 
   protected hitMonster(projectile: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,

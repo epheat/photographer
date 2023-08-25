@@ -9,6 +9,8 @@ export class Monster extends Phaser.GameObjects.PathFollower {
   }
 
   update(time: number, delta: number) {
-    this.velocity = this.pathDelta.clone().scale(1000 / delta);
+    const newVelocity = this.pathDelta.clone().scale(1000 / delta);
+    // average the new and previous velocity to make it smoother.
+    this.velocity = this.velocity.add(newVelocity).scale(0.5);
   }
 }
