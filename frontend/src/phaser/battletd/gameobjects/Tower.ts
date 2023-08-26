@@ -29,7 +29,7 @@ export class Tower extends Phaser.GameObjects.Container {
     this.add([this.rangeIndicator, this.towerSprite, this.reloadIndicator]);
     this.reloadTime = props.reloadTime ?? 400;
     this.range = props.range ?? 120;
-    this.projectileSpeed = props.projectileSpeed ?? 100;
+    this.projectileSpeed = props.projectileSpeed ?? 200;
 
     this.setSize(16, 16).setInteractive().on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, this.reload);
     this.scene.add.existing(this);
@@ -38,7 +38,9 @@ export class Tower extends Phaser.GameObjects.Container {
   }
 
   protected createRangeIndicator(): Phaser.GameObjects.Image {
-    return this.scene.add.image(0, 0, 'range_indicator');
+    const indicator = this.scene.add.image(0, 0, 'range_indicator');
+    indicator.setVisible(false);
+    return indicator;
   }
 
   protected createTowerSprite(): Phaser.GameObjects.Sprite {

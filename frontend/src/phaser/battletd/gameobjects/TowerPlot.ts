@@ -16,7 +16,9 @@ export class TowerPlot extends Phaser.GameObjects.Container {
   }
 
   createHighlight(): Phaser.GameObjects.Rectangle {
-    return this.scene.add.rectangle(0, 0, 18, 18, 0x44ff44, 0.5);
+    const highlight = this.scene.add.rectangle(0, 0, 18, 18, 0x44ff44, 0.5);
+    highlight.setVisible(false);
+    return highlight;
   }
 
   createPlotImage(): Phaser.GameObjects.Image {
