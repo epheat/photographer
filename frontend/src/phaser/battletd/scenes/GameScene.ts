@@ -98,7 +98,9 @@ export default class GameScene extends Phaser.Scene {
             monsterPath.lineTo(monsterPathLayer?.objects[i].x!, monsterPathLayer?.objects[i].y!);
         }
 
-        const monster = new Monster(this, monsterPath, monsterPathStart!.x!, monsterPathStart!.y!);
+        const monster = new Monster(this, monsterPath, monsterPathStart!.x!, monsterPathStart!.y!, {
+            maxHp: 500,
+        });
         monster.startFollow(15000);
         this.monsters.add(monster);
 
@@ -121,7 +123,9 @@ export default class GameScene extends Phaser.Scene {
         const pathEnd = map.findObject(pathLayer!, object => object.name == "PathEnd");
         const monsterPath = new Phaser.Curves.Path(pathStart!.x!, pathStart!.y!).lineTo(pathEnd!.x!, pathEnd!.y!);
 
-        const monster = new Monster(this, monsterPath, pathStart!.x!, pathStart!.y!);
+        const monster = new Monster(this, monsterPath, pathStart!.x!, pathStart!.y!, {
+            maxHp: 500,
+        });
         monster.startFollow(8000);
         this.monsters.add(monster);
 
@@ -149,7 +153,9 @@ export default class GameScene extends Phaser.Scene {
             monsterPath.lineTo(monsterPathLayer?.objects[i].x!, monsterPathLayer?.objects[i].y!);
         }
 
-        const monster = new Monster(this, monsterPath, monsterPathStart!.x!, monsterPathStart!.y!);
+        const monster = new Monster(this, monsterPath, monsterPathStart!.x!, monsterPathStart!.y!, {
+            maxHp: 500,
+        });
         monster.startFollow(15000);
         this.monsters.add(monster);
 

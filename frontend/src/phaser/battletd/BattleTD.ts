@@ -11,7 +11,7 @@ export function launch(containerId: string): Phaser.Game {
         physics: {
             default: 'arcade',
             arcade: {
-                debug: false,
+                debug: true,
             }
         },
         scene: [GameScene, GameUI]

@@ -5,6 +5,7 @@ export interface TowerOptions {
   readonly reloadTime?: number,
   readonly range?: number,
   readonly projectileSpeed?: number,
+  readonly projectileDamage?: number,
 }
 
 export interface TowerProps extends TowerOptions {
@@ -19,6 +20,7 @@ export class Tower extends Phaser.GameObjects.Container {
   private readonly range: number;
   private readonly projectiles: Phaser.Physics.Arcade.Group;
   private readonly projectileSpeed: number;
+  private readonly projectileDamage: number;
   private reloading: boolean = false;
 
   constructor(scene: Phaser.Scene, x: number, y: number, props: TowerProps) {
@@ -30,11 +32,12 @@ export class Tower extends Phaser.GameObjects.Container {
     this.reloadTime = props.reloadTime ?? 400;
     this.range = props.range ?? 120;
     this.projectileSpeed = props.projectileSpeed ?? 200;
+    this.projectileDamage = props.projectileDamage ?? 40;
 
     this.setSize(16, 16).setInteractive().on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, this.reload);
     this.scene.add.existing(this);
     this.projectiles = this.scene.physics.add.group();
-    this.scene.physics.add.overlap(this.projectiles, (this.scene as GameScene).monsters, this.hitMonster);
+    this.scene.physics.add.overlap(this.projectiles, (this.scene as GameScene).monsters, this.hitMonster.bind(this));
   }
 
   protected createRangeIndicator(): Phaser.GameObjects.Image {
@@ -97,12 +100,17 @@ export class Tower extends Phaser.GameObjects.Container {
       return;
     }
 
-    const projectile = this.scene.physics.add.sprite( this.x, this.y, 'bomb')
-    this.projectiles.add(projectile);
+    const projectile = this.createProjectile();
     const angle = this.getLeadingAngleToFire(monster);
     this.scene.physics.velocityFromRotation(angle, this.projectileSpeed, projectile.body.velocity);
-    console.log("fired at " + monster.name);
     this.reload();
+  }
+
+  protected createProjectile(): Phaser.Types.Physics.Arcade.ImageWithDynamicBody {
+    const projectile = this.scene.physics.add.image( this.x, this.y, 'bomb');
+    projectile.setCircle(7);
+    this.projectiles.add(projectile);
+    return projectile;
   }
 
   // inspiration from https://www.reddit.com/r/gamedev/comments/3hgxs7/projectile_interception_how_ai_lead_their_shots/cu7lg92/
@@ -137,6 +145,7 @@ export class Tower extends Phaser.GameObjects.Container {
   protected hitMonster(projectile: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
                        monster: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile) {
     projectile.destroy();
+    (monster as Monster).takeDamage(this.projectileDamage);
   }
 
 }
