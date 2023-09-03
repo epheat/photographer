@@ -1,4 +1,4 @@
-import Phaser from 'phaser'
+import * as Phaser from 'phaser'
 import GameScene from './scenes/GameScene'
 import GameUI from './scenes/GameUI';
 
