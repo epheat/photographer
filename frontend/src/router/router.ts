@@ -5,9 +5,9 @@ import PostPage from "@/pages/PostPage.vue";
 import MusicPage from "@/pages/MusicPage.vue";
 import AuthPage from "@/pages/AuthPage.vue";
 import EditorPage from "@/pages/EditorPage.vue";
-import GamesPage from "@/pages/GamesPage";
-import SurvivorGamePage from "@/pages/SurvivorGamePage";
-import BattleTDPage from "@/pages/BattleTDPage";
+import GamesPage from "@/pages/GamesPage.vue";
+import SurvivorGamePage from "@/pages/SurvivorGamePage.vue";
+import BattleTDPage from "@/pages/BattleTDPage.vue";
 
 const routes = [
   { path: '/', component: Home },
