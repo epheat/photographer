@@ -56,6 +56,7 @@ export default class GameScene extends Phaser.Scene {
     }
 
     create() {
+        this.scene.launch('game-ui');
         this.monsters = this.physics.add.group({ runChildUpdate: true });
         this.towers = this.add.group({ runChildUpdate: true });
         this.createMap3();
