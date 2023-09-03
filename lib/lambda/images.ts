@@ -2,7 +2,7 @@ import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocument } from "@aws-sdk/lib-dynamodb";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from "aws-lambda";
+import { APIGatewayProxyEventV2, APIGatewayProxyEventV2WithJWTAuthorizer, APIGatewayProxyResultV2 } from "aws-lambda";
 import middy from '@middy/core';
 import { v4 as uuidv4 } from "uuid";
 import cloudwatchMetrics, { Context } from '@middy/cloudwatch-metrics';
@@ -11,14 +11,14 @@ import { getUserInfo } from "./auth";
 import { error, fault, success } from "./responses";
 
 const tableName = process.env.imageMetadataTableName;
-const ddbClient = new DynamoDBClient({ region: "us-east-1" });
+const ddbClient = new DynamoDBClient([{ region: "us-east-1" }]);
 // DynamoDB document client abstracts the mapping from ddb attributes into javascript objects.
 // docs: https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB/DocumentClient.html
 const ddb = DynamoDBDocument.from(ddbClient);
 
 const bucketName = process.env.imageDataBucketName;
 // https://aws.amazon.com/blogs/developer/generate-presigned-url-modular-aws-sdk-javascript/
-const s3Client = new S3Client({ region: "us-east-1" });
+const s3Client = new S3Client([{ region: "us-east-1" }]);
 
 /**
  * GET images/uploadUrl
@@ -26,7 +26,7 @@ const s3Client = new S3Client({ region: "us-east-1" });
  * returns a s3 presigned url which can be used to upload an image.
  * additionally, creates a record in the EHImageMetadata table.
  */
-async function getUploadUrlActivity(event: APIGatewayProxyEventV2, context: Context): Promise<APIGatewayProxyResultV2> {
+async function getUploadUrlActivity(event: APIGatewayProxyEventV2WithJWTAuthorizer, context: Context): Promise<APIGatewayProxyResultV2> {
   context.metrics.setProperty("RequestId", context.awsRequestId);
   const { username, sub } = getUserInfo(event);
   if (!event.pathParameters?.imageFileName) {

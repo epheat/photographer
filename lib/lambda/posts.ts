@@ -1,16 +1,16 @@
-import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
+import { APIGatewayProxyEventV2, APIGatewayProxyEventV2WithJWTAuthorizer, APIGatewayProxyResultV2 } from 'aws-lambda';
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocument } from "@aws-sdk/lib-dynamodb";
-import { fault, success, error, deny } from './responses';
+import { fault, success, error } from './responses';
 import { v4 as uuidv4 } from "uuid";
-import { getUserInfo, userHasGroup } from "./auth";
+import { getUserInfo } from "./auth";
 import middy from '@middy/core';
 import cloudwatchMetrics, { Context } from '@middy/cloudwatch-metrics';
 import { requireGroup } from './middleware';
 
 // TODO: environment variables for constants like table name
 const tableName = "PSPosts";
-const client = new DynamoDBClient({ region: "us-east-1" });
+const client = new DynamoDBClient([{ region: "us-east-1" }]);
 // DynamoDB document client abstracts the mapping from ddb attributes into javascript objects.
 // docs: https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB/DocumentClient.html
 const ddb = DynamoDBDocument.from(client);
@@ -98,7 +98,7 @@ async function getPost(event: APIGatewayProxyEventV2, context: Context): Promise
  * 
  * Creates a new post.
  */
-async function putPost(event: APIGatewayProxyEventV2, context: Context): Promise<APIGatewayProxyResultV2> {
+async function putPost(event: APIGatewayProxyEventV2WithJWTAuthorizer, context: Context): Promise<APIGatewayProxyResultV2> {
   context.metrics.setProperty("RequestId", context.awsRequestId);
   if (!event.body) {
     return error({ message: "Invalid Request: Missing post body." });

@@ -1,12 +1,12 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocument } from "@aws-sdk/lib-dynamodb";
-import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from "aws-lambda";
+import { APIGatewayProxyEventV2, APIGatewayProxyEventV2WithJWTAuthorizer, APIGatewayProxyResultV2 } from "aws-lambda";
 import {deny, error, fault, success} from "./responses";
 import {getUserInfo, userHasGroup} from "./auth";
 import {v4 as uuidv4} from "uuid";
 
 const tableName = "PSGameData";
-const client = new DynamoDBClient({ region: "us-east-1" });
+const client = new DynamoDBClient([{ region: "us-east-1" }]);
 // DynamoDB document client abstracts the mapping from ddb attributes into javascript objects.
 // docs: https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB/DocumentClient.html
 const ddb = DynamoDBDocument.from(client);
@@ -38,7 +38,7 @@ export async function getCast(event: APIGatewayProxyEventV2): Promise<APIGateway
  *
  * updates the survivor cast for the active season.
  */
-export async function setCast(event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> {
+export async function setCast(event: APIGatewayProxyEventV2WithJWTAuthorizer): Promise<APIGatewayProxyResultV2> {
     if (!userHasGroup(event, "Admins")) {
         return deny();
     }
@@ -104,7 +104,7 @@ export async function getPredictions(event: APIGatewayProxyEventV2): Promise<API
  *
  * edit or put a new game-prediction
  */
-export async function setPrediction(event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> {
+export async function setPrediction(event: APIGatewayProxyEventV2WithJWTAuthorizer): Promise<APIGatewayProxyResultV2> {
     if (!userHasGroup(event, "Admins")) { return deny(); }
     if (!event.body) { return error({ message: "Invalid Request: Missing post body." }); }
     const request = JSON.parse(event.body);
@@ -143,7 +143,7 @@ export async function setPrediction(event: APIGatewayProxyEventV2): Promise<APIG
  *
  * deletes a prediction. Revokes
  */
-export async function deletePrediction(event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> {
+export async function deletePrediction(event: APIGatewayProxyEventV2WithJWTAuthorizer): Promise<APIGatewayProxyResultV2> {
     if (!userHasGroup(event, "Admins")) { return deny(); }
     if (!event.body) { return error({ message: "Invalid Request: Missing body." }); }
     const request = JSON.parse(event.body);
@@ -274,7 +274,7 @@ export async function getUserPrediction(event: APIGatewayProxyEventV2): Promise<
  *
  * submit/edit your user prediction
  */
-export async function setUserPrediction(event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> {
+export async function setUserPrediction(event: APIGatewayProxyEventV2WithJWTAuthorizer): Promise<APIGatewayProxyResultV2> {
     const { username, sub } = getUserInfo(event);
     if (!event.body) { return error({ message: "Invalid Request: Missing post body." }); }
     const request = JSON.parse(event.body);
@@ -391,7 +391,7 @@ export async function setUserPrediction(event: APIGatewayProxyEventV2): Promise<
  *
  * complete a prediction by providing the results, awarding points to users.
  */
-export async function completePrediction(event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> {
+export async function completePrediction(event: APIGatewayProxyEventV2WithJWTAuthorizer): Promise<APIGatewayProxyResultV2> {
     if (!userHasGroup(event, "Admins")) { return deny(); }
     if (!event.body) { return error({ message: "Invalid Request: Missing body." }); }
     const request = JSON.parse(event.body);
@@ -623,7 +623,7 @@ export async function getUserInventory(event: APIGatewayProxyEventV2): Promise<A
     }
 }
 
-export async function getAllInventories(event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> {
+export async function getAllInventories(event: APIGatewayProxyEventV2WithJWTAuthorizer): Promise<APIGatewayProxyResultV2> {
     if (!userHasGroup(event, "Admins")) { return deny(); }
     const seasonId = await getActiveSeason();
     try {
@@ -647,7 +647,7 @@ export async function getAllInventories(event: APIGatewayProxyEventV2): Promise<
  *
  * update a user's inventory
  */
-export async function putItem(event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> {
+export async function putItem(event: APIGatewayProxyEventV2WithJWTAuthorizer): Promise<APIGatewayProxyResultV2> {
     if (!event.pathParameters?.sub) {
         return error({ message: "Invalid Request: Missing sub path parameter." });
     }

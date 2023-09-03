@@ -109,20 +109,20 @@ export class PSBackendStack extends Stack {
 
     // Lambda functions
     const getPostsLambda = new nodejs.NodejsFunction(this, 'get-posts-func', {
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       entry: path.join(__dirname, "./lambda/posts.ts"),
       handler: 'getAll',
     });
     postsTable.grantReadData(getPostsLambda);
     const getPostLambda = new nodejs.NodejsFunction(this, 'get-post-func', {
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       entry: path.join(__dirname, "./lambda/posts.ts"),
       handler: 'get',
     });
     postsTable.grantReadData(getPostLambda);
 
     const createPostLambda = new nodejs.NodejsFunction(this, 'put-post-func', {
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       entry: path.join(__dirname, "./lambda/posts.ts"),
       handler: 'put',
     });
@@ -130,81 +130,81 @@ export class PSBackendStack extends Stack {
 
     // survivor functions
     const getCastLambda = new nodejs.NodejsFunction(this, 'get-cast-func', {
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       entry: path.join(__dirname, "./lambda/survivor.ts"),
       handler: 'getCast',
     });
     gameDataTable.grantReadData(getCastLambda);
     const setCastLambda = new nodejs.NodejsFunction(this, 'set-cast-func', {
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       entry: path.join(__dirname, "./lambda/survivor.ts"),
       handler: 'setCast',
     });
     gameDataTable.grantReadWriteData(setCastLambda);
 
     const getPredictionsLambda = new nodejs.NodejsFunction(this, 'get-predictions-func', {
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       entry: path.join(__dirname, "./lambda/survivor.ts"),
       handler: 'getPredictions',
     });
     gameDataTable.grantReadData(getPredictionsLambda);
     const setPredictionLambda = new nodejs.NodejsFunction(this, 'set-prediction-func', {
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       entry: path.join(__dirname, "./lambda/survivor.ts"),
       handler: 'setPrediction',
     });
     gameDataTable.grantReadWriteData(setPredictionLambda);
     const deletePredictionLambda = new nodejs.NodejsFunction(this, 'del-prediction-func', {
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       entry: path.join(__dirname, "./lambda/survivor.ts"),
       handler: 'deletePrediction',
     });
     gameDataTable.grantReadWriteData(deletePredictionLambda);
     const getUserPredictionsLambda = new nodejs.NodejsFunction(this, 'get-user-predictions-func', {
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       entry: path.join(__dirname, "./lambda/survivor.ts"),
       handler: 'getUserPredictions',
     });
     gameDataTable.grantReadData(getUserPredictionsLambda);
     const getUserPredictionLambda = new nodejs.NodejsFunction(this, 'get-user-prediction-func', {
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       entry: path.join(__dirname, "./lambda/survivor.ts"),
       handler: 'getUserPrediction',
     });
     gameDataTable.grantReadData(getUserPredictionLambda);
     const setUserPredictionLambda = new nodejs.NodejsFunction(this, 'set-user-prediction-func', {
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       entry: path.join(__dirname, "./lambda/survivor.ts"),
       handler: 'setUserPrediction',
     });
     gameDataTable.grantReadWriteData(setUserPredictionLambda);
     const completePredictionLambda = new nodejs.NodejsFunction(this, 'complete-prediction-func', {
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       entry: path.join(__dirname, "./lambda/survivor.ts"),
       handler: 'completePrediction',
       timeout: Duration.seconds(10), // it can take a while to loop through all the players.
     });
     gameDataTable.grantReadWriteData(completePredictionLambda);
     const getLeaderboardLambda = new nodejs.NodejsFunction(this, 'get-leaderboard-func', {
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       entry: path.join(__dirname, "./lambda/survivor.ts"),
       handler: 'getLeaderboard',
     });
     gameDataTable.grantReadData(getLeaderboardLambda);
     const getUserInventoryLambda = new nodejs.NodejsFunction(this, 'get-user-inventory-func', {
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       entry: path.join(__dirname, "./lambda/survivor.ts"),
       handler: 'getUserInventory',
     });
     gameDataTable.grantReadData(getUserInventoryLambda);
     const getAllUserInventoriesLambda = new nodejs.NodejsFunction(this, 'get-all-user-inventories-func', {
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       entry: path.join(__dirname, "./lambda/survivor.ts"),
       handler: 'getAllInventories',
     });
     gameDataTable.grantReadData(getAllUserInventoriesLambda);
     const putItemLambda = new nodejs.NodejsFunction(this, 'put-item-func', {
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_16_X,
       entry: path.join(__dirname, "./lambda/survivor.ts"),
       handler: 'putItem',
     });
@@ -212,7 +212,7 @@ export class PSBackendStack extends Stack {
 
     // images functions
     const getImageUploadUrl = new nodejs.NodejsFunction(this, 'get-image-upload-url-func', {
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       entry: path.join(__dirname, "./lambda/images.ts"),
       handler: 'getUploadUrl',
       environment: {
@@ -223,7 +223,7 @@ export class PSBackendStack extends Stack {
     imageMetadataTable.grantReadWriteData(getImageUploadUrl);
     staticDataBucket.grantReadWrite(getImageUploadUrl);
     const putImageMetadata = new nodejs.NodejsFunction(this, 'put-image-metadata-func', {
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       entry: path.join(__dirname, "./lambda/images.ts"),
       handler: 'putImageMetadata',
       environment: {
@@ -233,7 +233,7 @@ export class PSBackendStack extends Stack {
     });
     imageMetadataTable.grantReadWriteData(putImageMetadata);
     const getAllImagesMetadata = new nodejs.NodejsFunction(this, 'get-all-images-metadata-func', {
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       entry: path.join(__dirname, "./lambda/images.ts"),
       handler: 'getAllImages',
       environment: {
