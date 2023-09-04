@@ -18,6 +18,7 @@ import { TowerPlot } from "@/phaser/battletd/gameobjects/TowerPlot";
 import { KeyboardMovementComponent } from "@/phaser/battletd/components/KeyboardMovementComponent";
 import { CardinalAnimationComponent } from "@/phaser/battletd/components/CardinalAnimationComponent";
 import { Monster } from "@/phaser/battletd/gameobjects/Monster";
+import { eventBus, events } from "@/phaser/battletd/events/EventBus";
 
 export default class GameScene extends Phaser.Scene {
 
@@ -26,6 +27,9 @@ export default class GameScene extends Phaser.Scene {
     private woolly!: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
     public monsters!: Phaser.Physics.Arcade.Group;
     public towers!: Phaser.GameObjects.Group;
+
+    private monsterPath!: Phaser.Curves.Path;
+    private monsterPathStart!: Phaser.Types.Tilemaps.TiledObject;
 
     constructor() {
         super('game-scene')
@@ -60,6 +64,7 @@ export default class GameScene extends Phaser.Scene {
         this.monsters = this.physics.add.group({ runChildUpdate: true });
         this.towers = this.add.group({ runChildUpdate: true });
         this.createMap3();
+        eventBus.on(events.newWave, this.spawnNewWave, this);
 
         // this.woolly = this.physics.add.sprite(100, 100, 'woolly');
         // this.createWoollyAnimations(this.woolly)
@@ -148,13 +153,13 @@ export default class GameScene extends Phaser.Scene {
         const pathLayer = map.createLayer('Path', terrainTileset!, 0, 0);
         const castleLayer = map.createLayer('Castle', buildingsTileset!, 0, 0);
         const monsterPathLayer = map.getObjectLayer('MonsterPath');
-        const monsterPathStart = monsterPathLayer?.objects[0];
-        const monsterPath = new Phaser.Curves.Path(monsterPathStart!.x, monsterPathStart!.y);
+        this.monsterPathStart = monsterPathLayer?.objects[0]!;
+        this.monsterPath = new Phaser.Curves.Path(this.monsterPathStart!.x, this.monsterPathStart!.y);
         for (let i = 1; i < monsterPathLayer?.objects.length!; i++) {
-            monsterPath.lineTo(monsterPathLayer?.objects[i].x!, monsterPathLayer?.objects[i].y!);
+            this.monsterPath.lineTo(monsterPathLayer?.objects[i].x!, monsterPathLayer?.objects[i].y!);
         }
 
-        const monster = new Monster(this, monsterPath, monsterPathStart!.x!, monsterPathStart!.y!, {
+        const monster = new Monster(this, this.monsterPath, this.monsterPathStart!.x!, this.monsterPathStart!.y!, {
             maxHp: 500,
         });
         monster.startFollow(15000);
@@ -190,5 +195,14 @@ export default class GameScene extends Phaser.Scene {
             frames: this.anims.generateFrameNumbers('woolly_frames', {start: 12, end: 15}),
             repeat: -1
         });
+    }
+
+    private spawnNewWave() {
+        const monster = new Monster(this, this.monsterPath, this.monsterPathStart!.x!, this.monsterPathStart!.y!, {
+            maxHp: 500,
+        });
+        monster.startFollow(15000);
+        this.monsters.add(monster);
+
     }
 }
