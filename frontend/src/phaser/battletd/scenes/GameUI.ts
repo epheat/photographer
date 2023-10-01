@@ -8,6 +8,7 @@ export default class GameUI extends Phaser.Scene {
   private shopButton!: UIButton;
   private waveButton!: UIButton;
   private shop!: Phaser.GameObjects.Container;
+  private bench!: Phaser.GameObjects.Container;
 
   constructor() {
     super('game-ui')
@@ -32,7 +33,7 @@ export default class GameUI extends Phaser.Scene {
     })
 
     this.shop = this.createShop();
-
+    this.bench = this.createBench();
   }
 
   createShop(): Phaser.GameObjects.Container {
@@ -40,6 +41,13 @@ export default class GameUI extends Phaser.Scene {
     const background = this.add.rectangle(220, 100, 500, 300, 0xdddddd, 0.8);
     shop.add(background);
     return shop;
+  }
+
+  createBench(): Phaser.GameObjects.Container {
+    const bench = this.add.container(320, 420);
+    const back = this.add.rectangle(0, 0, 600, 80, 0xdddddd, 0.8);
+    bench.add(back);
+    return bench;
   }
 
   toggleShop() {

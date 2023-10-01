@@ -1,16 +1,18 @@
-
+import { eventBus, events } from "@/phaser/battletd/events/EventBus";
 
 export interface MonsterProps {
   maxHp: number;
   hpBarBaseScale?: number;
+  castleDmg?: number;
 }
 
 export class Monster extends Phaser.GameObjects.PathFollower {
   public velocity: Phaser.Math.Vector2 = new Phaser.Math.Vector2();
   private readonly hpBar: Phaser.GameObjects.Rectangle;
-  private maxHp: number;
+  private readonly maxHp: number;
   private hp: number;
-  private hpBarBaseScale: number;
+  private readonly hpBarBaseScale: number;
+  public readonly castleDmg: number;
 
   constructor(scene: Phaser.Scene, path: Phaser.Curves.Path, x: number, y: number, props: MonsterProps) {
     super(scene, path, x, y, 'orc');
@@ -21,6 +23,7 @@ export class Monster extends Phaser.GameObjects.PathFollower {
 
     this.maxHp = props.maxHp;
     this.hp = props.maxHp;
+    this.castleDmg = props.castleDmg ?? 1;
   }
 
   update(time: number, delta: number) {
@@ -28,6 +31,11 @@ export class Monster extends Phaser.GameObjects.PathFollower {
     // average the new and previous velocity to make it smoother.
     this.velocity = this.velocity.add(newVelocity).scale(0.5);
     this.hpBar.setPosition(this.x, this.y + this.displayHeight);
+
+    if (this.pathVector.equals(this.path.getEndPoint())) {
+      eventBus.emit(events.castleDmg, this);
+      this.destroy();
+    }
   }
 
   public takeDamage(dmg: number) {
@@ -36,7 +44,15 @@ export class Monster extends Phaser.GameObjects.PathFollower {
     this.hpBar.setScale(newScale, 1);
     if (this.hp <= 0) {
       this.destroy();
-      this.hpBar.destroy();
     }
+  }
+
+  public finishTween() {
+    console.log("hello");
+  }
+
+  public destroy() {
+    super.destroy();
+    this.hpBar.destroy();
   }
 }

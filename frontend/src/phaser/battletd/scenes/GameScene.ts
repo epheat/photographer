@@ -19,6 +19,7 @@ import { KeyboardMovementComponent } from "@/phaser/battletd/components/Keyboard
 import { CardinalAnimationComponent } from "@/phaser/battletd/components/CardinalAnimationComponent";
 import { Monster } from "@/phaser/battletd/gameobjects/Monster";
 import { eventBus, events } from "@/phaser/battletd/events/EventBus";
+import { CastleHp } from "@/phaser/battletd/gameobjects/CastleHp";
 
 export default class GameScene extends Phaser.Scene {
 
@@ -64,6 +65,8 @@ export default class GameScene extends Phaser.Scene {
         this.monsters = this.physics.add.group({ runChildUpdate: true });
         this.towers = this.add.group({ runChildUpdate: true });
         this.createMap3();
+
+        const castleHp = new CastleHp(this, 460, 50, { maxHp: 20 });
         eventBus.on(events.newWave, this.spawnNewWave, this);
 
         // this.woolly = this.physics.add.sprite(100, 100, 'woolly');
@@ -154,6 +157,7 @@ export default class GameScene extends Phaser.Scene {
         const castleLayer = map.createLayer('Castle', buildingsTileset!, 0, 0);
         const monsterPathLayer = map.getObjectLayer('MonsterPath');
         this.monsterPathStart = monsterPathLayer?.objects[0]!;
+        console.log(this.monsterPathStart);
         this.monsterPath = new Phaser.Curves.Path(this.monsterPathStart!.x, this.monsterPathStart!.y);
         for (let i = 1; i < monsterPathLayer?.objects.length!; i++) {
             this.monsterPath.lineTo(monsterPathLayer?.objects[i].x!, monsterPathLayer?.objects[i].y!);
