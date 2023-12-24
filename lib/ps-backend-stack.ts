@@ -204,7 +204,7 @@ export class PSBackendStack extends Stack {
     });
     gameDataTable.grantReadData(getAllUserInventoriesLambda);
     const putItemLambda = new nodejs.NodejsFunction(this, 'put-item-func', {
-      runtime: lambda.Runtime.NODEJS_16_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       entry: path.join(__dirname, "./lambda/survivor.ts"),
       handler: 'putItem',
     });
