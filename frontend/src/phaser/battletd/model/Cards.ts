@@ -1,4 +1,4 @@
-import {TowerType} from "@/phaser/battletd/model/Tower";
+import {TowerId} from "@/phaser/battletd/model/Towers";
 
 export enum RarityType {
     Common = "common",
@@ -9,31 +9,36 @@ export enum RarityType {
 }
 
 export interface TowerCard {
-    readonly towerType: TowerType;
+    readonly towerId: TowerId;
     readonly rarity: RarityType;
     readonly cost?: number;
 }
 
-export const CannonTowerCard: TowerCard = {
-    towerType: TowerType.Cannon,
-    rarity: RarityType.Uncommon,
-    cost: 2,
-}
-
-export const CrossbowTowerCard: TowerCard = {
-    towerType: TowerType.Crossbow,
+export const rustyCannonTowerCard: TowerCard = {
+    towerId: TowerId.RustyCannon,
     rarity: RarityType.Common,
     cost: 1,
 }
 
-export const LightningTowerCard: TowerCard = {
-    towerType: TowerType.Lightning,
-    rarity: RarityType.Epic,
-    cost: 3,
+export const blastMortarTowerCard: TowerCard = {
+    towerId: TowerId.BlastMortar,
+    rarity: RarityType.Common,
+    cost: 2,
 }
 
-export const FireTowerCard: TowerCard = {
-    towerType: TowerType.Fire,
-    rarity: RarityType.Rare,
-    cost: 2,
+export const pelletGunTowerCard: TowerCard = {
+    towerId: TowerId.PelletGun,
+    rarity: RarityType.Common,
+    cost: 1,
+}
+
+
+const towerCards: TowerCard[] = [
+    rustyCannonTowerCard,
+    blastMortarTowerCard,
+    pelletGunTowerCard,
+]
+
+export function getTowerCard(towerId: TowerId): TowerCard | undefined {
+    return towerCards.find(card => card.towerId == towerId);
 }

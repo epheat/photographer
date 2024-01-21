@@ -63,8 +63,12 @@ export default {
 }
 
 .shop-container {
-  width: 80%;
+  width: 100%;
   margin: 10px auto;
+  .battletd-shop {
+    width: 80%;
+    margin: 0 auto;
+  }
 }
 
 .bench-container {

@@ -24,8 +24,6 @@ import { CastleHp } from "@/phaser/battletd/gameobjects/CastleHp";
 export default class GameScene extends Phaser.Scene {
 
     private components!: ComponentSystem;
-    private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
-    private woolly!: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
     public monsters!: Phaser.Physics.Arcade.Group;
     public towers!: Phaser.GameObjects.Group;
 
@@ -37,8 +35,6 @@ export default class GameScene extends Phaser.Scene {
     }
 
     preload() {
-        this.load.spritesheet('woolly_frames', woolly, { frameWidth: 16, frameHeight: 16 } );
-
         this.load.image('bomb', bomb);
         this.load.image('star', star);
         this.load.image('plot', plot);
@@ -56,90 +52,19 @@ export default class GameScene extends Phaser.Scene {
         this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
             this.components.destroy();
         });
-
-        this.cursors = this.input.keyboard!.createCursorKeys();
     }
 
     create() {
-        // this.scene.launch('game-ui');
         this.monsters = this.physics.add.group({ runChildUpdate: true });
         this.towers = this.add.group({ runChildUpdate: true });
         this.createMap3();
 
         const castleHp = new CastleHp(this, 460, 50, { maxHp: 20 });
         eventBus.on(events.newWave, this.spawnNewWave, this);
-
-        // this.woolly = this.physics.add.sprite(100, 100, 'woolly');
-        // this.createWoollyAnimations(this.woolly)
-        // this.components.addComponent(this.woolly, new KeyboardMovementComponent(this.cursors));
-        // this.components.addComponent(this.woolly, new CardinalAnimationComponent({
-        //     lAnim: 'walk-left',
-        //     rAnim: 'walk-right',
-        //     uAnim: 'walk-up',
-        //     dAnim: 'walk-down'
-        // }));
-
-        // this.physics.add.overlap(this.woolly, this.monsters);
-
-        // this.woolly.play('walk-right');
     }
 
     update(time: number, delta: number) {
         this.components.update(delta);
-    }
-
-    private createMap1() {
-        const map = this.make.tilemap({ key: 'map1', tileWidth: 16, tileHeight: 16 });
-        const forestTileset = map.addTilesetImage('Forest Tileset', 'forest');
-        const waterTileset = map.addTilesetImage('Water Tileset', 'water');
-        const settlementTileset = map.addTilesetImage('Settlement', 'settlement');
-        const forestPropsTileset = map.addTilesetImage('Forest Props', 'props');
-        const baseLayer = map.createLayer('Base', forestTileset!, 0, 0);
-        const waterLayer = map.createLayer('Water', waterTileset!, 0, 0);
-        const grassLayer = map.createLayer('Grass', forestTileset!, 0, 0);
-        const pathLayer = map.createLayer('Path', settlementTileset!, 0, 0);
-        const rocksLayer = map.createLayer('Rocks/Trees', forestPropsTileset!, 0, 0);
-        const castleLayer = map.createLayer('Castle', settlementTileset!, 0, 0);
-        const monsterPathLayer = map.getObjectLayer('MonsterPath');
-        const monsterPathStart = monsterPathLayer?.objects[0];
-        const monsterPath = new Phaser.Curves.Path(monsterPathStart!.x, monsterPathStart!.y);
-        for (let i = 1; i < monsterPathLayer?.objects.length!; i++) {
-            monsterPath.lineTo(monsterPathLayer?.objects[i].x!, monsterPathLayer?.objects[i].y!);
-        }
-
-        const monster = new Monster(this, monsterPath, monsterPathStart!.x!, monsterPathStart!.y!, {
-            maxHp: 500,
-        });
-        monster.startFollow(15000);
-        this.monsters.add(monster);
-
-        // https://newdocs.phaser.io/docs/3.60.0/focus/Phaser.Tilemaps.Tilemap-createFromObjects
-        const plots = map.createFromObjects('Towers', { classType: TowerPlot, key: 'plot' });
-    }
-
-    private createMap2() {
-        const map = this.make.tilemap({ key: 'map2', tileWidth: 16, tileHeight: 16 });
-        const terrainTileset = map.addTilesetImage('terrain', 'terrain');
-        const buildingsTileset = map.addTilesetImage('buildings', 'buildings');
-        const natureTileset = map.addTilesetImage('nature', 'nature');
-        const waterLayer = map.createLayer('Water', terrainTileset!, 0, 0);
-        const sandLayer = map.createLayer('Sand', terrainTileset!, 0, 0);
-        const grassLayer = map.createLayer('Grass', terrainTileset!, 0, 0);
-        const propsLayer = map.createLayer('Props', natureTileset!, 0, 0);
-        const castleLayer = map.createLayer('Castle', buildingsTileset!, 0, 0);
-        const pathLayer = map.getObjectLayer('MonsterPath');
-        const pathStart = map.findObject(pathLayer!, object => object.name == "PathStart");
-        const pathEnd = map.findObject(pathLayer!, object => object.name == "PathEnd");
-        const monsterPath = new Phaser.Curves.Path(pathStart!.x!, pathStart!.y!).lineTo(pathEnd!.x!, pathEnd!.y!);
-
-        const monster = new Monster(this, monsterPath, pathStart!.x!, pathStart!.y!, {
-            maxHp: 500,
-        });
-        monster.startFollow(8000);
-        this.monsters.add(monster);
-
-        // https://newdocs.phaser.io/docs/3.60.0/focus/Phaser.Tilemaps.Tilemap-createFromObjects
-        const plots = map.createFromObjects('Towers', { classType: TowerPlot, key: 'plot' });
     }
 
     private createMap3() {
@@ -157,48 +82,13 @@ export default class GameScene extends Phaser.Scene {
         const castleLayer = map.createLayer('Castle', buildingsTileset!, 0, 0);
         const monsterPathLayer = map.getObjectLayer('MonsterPath');
         this.monsterPathStart = monsterPathLayer?.objects[0]!;
-        console.log(this.monsterPathStart);
         this.monsterPath = new Phaser.Curves.Path(this.monsterPathStart!.x, this.monsterPathStart!.y);
         for (let i = 1; i < monsterPathLayer?.objects.length!; i++) {
             this.monsterPath.lineTo(monsterPathLayer?.objects[i].x!, monsterPathLayer?.objects[i].y!);
         }
 
-        const monster = new Monster(this, this.monsterPath, this.monsterPathStart!.x!, this.monsterPathStart!.y!, {
-            maxHp: 500,
-        });
-        monster.startFollow(15000);
-        this.monsters.add(monster);
-
         // https://newdocs.phaser.io/docs/3.60.0/focus/Phaser.Tilemaps.Tilemap-createFromObjects
         const plots = map.createFromObjects('Towers', { classType: TowerPlot, key: 'plot' });
-    }
-
-
-    private createWoollyAnimations(woolly: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody) {
-        woolly.anims.create({
-            key: 'walk-right',
-            frameRate: 6,
-            frames: this.anims.generateFrameNumbers('woolly_frames', {start: 0, end: 3}),
-            repeat: -1
-        });
-        woolly.anims.create({
-            key: 'walk-left',
-            frameRate: 6,
-            frames: this.anims.generateFrameNumbers('woolly_frames', {start: 4, end: 7}),
-            repeat: -1
-        });
-        woolly.anims.create({
-            key: 'walk-down',
-            frameRate: 6,
-            frames: this.anims.generateFrameNumbers('woolly_frames', {start: 8, end: 11}),
-            repeat: -1
-        });
-        woolly.anims.create({
-            key: 'walk-up',
-            frameRate: 6,
-            frames: this.anims.generateFrameNumbers('woolly_frames', {start: 12, end: 15}),
-            repeat: -1
-        });
     }
 
     private spawnNewWave() {
