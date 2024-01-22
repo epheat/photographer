@@ -4,22 +4,36 @@
         v-for="(card, i) in cards"
         :key="i"
         v-bind="card"
+        :selected="selectedCard === i"
+        @clickTowerCard="toggleSelected(i)"
     />
   </div>
 </template>
 <script>
 import TowerCard from "@/components/battletd/TowerCard.vue";
-import {CannonTowerCard, CrossbowTowerCard} from "@/phaser/battletd/model/Cards";
+import {rustyCannonTowerCard, pelletGunTowerCard, getTowerCard} from "@/phaser/battletd/model/Cards";
+import {eventBus, events} from "@/phaser/battletd/events/EventBus";
 
 export default {
   components: {TowerCard},
   props: {
-
+    cards: Array,
+    selectedCard: Number,
   },
   data() {
     return {
-      cards: [CannonTowerCard, CannonTowerCard, CrossbowTowerCard, CrossbowTowerCard],
+
     }
+  },
+  methods: {
+    getTowerCard,
+    toggleSelected(index) {
+      if (this.selectedCard === index) {
+        eventBus.emit(events.selectCard, undefined);
+      } else {
+        eventBus.emit(events.selectCard, index);
+      }
+    },
   },
   computed: {
 
@@ -42,11 +56,5 @@ export default {
   position: relative;
 
   bottom: 0;
-  transition: all 0.2s;
-
-  &:hover {
-    bottom: 5px;
-    transform: scale(1.05);
-  }
 }
 </style>

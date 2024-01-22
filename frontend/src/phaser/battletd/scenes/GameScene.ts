@@ -1,6 +1,4 @@
 import Phaser from 'phaser'
-
-import woolly from "@/phaser/battletd/assets/tiles/miniworld/woolly.png";
 import miniTerrainTileset from "@/phaser/battletd/assets/tiles/miniworld/terrain.png";
 import miniBuildingsTileset from "@/phaser/battletd/assets/tiles/miniworld/buildings.png";
 import miniNatureTileset from "@/phaser/battletd/assets/tiles/miniworld/nature.png";
@@ -14,12 +12,12 @@ import map1 from "@/phaser/battletd/tiled/map1.json";
 import map2 from "@/phaser/battletd/tiled/map2.json";
 import map3 from "@/phaser/battletd/tiled/map3.json";
 import ComponentSystem from "@/phaser/battletd/system/ComponentSystem";
-import { TowerPlot } from "@/phaser/battletd/gameobjects/TowerPlot";
-import { KeyboardMovementComponent } from "@/phaser/battletd/components/KeyboardMovementComponent";
-import { CardinalAnimationComponent } from "@/phaser/battletd/components/CardinalAnimationComponent";
-import { Monster } from "@/phaser/battletd/gameobjects/Monster";
-import { eventBus, events } from "@/phaser/battletd/events/EventBus";
-import { CastleHp } from "@/phaser/battletd/gameobjects/CastleHp";
+import {TowerPlot} from "@/phaser/battletd/gameobjects/TowerPlot";
+import {Monster} from "@/phaser/battletd/gameobjects/Monster";
+import {eventBus, events} from "@/phaser/battletd/events/EventBus";
+import {BattleTDGameState} from "@/phaser/battletd/model/GameState";
+import {TowerId} from "@/phaser/battletd/model/Towers";
+import {BattleTDGame} from "@/phaser/battletd/BattleTD";
 
 export default class GameScene extends Phaser.Scene {
 
@@ -29,6 +27,8 @@ export default class GameScene extends Phaser.Scene {
 
     private monsterPath!: Phaser.Curves.Path;
     private monsterPathStart!: Phaser.Types.Tilemaps.TiledObject;
+
+    public gameState!: BattleTDGameState;
 
     constructor() {
         super('game-scene')
@@ -59,8 +59,11 @@ export default class GameScene extends Phaser.Scene {
         this.towers = this.add.group({ runChildUpdate: true });
         this.createMap3();
 
-        const castleHp = new CastleHp(this, 460, 50, { maxHp: 20 });
+        this.gameState = (this.game as BattleTDGame).gameState;
+
         eventBus.on(events.newWave, this.spawnNewWave, this);
+        eventBus.on(events.monsterReachedPathEnd, this.takeCastleDamage, this);
+        eventBus.on(events.selectCard, this.selectCard, this);
     }
 
     update(time: number, delta: number) {
@@ -98,5 +101,13 @@ export default class GameScene extends Phaser.Scene {
         monster.startFollow(15000);
         this.monsters.add(monster);
 
+    }
+
+    private takeCastleDamage(monster: Monster): void {
+        this.gameState.playerState.castle.hp -= monster.castleDmg;
+    }
+
+    private selectCard(selectedIndex: number): void {
+        this.gameState.playerState.selectedCard = selectedIndex;
     }
 }

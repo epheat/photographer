@@ -1,8 +1,8 @@
 import * as Phaser from 'phaser'
 import GameScene from './scenes/GameScene'
-import GameUI from './scenes/GameUI';
+import {BattleTDGameState} from "@/phaser/battletd/model/GameState";
 
-export function launch(containerId: string): Phaser.Game {
+export function launch(containerId: string, gameState: BattleTDGameState): BattleTDGame {
     const config: Phaser.Types.Core.GameConfig = {
         type: Phaser.AUTO,
         width: 40*16,
@@ -14,7 +14,15 @@ export function launch(containerId: string): Phaser.Game {
                 debug: false,
             }
         },
-        scene: [GameScene, GameUI]
+        scene: [GameScene]
     }
-    return new Phaser.Game(config);
+    return new BattleTDGame(config, gameState);
+}
+
+export class BattleTDGame extends Phaser.Game {
+    public gameState: BattleTDGameState;
+    constructor(config: Phaser.Types.Core.GameConfig, gameState: BattleTDGameState) {
+        super(config);
+        this.gameState = gameState;
+    }
 }

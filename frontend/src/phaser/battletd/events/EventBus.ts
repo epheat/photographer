@@ -1,7 +1,10 @@
 import Phaser from 'phaser';
 
-export const events = {
+export const events: any = {
   newWave: "new-wave",
-  castleDmg: "castle-dmg",
+  monsterReachedPathEnd: "monster-reached-path-end",
+  playerStateUpdate: "player-state-update",
+
+  selectCard: "select-card",
 }
-export const eventBus = new Phaser.Events.EventEmitter();
+export const eventBus: Phaser.Events.EventEmitter = new Phaser.Events.EventEmitter();

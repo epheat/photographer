@@ -1,7 +1,10 @@
 <template>
-  <div class="battletd-tower-card" :class="`rarity-${rarity}`">
+  <div class="battletd-tower-card"
+       :class="[`rarity-${rarity}`, { selected: selected }]"
+       @click="$emit('clickTowerCard', towerId)"
+  >
     <div class="tower-image">
-      {{ towerType }}
+      {{ towerId }}
     </div>
     <div class="cost">
       <div class="coin" v-for="i in cost" :key="i"/>
@@ -11,9 +14,10 @@
 <script>
 export default {
   props: {
-    towerType: String,
-    cost: Number,
+    towerId: String,
     rarity: String,
+    cost: Number,
+    selected: Boolean,
   },
   data() {
     return {
@@ -21,9 +25,6 @@ export default {
     }
   },
   computed: {
-    TowerType() {
-      return TowerType
-    }
 
   }
 }
@@ -35,10 +36,13 @@ export default {
   background-color: #cae5ff;
   width: 80px;
   height: 90px;
+  outline: 0 solid #83ff76;
 
-  transition: box-shadow 0.2s;
+  transition: all 0.2s;
 
   &:hover {
+    bottom: 5px;
+    transform: scale(1.05);
     box-shadow: 0 1px 2px 2px rgba(60, 60, 60, 0.6);
   }
 
@@ -46,6 +50,7 @@ export default {
     width: 74px;
     height: 70px;
     margin: 3px;
+    text-align: center;
     border-top-right-radius: 14px;
     background-color: #96deff;
     box-shadow: inset 0 0 2px rgba(40, 40, 40, 0.8);
@@ -91,6 +96,20 @@ export default {
     .tower-image {
       background-color: #ffc296;
     }
+  }
+
+  &.selected {
+    outline: 4px solid #83ff76;
+    animation: selected 1s linear infinite alternate;
+  }
+}
+
+@keyframes selected {
+  from {
+    outline-color: #83ff76;
+  }
+  to {
+    outline-color: #e3ff50;
   }
 }
 

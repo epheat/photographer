@@ -33,7 +33,7 @@ export class Monster extends Phaser.GameObjects.PathFollower {
     this.hpBar.setPosition(this.x, this.y + this.displayHeight);
 
     if (this.pathVector.equals(this.path.getEndPoint())) {
-      eventBus.emit(events.castleDmg, this);
+      eventBus.emit(events.monsterReachedPathEnd, this);
       this.destroy();
     }
   }

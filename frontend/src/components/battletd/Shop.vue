@@ -24,17 +24,17 @@
 </template>
 <script>
 import Button from "@/components/Button.vue";
-import {CannonTowerCard, CrossbowTowerCard, FireTowerCard, LightningTowerCard} from "@/phaser/battletd/model/Cards";
+import {rustyCannonTowerCard, blastMortarTowerCard, pelletGunTowerCard} from "@/phaser/battletd/model/Cards";
 import TowerCard from "@/components/battletd/TowerCard.vue";
 
 export default {
   components: {Button, TowerCard},
   props: {
-
+    cards: Array,
   },
   data() {
     return {
-      cards: [CannonTowerCard, CrossbowTowerCard, FireTowerCard, LightningTowerCard]
+
     }
   },
   computed: {
