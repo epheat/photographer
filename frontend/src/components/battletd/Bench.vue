@@ -11,7 +11,6 @@
 </template>
 <script>
 import TowerCard from "@/components/battletd/TowerCard.vue";
-import {rustyCannonTowerCard, pelletGunTowerCard, getTowerCard} from "@/phaser/battletd/model/Cards";
 import {eventBus, events} from "@/phaser/battletd/events/EventBus";
 
 export default {
@@ -26,7 +25,6 @@ export default {
     }
   },
   methods: {
-    getTowerCard,
     toggleSelected(index) {
       if (this.selectedCard === index) {
         eventBus.emit(events.selectCard, undefined);

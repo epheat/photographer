@@ -112,11 +112,4 @@ export default {
     outline-color: #e3ff50;
   }
 }
-
-.coin {
-  width: 8px;
-  height: 8px;
-  border-radius: 8px;
-  background-color: #fdfd85;
-}
 </style>

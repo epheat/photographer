@@ -11,7 +11,7 @@ export enum RarityType {
 export interface TowerCard {
     readonly towerId: TowerId;
     readonly rarity: RarityType;
-    readonly cost?: number;
+    readonly cost: number;
 }
 
 export const rustyCannonTowerCard: TowerCard = {

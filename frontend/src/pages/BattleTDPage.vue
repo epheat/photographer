@@ -26,7 +26,7 @@ export default {
     }
   },
   mounted() {
-    this.gameState.playerState.bench = [
+    this.gameState.shopState.offerings = [
         TowerId.BlastMortar,
         TowerId.RustyCannon,
         TowerId.PelletGun,

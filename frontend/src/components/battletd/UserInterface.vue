@@ -4,6 +4,10 @@
       <div class="buttons">
         <Button @click="toggleShop">Shop</Button>
         <Button @click="spawnWave">New Wave</Button>
+        <div class="player-gold">
+          <div class="coin" />
+          <div class="amount">{{ gameState.playerState.gold }}</div>
+        </div>
       </div>
       <div class="wave-info">
 
@@ -59,7 +63,7 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .battletd-ui {
   position: absolute;
   width: 100%;
@@ -95,4 +99,28 @@ export default {
 .bench-container {
 
 }
+
+.player-gold {
+  width: 144px;
+  height: 28px;
+  padding-left: 5px;
+  display: flex;
+  align-items: center;
+
+  background-color: rgba(200, 200, 200, 0.8);
+  border-radius: 5px;
+  box-sizing: border-box;
+  .amount {
+    margin-left: 5px;
+  }
+}
+
+.coin {
+  width: 8px;
+  height: 8px;
+  border-radius: 8px;
+  background-image: radial-gradient(#f1f199, #c9c946);
+  outline: 1px outset #c9c946;
+}
+
 </style>

@@ -12,6 +12,7 @@
           v-for="(card, i) in cards"
           :key="i"
           v-bind="card"
+          @clickTowerCard="buyCard(i)"
       />
     </div>
     <div class="controls">
@@ -26,6 +27,7 @@
 import Button from "@/components/Button.vue";
 import {rustyCannonTowerCard, blastMortarTowerCard, pelletGunTowerCard} from "@/phaser/battletd/model/Cards";
 import TowerCard from "@/components/battletd/TowerCard.vue";
+import {eventBus, events} from "@/phaser/battletd/events/EventBus";
 
 export default {
   components: {Button, TowerCard},
@@ -41,7 +43,9 @@ export default {
 
   },
   methods: {
-
+    buyCard(index) {
+      eventBus.emit(events.buyCard, index);
+    }
   }
 }
 </script>

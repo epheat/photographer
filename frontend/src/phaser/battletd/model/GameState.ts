@@ -12,7 +12,7 @@ export class BattleTDGameState {
         this.version = "1.0";
         this.seed = Date.now();
         this.playerState = {
-            gold: 100,
+            gold: 10,
             xp: 0,
             bench: [],
             selectedCard: undefined,

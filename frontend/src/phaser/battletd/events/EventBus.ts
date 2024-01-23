@@ -5,6 +5,7 @@ export const events: any = {
   monsterReachedPathEnd: "monster-reached-path-end",
 
   selectCard: "select-card",
+  buyCard: "buy-card",
   placeTower: "place-tower",
 }
 export const eventBus: Phaser.Events.EventEmitter = new Phaser.Events.EventEmitter();

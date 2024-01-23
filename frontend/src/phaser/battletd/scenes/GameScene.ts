@@ -18,6 +18,7 @@ import {eventBus, events} from "@/phaser/battletd/events/EventBus";
 import {BattleTDGameState} from "@/phaser/battletd/model/GameState";
 import {TowerId} from "@/phaser/battletd/model/Towers";
 import {BattleTDGame} from "@/phaser/battletd/BattleTD";
+import {getTowerCard, TowerCard} from "@/phaser/battletd/model/Cards";
 
 export default class GameScene extends Phaser.Scene {
 
@@ -66,6 +67,7 @@ export default class GameScene extends Phaser.Scene {
         eventBus.on(events.newWave, this.spawnNewWave, this);
         eventBus.on(events.monsterReachedPathEnd, this.takeCastleDamage, this);
         eventBus.on(events.selectCard, this.selectCard, this);
+        eventBus.on(events.buyCard, this.buyCard, this);
         eventBus.on(events.placeTower, this.placeTower, this);
     }
 
@@ -116,6 +118,13 @@ export default class GameScene extends Phaser.Scene {
             (tower as TowerPlot).setHighlightVisible(selectedIndex != undefined);
             return true;
         });
+    }
+
+    private buyCard(shopIndex: number): void {
+        const card: TowerCard = getTowerCard(this.gameState.shopState.offerings[shopIndex])!;
+        this.gameState.playerState.gold -= card.cost;
+        this.gameState.shopState.offerings.splice(shopIndex, 1);
+        this.gameState.playerState.bench.push(card.towerId);
     }
 
     private placeTower(plot: TowerPlot): void {
