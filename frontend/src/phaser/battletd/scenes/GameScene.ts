@@ -24,6 +24,7 @@ export default class GameScene extends Phaser.Scene {
     private components!: ComponentSystem;
     public monsters!: Phaser.Physics.Arcade.Group;
     public towers!: Phaser.GameObjects.Group;
+    public plots!: Phaser.GameObjects.Group;
 
     private monsterPath!: Phaser.Curves.Path;
     private monsterPathStart!: Phaser.Types.Tilemaps.TiledObject;
@@ -57,6 +58,7 @@ export default class GameScene extends Phaser.Scene {
     create() {
         this.monsters = this.physics.add.group({ runChildUpdate: true });
         this.towers = this.add.group({ runChildUpdate: true });
+        this.plots = this.add.group({ runChildUpdate: false });
         this.createMap3();
 
         this.gameState = (this.game as BattleTDGame).gameState;
@@ -64,6 +66,7 @@ export default class GameScene extends Phaser.Scene {
         eventBus.on(events.newWave, this.spawnNewWave, this);
         eventBus.on(events.monsterReachedPathEnd, this.takeCastleDamage, this);
         eventBus.on(events.selectCard, this.selectCard, this);
+        eventBus.on(events.placeTower, this.placeTower, this);
     }
 
     update(time: number, delta: number) {
@@ -91,7 +94,7 @@ export default class GameScene extends Phaser.Scene {
         }
 
         // https://newdocs.phaser.io/docs/3.60.0/focus/Phaser.Tilemaps.Tilemap-createFromObjects
-        const plots = map.createFromObjects('Towers', { classType: TowerPlot, key: 'plot' });
+        this.plots.addMultiple(map.createFromObjects('Towers', { classType: TowerPlot, key: 'plot' }));
     }
 
     private spawnNewWave() {
@@ -109,5 +112,23 @@ export default class GameScene extends Phaser.Scene {
 
     private selectCard(selectedIndex: number): void {
         this.gameState.playerState.selectedCard = selectedIndex;
+        this.plots.children.each(tower => {
+            (tower as TowerPlot).setHighlightVisible(selectedIndex != undefined);
+            return true;
+        });
+    }
+
+    private placeTower(plot: TowerPlot): void {
+        if (this.gameState.playerState.selectedCard == undefined) {
+            console.log("That should not be possible.");
+            return;
+        }
+        this.gameState.playerState.bench.splice(this.gameState.playerState.selectedCard, 1);
+        this.gameState.playerState.selectedCard = undefined;
+
+        this.plots.children.each(tower => {
+            (tower as TowerPlot).setHighlightVisible(false);
+            return true;
+        });
     }
 }

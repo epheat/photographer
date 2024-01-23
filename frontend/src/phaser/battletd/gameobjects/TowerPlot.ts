@@ -1,5 +1,6 @@
 import { Tower } from "@/phaser/battletd/gameobjects/Tower";
 import GameScene from "@/phaser/battletd/scenes/GameScene";
+import {eventBus, events} from "@/phaser/battletd/events/EventBus";
 
 export class TowerPlot extends Phaser.GameObjects.Container {
   private readonly image: Phaser.GameObjects.Image;
@@ -16,7 +17,7 @@ export class TowerPlot extends Phaser.GameObjects.Container {
   }
 
   createHighlight(): Phaser.GameObjects.Rectangle {
-    const highlight = this.scene.add.rectangle(0, 0, 18, 18, 0x44ff44, 0.5);
+    const highlight = this.scene.add.rectangle(0, 0, 18, 18, 0xff4444, 0.5);
     highlight.setVisible(false);
     return highlight;
   }
@@ -26,6 +27,9 @@ export class TowerPlot extends Phaser.GameObjects.Container {
   }
 
   onClick() {
+    if (!this.highlight.visible) {
+      return;
+    }
     this.highlight.setVisible(false);
     this.image.setVisible(false);
 
@@ -34,14 +38,18 @@ export class TowerPlot extends Phaser.GameObjects.Container {
     this.scene.add.existing(tower);
     (this.scene as GameScene).towers.add(tower);
     this.disableInteractive();
+
+    eventBus.emit(events.placeTower, this);
   }
 
   setTexture(key: string) {
     this.image.setTexture(key)
   }
 
-  showHighlight() {
-
+  setHighlightVisible(visible: boolean) {
+    if (this.image.visible) {
+      this.highlight.setVisible(visible);
+    }
   }
 
   destroy(fromScene?: boolean) {
