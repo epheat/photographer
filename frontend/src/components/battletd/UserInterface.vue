@@ -18,8 +18,9 @@
     </div>
     <div class="shop-container">
       <Shop
-          v-show="showShop"
+          :show="showShop"
           @closeShop="showShop = false"
+          @toggleShop="toggleShop"
           :cards="gameState.shopState.offerings.map(towerId => getTowerCard(towerId)!)"
       />
     </div>
@@ -27,6 +28,7 @@
       <Bench
         :cards="gameState.playerState.bench.map(towerId => getTowerCard(towerId)!)"
         :selectedCard="gameState.playerState.selectedCard"
+        @toggleSelected="toggleSelected"
       />
     </div>
   </div>
@@ -63,7 +65,15 @@ export default defineComponent({
     },
     toggleShop() {
       this.showShop = !this.showShop;
-    }
+    },
+    toggleSelected(index: number) {
+      this.showShop = false;
+      if (this.gameState.playerState.selectedCard === index) {
+        eventBus.emit(events.selectCard, undefined);
+      } else {
+        eventBus.emit(events.selectCard, index);
+      }
+    },
   }
 })
 </script>
@@ -94,10 +104,12 @@ export default defineComponent({
   margin: 10px auto;
   display: flex;
   align-items: center;
+  overflow: hidden;
 
   .battletd-shop {
     width: 80%;
     margin: 0 auto;
+    position: relative;
   }
 }
 

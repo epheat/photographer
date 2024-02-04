@@ -5,7 +5,7 @@
         :key="index"
         :card="card"
         :selected="selectedCard == index"
-        @clickTowerCard="toggleSelected(index)"
+        @clickTowerCard="$emit('toggleSelected', index)"
     />
   </div>
 </template>
@@ -13,7 +13,6 @@
 import { defineComponent, PropType } from "vue";
 import { TowerCard as TowerCardDef } from "@/phaser/battletd/model/Cards";
 import TowerCard from "@/components/battletd/TowerCard.vue";
-import {eventBus, events} from "@/phaser/battletd/events/EventBus";
 
 export default defineComponent({
   components: {TowerCard},
@@ -27,13 +26,7 @@ export default defineComponent({
     }
   },
   methods: {
-    toggleSelected(index: number) {
-      if (this.selectedCard === index) {
-        eventBus.emit(events.selectCard, undefined);
-      } else {
-        eventBus.emit(events.selectCard, index);
-      }
-    },
+
   },
   computed: {
 

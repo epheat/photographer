@@ -1,25 +1,30 @@
 <template>
-  <div class="battletd-shop">
-    <div class="level">
-      <h2>Lvl. 2</h2>
-      <div class="bar">
-        <div class="progress"></div>
+  <div class="battletd-shop" :class="{hide: !show}">
+    <div class="shop-window">
+      <div class="level">
+        <h2>Lvl. 2</h2>
+        <div class="bar">
+          <div class="progress"></div>
+        </div>
+        <Button>+XP</Button>
       </div>
-      <Button>+XP</Button>
+      <div class="cards-container">
+        <TowerCard
+            v-for="(card, index) in cards"
+            :key="index"
+            :card="card"
+            @clickTowerCard="buyCard(index)"
+        />
+      </div>
+      <div class="controls">
+        <Button @click="$emit('closeShop')">Close</Button>
+        <div class="spacer"/>
+        <Button>Lock</Button>
+        <Button>Refresh</Button>
+      </div>
     </div>
-    <div class="cards-container">
-      <TowerCard
-          v-for="(card, index) in cards"
-          :key="index"
-          :card="card"
-          @clickTowerCard="buyCard(index)"
-      />
-    </div>
-    <div class="controls">
-      <Button @click="$emit('closeShop')">Close</Button>
-      <div class="spacer"/>
-      <Button>Lock</Button>
-      <Button>Refresh</Button>
+    <div class="toggle" @click="$emit('toggleShop')">
+      <div class="chevron" :class="{left: show, right: !show}"/>
     </div>
   </div>
 </template>
@@ -34,6 +39,7 @@ export default defineComponent({
   components: {Button, TowerCard},
   props: {
     cards: Array as PropType<Array<TowerCardDef>>,
+    show: Boolean,
   },
   data() {
     return {
@@ -54,6 +60,17 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .battletd-shop {
+  display: flex;
+  align-items: center;
+  position: relative;
+  left: 0;
+  transition: left 0.2s;
+
+  &.hide {
+    left: -550px;
+  }
+}
+.shop-window {
   display: grid;
   grid-template-areas: "levels controls"
                        "tcards controls";
@@ -122,4 +139,30 @@ export default defineComponent({
     }
   }
 }
+.toggle {
+  height: 80px;
+  padding: 6px;
+  border-radius: 0 6px 6px 0;
+  background-color: #bcc7d5;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+.chevron {
+  position: relative;
+  display: inline-block;
+  border-right: 4px solid white;
+  border-bottom: 4px solid white;
+  width: 10px; height: 10px;
+  transition: transform 0.2s;
+  &.left {
+    transform: rotate(135deg);
+    left: 2px;
+  }
+  &.right {
+    transform: rotate(-45deg);
+    right: 4px;
+  }
+}
+
 </style>
