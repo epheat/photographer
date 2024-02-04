@@ -9,10 +9,10 @@
     </div>
     <div class="cards-container">
       <TowerCard
-          v-for="(card, i) in cards"
-          :key="i"
-          v-bind="card"
-          @clickTowerCard="buyCard(i)"
+          v-for="(card, index) in cards"
+          :key="index"
+          :card="card"
+          @clickTowerCard="buyCard(index)"
       />
     </div>
     <div class="controls">
@@ -23,16 +23,17 @@
     </div>
   </div>
 </template>
-<script>
+<script lang="ts">
+import { defineComponent, PropType } from "vue";
 import Button from "@/components/Button.vue";
-import {rustyCannonTowerCard, blastMortarTowerCard, pelletGunTowerCard} from "@/phaser/battletd/model/Cards";
+import {TowerCard as TowerCardDef, rustyCannonTowerCard, blastMortarTowerCard, pelletGunTowerCard} from "@/phaser/battletd/model/Cards";
 import TowerCard from "@/components/battletd/TowerCard.vue";
 import {eventBus, events} from "@/phaser/battletd/events/EventBus";
 
-export default {
+export default defineComponent({
   components: {Button, TowerCard},
   props: {
-    cards: Array,
+    cards: Array as PropType<Array<TowerCardDef>>,
   },
   data() {
     return {
@@ -43,11 +44,12 @@ export default {
 
   },
   methods: {
-    buyCard(index) {
+    buyCard(index: number) {
+      console.log(index);
       eventBus.emit(events.buyCard, index);
     }
   }
-}
+})
 </script>
 
 <style lang="scss" scoped>

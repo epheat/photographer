@@ -7,13 +7,14 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from "vue";
 import * as game from '@/phaser/battletd/BattleTD';
 import UserInterface from "@/components/battletd/UserInterface.vue";
 import {BattleTDGameState} from "@/phaser/battletd/model/GameState";
 import {TowerId} from "@/phaser/battletd/model/Towers";
 
-export default {
+export default defineComponent({
   name: "BattleTDPage",
   components: { UserInterface },
   props: {
@@ -31,7 +32,7 @@ export default {
         TowerId.RustyCannon,
         TowerId.PelletGun,
     ]
-    this.gameInstance = game.launch(this.containerId, this.gameState);
+    game.launch(this.containerId, this.gameState);
   },
   methods: {
 
@@ -39,7 +40,7 @@ export default {
   computed: {
 
   },
-}
+})
 </script>
 
 <style scoped>

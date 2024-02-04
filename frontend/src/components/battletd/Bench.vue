@@ -1,22 +1,24 @@
 <template>
   <div class="battletd-bench">
     <TowerCard
-        v-for="(card, i) in cards"
-        :key="i"
-        v-bind="card"
-        :selected="selectedCard === i"
-        @clickTowerCard="toggleSelected(i)"
+        v-for="(card, index) in cards"
+        :key="index"
+        :card="card"
+        :selected="selectedCard == index"
+        @clickTowerCard="toggleSelected(index)"
     />
   </div>
 </template>
-<script>
+<script lang="ts">
+import { defineComponent, PropType } from "vue";
+import { TowerCard as TowerCardDef } from "@/phaser/battletd/model/Cards";
 import TowerCard from "@/components/battletd/TowerCard.vue";
 import {eventBus, events} from "@/phaser/battletd/events/EventBus";
 
-export default {
+export default defineComponent({
   components: {TowerCard},
   props: {
-    cards: Array,
+    cards: Array as PropType<Array<TowerCardDef>>,
     selectedCard: Number,
   },
   data() {
@@ -25,7 +27,7 @@ export default {
     }
   },
   methods: {
-    toggleSelected(index) {
+    toggleSelected(index: number) {
       if (this.selectedCard === index) {
         eventBus.emit(events.selectCard, undefined);
       } else {
@@ -36,7 +38,7 @@ export default {
   computed: {
 
   }
-}
+})
 </script>
 
 <style lang="scss" scoped>

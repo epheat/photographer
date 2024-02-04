@@ -6,42 +6,44 @@
         <Button @click="spawnWave">New Wave</Button>
         <div class="player-gold">
           <div class="coin" />
-          <div class="amount">{{ gameState.playerState.gold }}</div>
+          <div class="amount">{{ gameState!.playerState.gold }}</div>
         </div>
       </div>
       <div class="wave-info">
 
       </div>
       <div class="castle-hp">
-        {{ gameState.playerState?.castle?.hp }} / {{ gameState.playerState?.castle?.maxHp }}
+        {{ gameState!.playerState?.castle?.hp }} / {{ gameState!.playerState?.castle?.maxHp }}
       </div>
     </div>
     <div class="shop-container">
       <Shop
           v-show="showShop"
           @closeShop="showShop = false"
-          :cards="gameState.shopState.offerings.map(towerId => getTowerCard(towerId))"
+          :cards="gameState!.shopState.offerings.map(towerId => getTowerCard(towerId)!)"
       />
     </div>
     <div class="bench-container">
       <Bench
-        :cards="gameState.playerState.bench.map(towerId => getTowerCard(towerId))"
-        :selectedCard="gameState.playerState.selectedCard"
+        :cards="gameState!.playerState.bench.map(towerId => getTowerCard(towerId)!)"
+        :selectedCard="gameState!.playerState.selectedCard"
       />
     </div>
   </div>
 </template>
-<script>
+<script lang="ts">
+import { defineComponent, PropType } from "vue";
 import { events, eventBus } from "@/phaser/battletd/events/EventBus";
 import Shop from "@/components/battletd/Shop.vue";
 import Button from "@/components/Button.vue";
 import Bench from "@/components/battletd/Bench.vue";
 import {getTowerCard} from "@/phaser/battletd/model/Cards";
+import { BattleTDGameState } from "@/phaser/battletd/model/GameState";
 
-export default {
+export default defineComponent({
   components: {Bench, Button, Shop},
   props: {
-    gameState: Object
+    gameState: Object as PropType<BattleTDGameState>,
   },
   data() {
     return {
@@ -60,7 +62,7 @@ export default {
       this.showShop = !this.showShop;
     }
   }
-}
+})
 </script>
 
 <style lang="scss">

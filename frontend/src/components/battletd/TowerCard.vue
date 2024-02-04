@@ -1,22 +1,23 @@
 <template>
   <div class="battletd-tower-card"
-       :class="[`rarity-${rarity}`, { selected: selected }]"
-       @click="$emit('clickTowerCard', towerId)"
+       :class="[`rarity-${card!.rarity}`, { selected: selected }]"
+       @click="$emit('clickTowerCard', card!.towerId)"
   >
     <div class="tower-image">
-      {{ towerId }}
+      {{ card!.towerId }}
     </div>
     <div class="cost">
-      <div class="coin" v-for="i in cost" :key="i"/>
+      <div class="coin" v-for="i in card!.cost" :key="i"/>
     </div>
   </div>
 </template>
-<script>
-export default {
+<script lang="ts">
+import { TowerCard } from "@/phaser/battletd/model/Cards";
+import { defineComponent, PropType } from "vue";
+
+export default defineComponent({
   props: {
-    towerId: String,
-    rarity: String,
-    cost: Number,
+    card: Object as PropType<TowerCard>,
     selected: Boolean,
   },
   data() {
@@ -27,7 +28,7 @@ export default {
   computed: {
 
   }
-}
+})
 </script>
 
 <style lang="scss" scoped>
