@@ -10,7 +10,7 @@
         </div>
       </div>
       <div class="wave-info">
-
+        <WaveInfo :waveState="gameState.waveState"/>
       </div>
       <div class="castle-hp">
         {{ gameState.playerState?.castle?.hp }} / {{ gameState.playerState?.castle?.maxHp }}
@@ -39,11 +39,12 @@ import { events, eventBus } from "@/phaser/battletd/events/EventBus";
 import Shop from "@/components/battletd/Shop.vue";
 import Button from "@/components/Button.vue";
 import Bench from "@/components/battletd/Bench.vue";
+import WaveInfo from "@/components/battletd/WaveInfo.vue";
 import {getTowerCard} from "@/phaser/battletd/model/Cards";
 import { BattleTDGameState } from "@/phaser/battletd/model/GameState";
 
 export default defineComponent({
-  components: {Bench, Button, Shop},
+  components: {Bench, Button, Shop, WaveInfo},
   props: {
     gameState: {
       type: Object as PropType<BattleTDGameState>,
@@ -96,6 +97,9 @@ export default defineComponent({
       width: 120px;
       margin-bottom: 5px;
     }
+  }
+  & > div {
+    padding: 4px;
   }
 }
 

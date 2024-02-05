@@ -31,7 +31,7 @@
 <script lang="ts">
 import { defineComponent, PropType } from "vue";
 import Button from "@/components/Button.vue";
-import {TowerCard as TowerCardDef, rustyCannonTowerCard, blastMortarTowerCard, pelletGunTowerCard} from "@/phaser/battletd/model/Cards";
+import {TowerCard as TowerCardDef} from "@/phaser/battletd/model/Cards";
 import TowerCard from "@/components/battletd/TowerCard.vue";
 import {eventBus, events} from "@/phaser/battletd/events/EventBus";
 

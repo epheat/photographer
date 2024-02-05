@@ -1,4 +1,3 @@
-import {blastMortarTowerCard, pelletGunTowerCard, rustyCannonTowerCard, TowerCard} from "@/phaser/battletd/model/Cards";
 
 export enum TowerId {
     RustyCannon = "Rusty Cannon",

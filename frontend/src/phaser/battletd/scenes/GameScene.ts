@@ -73,6 +73,8 @@ export default class GameScene extends Phaser.Scene {
 
     update(time: number, delta: number) {
         this.components.update(delta);
+
+        this.gameState.update(time, delta);
     }
 
     private createMap3() {
@@ -129,7 +131,7 @@ export default class GameScene extends Phaser.Scene {
 
     private placeTower(plot: TowerPlot): void {
         if (this.gameState.playerState.selectedCard == undefined) {
-            console.log("That should not be possible.");
+            console.log("No tower selected.");
             return;
         }
         this.gameState.playerState.bench.splice(this.gameState.playerState.selectedCard, 1);

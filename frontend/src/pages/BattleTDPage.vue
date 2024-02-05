@@ -2,7 +2,7 @@
   <div class="page battletd-page">
     <h1>BattleTD</h1>
     <div :id="containerId" class="game-container">
-      <UserInterface :gameState="gameState" />
+      <UserInterface :gameState="(gameState as BattleTDGameState)" />
     </div>
   </div>
 </template>
@@ -32,7 +32,7 @@ export default defineComponent({
         TowerId.RustyCannon,
         TowerId.PelletGun,
     ]
-    game.launch(this.containerId, this.gameState);
+    game.launch(this.containerId, this.gameState as BattleTDGameState);
   },
   methods: {
 
