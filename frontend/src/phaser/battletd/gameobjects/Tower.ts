@@ -4,6 +4,9 @@ import GameScene from "@/phaser/battletd/scenes/GameScene";
 export interface TowerOptions {
   readonly reloadTime?: number,
   readonly range?: number,
+  readonly projectileTexture?: string,
+  readonly projectileFrame?: number,
+  readonly projectileSize?: number,
   readonly projectileSpeed?: number,
   readonly projectileDamage?: number,
 }
@@ -19,6 +22,9 @@ export class Tower extends Phaser.GameObjects.Container {
   private readonly reloadTime: number;
   private readonly range: number;
   private readonly projectiles: Phaser.Physics.Arcade.Group;
+  private readonly projectileSize: number;
+  private readonly projectileTexture: string;
+  private readonly projectileFrame: number;
   private readonly projectileSpeed: number;
   private readonly projectileDamage: number;
   private reloading: boolean = false;
@@ -29,10 +35,13 @@ export class Tower extends Phaser.GameObjects.Container {
     this.towerSprite = this.createTowerSprite();
     this.reloadIndicator = this.createReloadIndicator();
     this.add([this.rangeIndicator, this.towerSprite, this.reloadIndicator]);
-    this.reloadTime = props.reloadTime ?? 400;
+    this.reloadTime = props.reloadTime ?? 250;
     this.range = props.range ?? 120;
-    this.projectileSpeed = props.projectileSpeed ?? 200;
-    this.projectileDamage = props.projectileDamage ?? 40;
+    this.projectileSize = props.projectileSize ?? 4;
+    this.projectileTexture = props.projectileTexture ?? 'bullet';
+    this.projectileFrame = props.projectileFrame ?? 2;
+    this.projectileSpeed = props.projectileSpeed ?? 250;
+    this.projectileDamage = props.projectileDamage ?? 30;
 
     this.setSize(16, 16).setInteractive().on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, this.reload);
     this.scene.add.existing(this);
@@ -107,8 +116,8 @@ export class Tower extends Phaser.GameObjects.Container {
   }
 
   protected createProjectile(): Phaser.Types.Physics.Arcade.ImageWithDynamicBody {
-    const projectile = this.scene.physics.add.image( this.x, this.y, 'bomb');
-    projectile.setCircle(7);
+    const projectile = this.scene.physics.add.image(this.x, this.y, this.projectileTexture, this.projectileFrame);
+    projectile.setCircle(this.projectileSize);
     this.projectiles.add(projectile);
     return projectile;
   }

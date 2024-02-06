@@ -62,7 +62,7 @@ export default defineComponent({
   methods: {
     getTowerCard,
     spawnWave() {
-      eventBus.emit(events.newWave)
+      eventBus.emit(events.newWave, "orc", 1);
     },
     toggleShop() {
       this.showShop = !this.showShop;
@@ -100,6 +100,14 @@ export default defineComponent({
   }
   & > div {
     padding: 4px;
+  }
+
+  .wave-info {
+
+    p {
+      text-align: center;
+
+    }
   }
 }
 

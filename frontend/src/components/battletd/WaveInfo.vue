@@ -1,18 +1,23 @@
 <template>
   <div class="battletd-wave-info">
-    <span class="wave-number">{{ waveState.waveNumber }}</span>
-    <div class="bar">
-      <div class="background"></div>
-      <div class="timeline"></div>
-      <div class="wave-indicator next" :style="indicatorStyle"></div>
-      <div class="waveinfo current"></div>
-      <div class="waveinfo next"></div>
-      <div class="waveinfo future"></div>
+    <div class="row">
+      <span class="wave-number">{{ waveState.waveNumber }}</span>
+      <div class="bar">
+        <div class="background"></div>
+        <div class="timeline"></div>
+        <div class="wave-indicator next" :style="indicatorStyle"></div>
+        <div class="waveinfo current"></div>
+        <div class="waveinfo next"></div>
+        <div class="waveinfo future"></div>
+      </div>
+    </div>
+    <div class="row">
+      <p class="description">{{ phaseDescription }}</p>
     </div>
   </div>
 </template>
 <script lang="ts">
-import { WaveState } from '@/phaser/battletd/model/GameState';
+import { WavePhase, WaveState } from '@/phaser/battletd/model/GameState';
 import { defineComponent, PropType, StyleValue } from 'vue';
 
 export default defineComponent({
@@ -32,6 +37,16 @@ export default defineComponent({
       return {
         left: `${this.waveState.phaseTimeRemainingMillis / this.waveState.phaseTime * 100}%`,
       }
+    },
+    phaseDescription(): string | undefined {
+      if (this.waveState.phase == WavePhase.BuyPhase) {
+        return "Buy new towers from the shop!";
+      } else if (this.waveState.phase == WavePhase.BattlePhase) {
+        return "Destroy all enemies!";
+      } else if (this.waveState.phase == WavePhase.PreBattlePhase) {
+        return "Preparing for battle...";
+      }
+      return undefined;
     }
   }
 })
@@ -40,7 +55,9 @@ export default defineComponent({
 <style lang="scss" scoped>
 .battletd-wave-info {
   
-  display: flex;
+  .row {
+    display: flex;
+  }
 
   .wave-number {
     height: 20px;
@@ -93,5 +110,29 @@ export default defineComponent({
       }
     }
   }
+  .description {
+    margin-top: 5px;
+    text-align: center;
+    margin: 0 auto;
+    color: white;
+    font-weight: bold;
+    transform: scale(1);
+    animation: pulse 4s infinite;
+  }
 }
+
+@keyframes pulse {
+	0% {
+		transform: scale(0.95);
+	}
+
+	50% {
+		transform: scale(1);
+	}
+
+	100% {
+		transform: scale(0.95);
+	}
+}
+
 </style>

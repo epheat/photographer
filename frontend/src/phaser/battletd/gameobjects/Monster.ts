@@ -27,12 +27,17 @@ export class Monster extends Phaser.GameObjects.PathFollower {
   }
 
   update(time: number, delta: number) {
-    const newVelocity = this.pathDelta.clone().scale(1000 / delta);
-    // average the new and previous velocity to make it smoother.
-    this.velocity = this.velocity.add(newVelocity).scale(0.5);
+    if (!this.path) {
+      return;
+    }
+    if (this.isFollowing()) {
+      const newVelocity = this.pathDelta.clone().scale(1000 / delta);
+      // average the new and previous velocity to make it smoother.
+      this.velocity = this.velocity.add(newVelocity).scale(0.5);
+    }
     this.hpBar.setPosition(this.x, this.y + this.displayHeight);
 
-    if (this.pathVector.equals(this.path.getEndPoint())) {
+    if (this.pathVector?.equals(this.path.getEndPoint())) {
       eventBus.emit(events.monsterReachedPathEnd, this);
       this.destroy();
     }

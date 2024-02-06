@@ -6,6 +6,7 @@ import tower from "@/phaser/battletd/assets/tiles/miniworld/tower.png";
 import plot from "@/phaser/battletd/assets/tiles/miniworld/plot.png";
 import orc from "@/phaser/battletd/assets/tiles/miniworld/orc.png";
 import bomb from "@/phaser/battletd/assets/bomb.png";
+import bullet from "@/phaser/battletd/assets/bullet.png";
 import range from "@/phaser/battletd/assets/range.png";
 import star from "@/phaser/battletd/assets/star.png";
 import map1 from "@/phaser/battletd/tiled/map1.json";
@@ -15,7 +16,7 @@ import ComponentSystem from "@/phaser/battletd/system/ComponentSystem";
 import {TowerPlot} from "@/phaser/battletd/gameobjects/TowerPlot";
 import {Monster} from "@/phaser/battletd/gameobjects/Monster";
 import {eventBus, events} from "@/phaser/battletd/events/EventBus";
-import {BattleTDGameState} from "@/phaser/battletd/model/GameState";
+import {BattleTDGameState, WavePhase} from "@/phaser/battletd/model/GameState";
 import {TowerId} from "@/phaser/battletd/model/Towers";
 import {BattleTDGame} from "@/phaser/battletd/BattleTD";
 import {getTowerCard, TowerCard} from "@/phaser/battletd/model/Cards";
@@ -38,6 +39,7 @@ export default class GameScene extends Phaser.Scene {
 
     preload() {
         this.load.image('bomb', bomb);
+        this.load.spritesheet('bullet', bullet, { frameWidth: 16, frameHeight: 16 });
         this.load.image('star', star);
         this.load.image('plot', plot);
         this.load.image('tower', tower);
@@ -64,7 +66,7 @@ export default class GameScene extends Phaser.Scene {
 
         this.gameState = (this.game as BattleTDGame).gameState;
 
-        eventBus.on(events.newWave, this.spawnNewWave, this);
+        eventBus.on(events.newWave, this.spawnWave, this);
         eventBus.on(events.monsterReachedPathEnd, this.takeCastleDamage, this);
         eventBus.on(events.selectCard, this.selectCard, this);
         eventBus.on(events.buyCard, this.buyCard, this);
@@ -75,6 +77,15 @@ export default class GameScene extends Phaser.Scene {
         this.components.update(delta);
 
         this.gameState.update(time, delta);
+
+        if (this.gameState.waveState.phase == WavePhase.PreBattlePhase && this.monsters.children.size == 0) {
+            this.spawnWave('orc', this.gameState.waveState.waveNumber);
+        }
+        if (this.gameState.waveState.phase == WavePhase.BattlePhase && this.monsters.children.size == 0) {
+            this.gameState.waveState.complete = true;
+            // TODO: calculate interest
+            this.gameState.playerState.gold++;
+        }
     }
 
     private createMap3() {
@@ -101,13 +112,16 @@ export default class GameScene extends Phaser.Scene {
         this.plots.addMultiple(map.createFromObjects('Towers', { classType: TowerPlot, key: 'plot' }));
     }
 
-    private spawnNewWave() {
-        const monster = new Monster(this, this.monsterPath, this.monsterPathStart!.x!, this.monsterPathStart!.y!, {
-            maxHp: 500,
-        });
-        monster.startFollow(15000);
-        this.monsters.add(monster);
-
+    private spawnWave(monsterType: string, waveSize: number) {
+        for (let i=0; i<waveSize; i++) {
+            const monster = new Monster(this, this.monsterPath, this.monsterPathStart!.x!, this.monsterPathStart!.y!, {
+                maxHp: 400,
+            });
+            this.monsters.add(monster);
+            setTimeout(() => {
+                monster.startFollow(18_000);
+            }, 1000 * i + BattleTDGameState.PRE_BATTLE_PHASE_TIME_MILLIS)
+        }
     }
 
     private takeCastleDamage(monster: Monster): void {

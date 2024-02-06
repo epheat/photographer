@@ -27,11 +27,6 @@ export default defineComponent({
     }
   },
   mounted() {
-    this.gameState.shopState.offerings = [
-        TowerId.BlastMortar,
-        TowerId.RustyCannon,
-        TowerId.PelletGun,
-    ]
     game.launch(this.containerId, this.gameState as BattleTDGameState);
   },
   methods: {
