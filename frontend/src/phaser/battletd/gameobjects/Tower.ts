@@ -1,11 +1,12 @@
 import { Monster } from "@/phaser/battletd/gameobjects/Monster";
 import GameScene from "@/phaser/battletd/scenes/GameScene";
+import { TowerId } from "@/phaser/battletd/model/Towers";
+import { prop } from "vue-class-component";
 
 export interface TowerOptions {
+  readonly towerId: TowerId,
   readonly reloadTime?: number,
   readonly range?: number,
-  readonly projectileTexture?: string,
-  readonly projectileFrame?: number,
   readonly projectileSize?: number,
   readonly projectileSpeed?: number,
   readonly projectileDamage?: number,
@@ -19,18 +20,18 @@ export class Tower extends Phaser.GameObjects.Container {
   private readonly rangeIndicator: Phaser.GameObjects.Image;
   private readonly towerSprite: Phaser.GameObjects.Sprite;
   private readonly reloadIndicator: Phaser.GameObjects.Rectangle;
+  private readonly towerId: TowerId;
   private readonly reloadTime: number;
   private readonly range: number;
   private readonly projectiles: Phaser.Physics.Arcade.Group;
   private readonly projectileSize: number;
-  private readonly projectileTexture: string;
-  private readonly projectileFrame: number;
   private readonly projectileSpeed: number;
   private readonly projectileDamage: number;
   private reloading: boolean = false;
 
   constructor(scene: Phaser.Scene, x: number, y: number, props: TowerProps) {
     super(scene, x, y);
+    this.towerId = props.towerId;
     this.rangeIndicator = this.createRangeIndicator();
     this.towerSprite = this.createTowerSprite();
     this.reloadIndicator = this.createReloadIndicator();
@@ -38,12 +39,10 @@ export class Tower extends Phaser.GameObjects.Container {
     this.reloadTime = props.reloadTime ?? 250;
     this.range = props.range ?? 120;
     this.projectileSize = props.projectileSize ?? 4;
-    this.projectileTexture = props.projectileTexture ?? 'bullet';
-    this.projectileFrame = props.projectileFrame ?? 2;
     this.projectileSpeed = props.projectileSpeed ?? 250;
     this.projectileDamage = props.projectileDamage ?? 30;
 
-    this.setSize(16, 16).setInteractive().on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, this.reload);
+    // this.setSize(16, 16).setInteractive().on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, this.reload);
     this.scene.add.existing(this);
     this.projectiles = this.scene.physics.add.group();
     this.scene.physics.add.overlap(this.projectiles, (this.scene as GameScene).monsters, this.hitMonster.bind(this));
@@ -56,7 +55,8 @@ export class Tower extends Phaser.GameObjects.Container {
   }
 
   protected createTowerSprite(): Phaser.GameObjects.Sprite {
-    return this.scene.add.sprite(0, 0, 'tower');
+    const spriteInfo: SpriteInfo = this.getTowerSpriteInfo(this.towerId);
+    return this.scene.add.sprite(0, 0, spriteInfo.texture, spriteInfo.frame);
   }
 
   protected createReloadIndicator(): Phaser.GameObjects.Rectangle {
@@ -116,7 +116,8 @@ export class Tower extends Phaser.GameObjects.Container {
   }
 
   protected createProjectile(): Phaser.Types.Physics.Arcade.ImageWithDynamicBody {
-    const projectile = this.scene.physics.add.image(this.x, this.y, this.projectileTexture, this.projectileFrame);
+    const spriteInfo: SpriteInfo = this.getProjectileSpriteInfo(this.towerId);
+    const projectile = this.scene.physics.add.image(this.x, this.y, spriteInfo.texture, spriteInfo.frame);
     projectile.setCircle(this.projectileSize);
     this.projectiles.add(projectile);
     return projectile;
@@ -157,4 +158,54 @@ export class Tower extends Phaser.GameObjects.Container {
     (monster as Monster).takeDamage(this.projectileDamage);
   }
 
+  private getProjectileSpriteInfo(towerId: TowerId): SpriteInfo {
+    switch(towerId) {
+      case TowerId.RustyCannon:
+        return { texture: 'bullet', frame: 0 };
+      case TowerId.PelletGun:
+        return { texture: 'bullet', frame: 2 };
+      case TowerId.BlastMortar:
+        return { texture: 'bullet', frame: 1 };
+      case TowerId.Catapult:
+        return { texture: 'bullet', frame: 1 };
+      case TowerId.CompoundBow:
+        return { texture: 'bullet', frame: 2 };
+      case TowerId.Flamethrower:
+        return { texture: 'bullet', frame: 3 };
+      case TowerId.ReactorCore:
+        return { texture: 'bullet', frame: 3 };
+      case TowerId.TeslaCoil:
+        return { texture: 'bullet', frame: 0 };
+      default:
+        return { texture: 'bullet', frame: 2 };
+    }
+  }
+
+  private getTowerSpriteInfo(towerId: TowerId): SpriteInfo {
+    switch(towerId) {
+      case TowerId.RustyCannon:
+        return { texture: 'buildings_sprites', frame: 526 };
+      case TowerId.PelletGun:
+        return { texture: 'buildings_sprites', frame: 6 };
+      case TowerId.BlastMortar:
+        return { texture: 'buildings_sprites', frame: 65 };
+      case TowerId.Catapult:
+        return { texture: 'buildings_sprites', frame: 1570 };
+      case TowerId.CompoundBow:
+        return { texture: 'buildings_sprites', frame: 1882 };
+      case TowerId.Flamethrower:
+        return { texture: 'buildings_sprites', frame: 614 };
+      case TowerId.ReactorCore:
+        return { texture: 'buildings_sprites', frame: 807 };
+      case TowerId.TeslaCoil:
+        return { texture: 'buildings_sprites', frame: 546 };
+      default:
+        return { texture: 'tower' };
+    }
+  }
+}
+
+interface SpriteInfo {
+  texture: string,
+  frame?: number,
 }

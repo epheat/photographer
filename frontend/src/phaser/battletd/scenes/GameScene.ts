@@ -48,6 +48,7 @@ export default class GameScene extends Phaser.Scene {
         this.load.image('terrain', miniTerrainTileset);
         this.load.image('nature', miniNatureTileset);
         this.load.image('buildings', miniBuildingsTileset);
+        this.load.spritesheet('buildings_sprites', miniBuildingsTileset, { frameWidth: 16, frameHeight: 16 });
         this.load.tilemapTiledJSON('map1', map1);
         this.load.tilemapTiledJSON('map2', map2);
         this.load.tilemapTiledJSON('map3', map3);
@@ -115,7 +116,7 @@ export default class GameScene extends Phaser.Scene {
     private spawnWave(monsterType: string, waveSize: number) {
         for (let i=0; i<waveSize; i++) {
             const monster = new Monster(this, this.monsterPath, this.monsterPathStart!.x!, this.monsterPathStart!.y!, {
-                maxHp: 400,
+                maxHp: 400 + waveSize * 25,
             });
             this.monsters.add(monster);
             setTimeout(() => {

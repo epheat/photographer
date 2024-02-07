@@ -1,6 +1,7 @@
 import { Tower } from "@/phaser/battletd/gameobjects/Tower";
 import GameScene from "@/phaser/battletd/scenes/GameScene";
 import {eventBus, events} from "@/phaser/battletd/events/EventBus";
+import { TowerId } from "@/phaser/battletd/model/Towers";
 
 export class TowerPlot extends Phaser.GameObjects.Container {
   private readonly image: Phaser.GameObjects.Image;
@@ -27,13 +28,16 @@ export class TowerPlot extends Phaser.GameObjects.Container {
   }
 
   onClick() {
-    if (!this.highlight.visible) {
+    const playerState = (this.scene as GameScene).gameState.playerState;
+    if (playerState.selectedCard == undefined) {
       return;
     }
+    const towerId: TowerId = playerState.bench[playerState.selectedCard];
+    console.log(towerId);
     this.highlight.setVisible(false);
     this.image.setVisible(false);
 
-    const tower = new Tower(this.scene, this.x, this.y, {});
+    const tower = new Tower(this.scene, this.x, this.y, { towerId: towerId });
 
     this.scene.add.existing(tower);
     (this.scene as GameScene).towers.add(tower);
