@@ -13,18 +13,19 @@ import map1 from "@/phaser/battletd/tiled/map1.json";
 import map2 from "@/phaser/battletd/tiled/map2.json";
 import map3 from "@/phaser/battletd/tiled/map3.json";
 import ComponentSystem from "@/phaser/battletd/system/ComponentSystem";
-import {TowerPlot} from "@/phaser/battletd/gameobjects/TowerPlot";
-import {Monster} from "@/phaser/battletd/gameobjects/Monster";
-import {eventBus, events} from "@/phaser/battletd/events/EventBus";
-import {BattleTDGameState, WavePhase} from "@/phaser/battletd/model/GameState";
-import {TowerId} from "@/phaser/battletd/model/Towers";
-import {BattleTDGame} from "@/phaser/battletd/BattleTD";
-import {getTowerCard, TowerCard} from "@/phaser/battletd/model/Cards";
+import { TowerPlot } from "@/phaser/battletd/gameobjects/TowerPlot";
+import { Monster } from "@/phaser/battletd/gameobjects/Monster";
+import { eventBus, events } from "@/phaser/battletd/events/EventBus";
+import { BattleTDGameState, WavePhase } from "@/phaser/battletd/model/GameState";
+import { BattleTDGame } from "@/phaser/battletd/BattleTD";
+import { getTowerCard, TowerCard } from "@/phaser/battletd/model/Cards";
+import { EnemyType } from "@/phaser/battletd/model/Enemies";
 
 export default class GameScene extends Phaser.Scene {
 
     private components!: ComponentSystem;
     public monsters!: Phaser.Physics.Arcade.Group;
+    public monsterSprites!: Phaser.Physics.Arcade.Group;
     public towers!: Phaser.GameObjects.Group;
     public plots!: Phaser.GameObjects.Group;
 
@@ -80,7 +81,7 @@ export default class GameScene extends Phaser.Scene {
         this.gameState.update(time, delta);
 
         if (this.gameState.waveState.phase == WavePhase.PreBattlePhase && this.monsters.children.size == 0) {
-            this.spawnWave('orc', this.gameState.waveState.waveNumber);
+            this.spawnWave(EnemyType.Orc1, this.gameState.waveState.waveNumber);
         }
         if (this.gameState.waveState.phase == WavePhase.BattlePhase && this.monsters.children.size == 0) {
             this.gameState.waveState.complete = true;
@@ -113,14 +114,14 @@ export default class GameScene extends Phaser.Scene {
         this.plots.addMultiple(map.createFromObjects('Towers', { classType: TowerPlot, key: 'plot' }));
     }
 
-    private spawnWave(monsterType: string, waveSize: number) {
+    private spawnWave(enemyType: EnemyType, waveSize: number) {
         for (let i=0; i<waveSize; i++) {
             const monster = new Monster(this, this.monsterPath, this.monsterPathStart!.x!, this.monsterPathStart!.y!, {
-                maxHp: 400 + waveSize * 25,
+                enemyType: enemyType,
             });
             this.monsters.add(monster);
             setTimeout(() => {
-                monster.startFollow(18_000);
+                monster.startFollow();
             }, 1000 * i + BattleTDGameState.PRE_BATTLE_PHASE_TIME_MILLIS)
         }
     }

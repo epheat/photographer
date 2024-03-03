@@ -51,7 +51,7 @@ export interface EnemyWave {
 export const Orc1Enemy : EnemyDefinition = {
     enemyType: EnemyType.Orc1,
     baseHp: 200,
-    baseSpeed: 10,
+    baseSpeed: 50,
     baseResistances: [],
     baseWeaknesses: [ DamageType.Piercing ],
     rank: EnemyRank.Soldier,
@@ -60,7 +60,7 @@ export const Orc1Enemy : EnemyDefinition = {
 export const Orc2Enemy : EnemyDefinition = {
     enemyType: EnemyType.Orc2,
     baseHp: 250,
-    baseSpeed: 12,
+    baseSpeed: 60,
     baseResistances: [ DamageType.Slashing ],
     baseWeaknesses: [ DamageType.Piercing ],
     rank: EnemyRank.Commander,
@@ -69,7 +69,7 @@ export const Orc2Enemy : EnemyDefinition = {
 export const Orc3Enemy : EnemyDefinition = {
     enemyType: EnemyType.Orc3,
     baseHp: 300,
-    baseSpeed: 15,
+    baseSpeed: 75,
     baseResistances: [ ...physicalDamageTypes ],
     baseWeaknesses: [ ...elementalDamageTypes ],
     rank: EnemyRank.Leader,
@@ -78,7 +78,7 @@ export const Orc3Enemy : EnemyDefinition = {
 export const Orc4Enemy : EnemyDefinition = {
     enemyType: EnemyType.Orc4,
     baseHp: 500,
-    baseSpeed: 8,
+    baseSpeed: 40,
     baseResistances: [ ...elementalDamageTypes ],
     baseWeaknesses: [ DamageType.Piercing ],
     rank: EnemyRank.Elite,
@@ -88,7 +88,7 @@ export const Orc4Enemy : EnemyDefinition = {
 export const Demon1Enemy : EnemyDefinition = {
     enemyType: EnemyType.Demon1,
     baseHp: 220,
-    baseSpeed: 9,
+    baseSpeed: 45,
     baseResistances: [ DamageType.Flame ],
     baseWeaknesses: [ DamageType.Ice, DamageType.Slashing ],
     rank: EnemyRank.Soldier,
@@ -97,7 +97,7 @@ export const Demon1Enemy : EnemyDefinition = {
 export const Demon2Enemy : EnemyDefinition = {
     enemyType: EnemyType.Demon2,
     baseHp: 240,
-    baseSpeed: 12,
+    baseSpeed: 60,
     baseResistances: [ DamageType.Flame, DamageType.Piercing ],
     baseWeaknesses: [ DamageType.Ice ],
     rank: EnemyRank.Commander,
@@ -107,7 +107,7 @@ export const Demon2Enemy : EnemyDefinition = {
 export const Demon3Enemy : EnemyDefinition = {
     enemyType: EnemyType.Demon3,
     baseHp: 400,
-    baseSpeed: 15,
+    baseSpeed: 75,
     baseResistances: [ DamageType.Flame, ...physicalDamageTypes ],
     baseWeaknesses: [ DamageType.Ice ],
     rank: EnemyRank.Leader,
@@ -117,7 +117,7 @@ export const Demon3Enemy : EnemyDefinition = {
 export const ElkEnemy : EnemyDefinition = {
     enemyType: EnemyType.Elk,
     baseHp: 800,
-    baseSpeed: 5,
+    baseSpeed: 25,
     baseResistances: [ ...physicalDamageTypes ],
     baseWeaknesses: [ ...elementalDamageTypes ],
     rank: EnemyRank.Leader,
@@ -127,7 +127,7 @@ export const ElkEnemy : EnemyDefinition = {
 export const MinotaurEnemy : EnemyDefinition = {
     enemyType: EnemyType.Minotaur,
     baseHp: 600,
-    baseSpeed: 8,
+    baseSpeed: 40,
     baseResistances: [ ...physicalDamageTypes, ...elementalDamageTypes ],
     baseWeaknesses: [ ...specialDamageTypes ],
     rank: EnemyRank.Elite,
@@ -137,7 +137,7 @@ export const MinotaurEnemy : EnemyDefinition = {
 export const SkeletonEnemy : EnemyDefinition = {
     enemyType: EnemyType.Skeleton,
     baseHp: 100,
-    baseSpeed: 20,
+    baseSpeed: 100,
     baseResistances: [ ],
     baseWeaknesses: [ ...physicalDamageTypes ],
     rank: EnemyRank.Soldier,
@@ -147,7 +147,7 @@ export const SkeletonEnemy : EnemyDefinition = {
 export const WoollyEnemy : EnemyDefinition = {
     enemyType: EnemyType.Woolly,
     baseHp: 500,
-    baseSpeed: 10,
+    baseSpeed: 50,
     baseResistances: [ DamageType.Ice ],
     baseWeaknesses: [ ],
     rank: EnemyRank.Leader,
@@ -157,7 +157,7 @@ export const WoollyEnemy : EnemyDefinition = {
 export const YetiEnemy : EnemyDefinition = {
     enemyType: EnemyType.Yeti,
     baseHp: 600,
-    baseSpeed: 8,
+    baseSpeed: 40,
     baseResistances: [ DamageType.Ice, DamageType.Water ],
     baseWeaknesses: [ ],
     rank: EnemyRank.Elite,
@@ -179,3 +179,7 @@ export const enemies: EnemyDefinition[] = [
     WoollyEnemy,
     YetiEnemy,
 ]
+
+export function getEnemyDefinition(enemyType: EnemyType): EnemyDefinition | undefined {
+    return enemies.find(enemy => enemy.enemyType == enemyType);
+}

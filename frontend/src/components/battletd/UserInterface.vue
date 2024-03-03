@@ -42,6 +42,7 @@ import Bench from "@/components/battletd/Bench.vue";
 import WaveInfo from "@/components/battletd/WaveInfo.vue";
 import {getTowerCard} from "@/phaser/battletd/model/Cards";
 import { BattleTDGameState } from "@/phaser/battletd/model/GameState";
+import { EnemyType } from "@/phaser/battletd/model/Enemies";
 
 export default defineComponent({
   components: {Bench, Button, Shop, WaveInfo},
@@ -62,7 +63,7 @@ export default defineComponent({
   methods: {
     getTowerCard,
     spawnWave() {
-      eventBus.emit(events.newWave, "orc", 1);
+      eventBus.emit(events.newWave, EnemyType.Orc1, 1);
     },
     toggleShop() {
       this.showShop = !this.showShop;

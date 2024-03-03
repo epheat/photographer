@@ -67,13 +67,13 @@ export class Tower extends Phaser.GameObjects.Container {
   // should be called every frame. To do this, add towers to a group with runChildUpdate=true
   // https://newdocs.phaser.io/docs/3.60.0/Phaser.GameObjects.Group#runChildUpdate
   update() {
-    const monsterToAttack = this.getAggro((this.scene as GameScene).monsters);
+    const monsterToAttack = this.getFurthestInPath((this.scene as GameScene).monsters);
     if (monsterToAttack) {
       this.fireAt(monsterToAttack);
     }
   }
 
-  protected getAggro(monsters: Phaser.GameObjects.Group): Monster | undefined {
+  protected getNearest(monsters: Phaser.GameObjects.Group): Monster | undefined {
     const monsterUnits = monsters.getChildren() as Monster[];
     const monsterDistances = monsterUnits
       .map(monster => { return { monster: monster, distance: Phaser.Math.Distance.Between(this.x, this.y, monster.x, monster.y) }})
@@ -83,6 +83,15 @@ export class Tower extends Phaser.GameObjects.Container {
     } else {
       return monsterDistances.reduce((curr, prev) => curr.distance > prev.distance ? curr : prev).monster;
     }
+  }
+
+  protected getFurthestInPath(monsters: Phaser.GameObjects.Group): Monster | undefined {
+    const monsterUnits = monsters.getChildren() as Monster[];
+    const monstersInRange = monsterUnits.filter(monster => Phaser.Math.Distance.Between(this.x, this.y, monster.x, monster.y) < this.range);
+    if (monstersInRange.length == 0) {
+      return;
+    }
+    return monstersInRange.reduce((curr, prev) => curr.pathProgress > prev.pathProgress ? curr : prev);
   }
 
   protected reload() {
