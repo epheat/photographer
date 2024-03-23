@@ -128,7 +128,10 @@ export class Tower extends Phaser.GameObjects.Container {
   protected createProjectile(): Phaser.Types.Physics.Arcade.ImageWithDynamicBody {
     const spriteInfo: SpriteInfo = projectileSpriteInfos[this.towerDefinition.projectile.projectileType];
     const projectile = this.scene.physics.add.image(this.x, this.y, spriteInfo.texture, spriteInfo.frame);
-    projectile.setCircle(this.towerDefinition.projectile.projectileSize);
+    const projectileSize = this.towerDefinition.projectile.projectileSize;
+    // offset the hitbox, since the body is positioned from the top-left of the gameobject.
+    // see: https://phaser.discourse.group/t/circular-collider-using-setcircle-is-not-centred-properly/8263/2
+    projectile.setCircle(projectileSize, projectile.body.halfWidth - projectileSize, projectile.body.halfHeight - projectileSize);
     this.projectiles.add(projectile);
     return projectile;
   }

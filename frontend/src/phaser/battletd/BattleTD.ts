@@ -12,7 +12,7 @@ export function launch(containerId: string, gameState: BattleTDGameState): Battl
         physics: {
             default: 'arcade',
             arcade: {
-                debug: true,
+                debug: false,
             }
         },
         scene: [GameScene]

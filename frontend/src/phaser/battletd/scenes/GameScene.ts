@@ -6,7 +6,10 @@ import tower from "@/phaser/battletd/assets/tiles/miniworld/tower.png";
 import plot from "@/phaser/battletd/assets/tiles/miniworld/plot.png";
 import orc from "@/phaser/battletd/assets/tiles/miniworld/orc.png";
 import bomb from "@/phaser/battletd/assets/bomb.png";
-import bullet from "@/phaser/battletd/assets/bullet.png";
+import pellet from "@/phaser/battletd/assets/tiles/miniworld/projectiles/pellet.png";
+import pellet2 from "@/phaser/battletd/assets/tiles/miniworld/projectiles/pellet2.png";
+import bullet from "@/phaser/battletd/assets/tiles/miniworld/projectiles/bullet.png";
+import bullet2 from "@/phaser/battletd/assets/tiles/miniworld/projectiles/bullet2.png";
 import range from "@/phaser/battletd/assets/range.png";
 import star from "@/phaser/battletd/assets/star.png";
 import map1 from "@/phaser/battletd/tiled/map1.json";
@@ -16,7 +19,7 @@ import ComponentSystem from "@/phaser/battletd/system/ComponentSystem";
 import { TowerPlot } from "@/phaser/battletd/gameobjects/TowerPlot";
 import { Monster } from "@/phaser/battletd/gameobjects/Monster";
 import { eventBus, events } from "@/phaser/battletd/events/EventBus";
-import { BattleTDGameState, WavePhase } from "@/phaser/battletd/model/GameState";
+import { WavePhase } from "@/phaser/battletd/model/GameState";
 import { BattleTDGame } from "@/phaser/battletd/BattleTD";
 import { getTowerCard, TowerCard } from "@/phaser/battletd/model/Cards";
 import { EnemyType } from "@/phaser/battletd/model/Enemies";
@@ -41,7 +44,10 @@ export default class GameScene extends Phaser.Scene {
 
     preload() {
         this.load.image('bomb', bomb);
-        this.load.spritesheet('bullet', bullet, { frameWidth: 16, frameHeight: 16 });
+        this.load.image('bullet', bullet);
+        this.load.image('bullet2', bullet2);
+        this.load.image('pellet', pellet);
+        this.load.image('pellet2', pellet2);
         this.load.image('star', star);
         this.load.image('plot', plot);
         this.load.image('tower', tower);

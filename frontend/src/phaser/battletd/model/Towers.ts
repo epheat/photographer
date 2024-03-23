@@ -33,9 +33,9 @@ export interface TowerProjectile {
 }
 
 export const projectileSpriteInfos: { [key in ProjectileType]: SpriteInfo } = {
-    [ProjectileType.Cannonball]: { texture: 'bullet', frame: 0 },
-    [ProjectileType.Arrow]: { texture: 'bullet', frame: 1 },
-    [ProjectileType.Pellet]: { texture: 'bullet', frame: 2 },
+    [ProjectileType.Cannonball]: { texture: 'bomb' },
+    [ProjectileType.Arrow]: { texture: 'bullet' },
+    [ProjectileType.Pellet]: { texture: 'pellet' },
 }
 
 /**
@@ -50,39 +50,6 @@ export interface TowerDefinition {
 
 export interface TowerSpriteInfo extends SpriteInfo {
     readonly towerId: TowerId,
-}
-
-export const rustyCannon: TowerDefinition = {
-    towerId: TowerId.RustyCannon,
-    projectile: {
-        projectileType: ProjectileType.Cannonball,
-        fireRate: 10,
-        projectileSize: 3,
-        projectileSpeed: 200,
-        projectileDamage: 30,
-    },
-}
-
-export const blastMortar: TowerDefinition = {
-    towerId: TowerId.BlastMortar,
-    projectile: {
-        projectileType: ProjectileType.Cannonball,
-        fireRate: 10,
-        projectileSize: 4,
-        projectileSpeed: 200,
-        projectileDamage: 30,
-    },
-}
-
-export const pelletGun: TowerDefinition = {
-    towerId: TowerId.PelletGun,
-    projectile: {
-        projectileType: ProjectileType.Pellet,
-        fireRate: 30,
-        projectileSize: 1,
-        projectileSpeed: 400,
-        projectileDamage: 30,
-    },
 }
 
 export const towerDefinitions: { [key in TowerId]: TowerDefinition } = {
@@ -110,9 +77,9 @@ export const towerDefinitions: { [key in TowerId]: TowerDefinition } = {
         towerId: TowerId.PelletGun,
         projectile: {
             projectileType: ProjectileType.Pellet,
-            fireRate: 30,
-            projectileSize: 1,
-            projectileSpeed: 500,
+            fireRate: 50,
+            projectileSize: 3,
+            projectileSpeed: 380,
             projectileDamage: 6,
         },
     },
