@@ -1,7 +1,12 @@
 import { Monster } from "@/phaser/battletd/gameobjects/Monster";
 import GameScene from "@/phaser/battletd/scenes/GameScene";
-import { TowerId } from "@/phaser/battletd/model/Towers";
-import { prop } from "vue-class-component";
+import {
+  projectileSpriteInfos,
+  TowerDefinition, towerDefinitions,
+  TowerId,
+  towerSpriteInfos
+} from "@/phaser/battletd/model/Towers";
+import { SpriteInfo } from "@/phaser/battletd/model/Common";
 
 export interface TowerOptions {
   readonly towerId: TowerId,
@@ -21,26 +26,22 @@ export class Tower extends Phaser.GameObjects.Container {
   private readonly towerSprite: Phaser.GameObjects.Sprite;
   private readonly reloadIndicator: Phaser.GameObjects.Rectangle;
   private readonly towerId: TowerId;
+  private readonly towerDefinition: TowerDefinition;
   private readonly reloadTime: number;
   private readonly range: number;
   private readonly projectiles: Phaser.Physics.Arcade.Group;
-  private readonly projectileSize: number;
-  private readonly projectileSpeed: number;
-  private readonly projectileDamage: number;
   private reloading: boolean = false;
 
   constructor(scene: Phaser.Scene, x: number, y: number, props: TowerProps) {
     super(scene, x, y);
     this.towerId = props.towerId;
+    this.towerDefinition = towerDefinitions[this.towerId];
     this.rangeIndicator = this.createRangeIndicator();
     this.towerSprite = this.createTowerSprite();
     this.reloadIndicator = this.createReloadIndicator();
     this.add([this.rangeIndicator, this.towerSprite, this.reloadIndicator]);
     this.reloadTime = props.reloadTime ?? 250;
     this.range = props.range ?? 120;
-    this.projectileSize = props.projectileSize ?? 4;
-    this.projectileSpeed = props.projectileSpeed ?? 250;
-    this.projectileDamage = props.projectileDamage ?? 30;
 
     // this.setSize(16, 16).setInteractive().on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, this.reload);
     this.scene.add.existing(this);
@@ -55,7 +56,7 @@ export class Tower extends Phaser.GameObjects.Container {
   }
 
   protected createTowerSprite(): Phaser.GameObjects.Sprite {
-    const spriteInfo: SpriteInfo = this.getTowerSpriteInfo(this.towerId);
+    const spriteInfo: SpriteInfo = towerSpriteInfos[this.towerId];
     return this.scene.add.sprite(0, 0, spriteInfo.texture, spriteInfo.frame);
   }
 
@@ -120,14 +121,14 @@ export class Tower extends Phaser.GameObjects.Container {
 
     const projectile = this.createProjectile();
     const angle = this.getLeadingAngleToFire(monster);
-    this.scene.physics.velocityFromRotation(angle, this.projectileSpeed, projectile.body.velocity);
+    this.scene.physics.velocityFromRotation(angle, this.towerDefinition.projectile.projectileSpeed, projectile.body.velocity);
     this.reload();
   }
 
   protected createProjectile(): Phaser.Types.Physics.Arcade.ImageWithDynamicBody {
-    const spriteInfo: SpriteInfo = this.getProjectileSpriteInfo(this.towerId);
+    const spriteInfo: SpriteInfo = projectileSpriteInfos[this.towerDefinition.projectile.projectileType];
     const projectile = this.scene.physics.add.image(this.x, this.y, spriteInfo.texture, spriteInfo.frame);
-    projectile.setCircle(this.projectileSize);
+    projectile.setCircle(this.towerDefinition.projectile.projectileSize);
     this.projectiles.add(projectile);
     return projectile;
   }
@@ -138,9 +139,10 @@ export class Tower extends Phaser.GameObjects.Container {
     // fire directly toward the monster's current location.
     const directAngle = this.getDirectFireVector(monster).angle();
 
+    const projectileSpeed = this.towerDefinition.projectile.projectileSpeed;
     const deltaX = monster.x - this.x;
     const deltaY = monster.y - this.y;
-    const a = monster.velocity.x + monster.velocity.x + monster.velocity.y * monster.velocity.y - this.projectileSpeed * this.projectileSpeed;
+    const a = monster.velocity.x + monster.velocity.x + monster.velocity.y * monster.velocity.y - projectileSpeed * projectileSpeed;
     const b = 2 * deltaX * monster.velocity.x + 2 * deltaY * monster.velocity.y;
     const c = deltaX * deltaX + deltaY * deltaY;
 
@@ -158,63 +160,12 @@ export class Tower extends Phaser.GameObjects.Container {
 
   protected getDirectFireVector(monster: Monster): Phaser.Math.Vector2 {
     const angle = Phaser.Math.RadToDeg(Phaser.Math.Angle.Between(this.x, this.y, monster.x, monster.y));
-    return this.scene.physics.velocityFromAngle(angle, this.projectileSpeed);
+    return this.scene.physics.velocityFromAngle(angle, this.towerDefinition.projectile.projectileSpeed);
   }
 
   protected hitMonster(projectile: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
                        monster: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile) {
     projectile.destroy();
-    (monster as Monster).takeDamage(this.projectileDamage);
+    (monster as Monster).takeDamage(this.towerDefinition.projectile.projectileDamage);
   }
-
-  private getProjectileSpriteInfo(towerId: TowerId): SpriteInfo {
-    switch(towerId) {
-      case TowerId.RustyCannon:
-        return { texture: 'bullet', frame: 0 };
-      case TowerId.PelletGun:
-        return { texture: 'bullet', frame: 2 };
-      case TowerId.BlastMortar:
-        return { texture: 'bullet', frame: 1 };
-      case TowerId.Catapult:
-        return { texture: 'bullet', frame: 1 };
-      case TowerId.CompoundBow:
-        return { texture: 'bullet', frame: 2 };
-      case TowerId.Flamethrower:
-        return { texture: 'bullet', frame: 3 };
-      case TowerId.ReactorCore:
-        return { texture: 'bullet', frame: 3 };
-      case TowerId.TeslaCoil:
-        return { texture: 'bullet', frame: 0 };
-      default:
-        return { texture: 'bullet', frame: 2 };
-    }
-  }
-
-  private getTowerSpriteInfo(towerId: TowerId): SpriteInfo {
-    switch(towerId) {
-      case TowerId.RustyCannon:
-        return { texture: 'buildings_sprites', frame: 526 };
-      case TowerId.PelletGun:
-        return { texture: 'buildings_sprites', frame: 6 };
-      case TowerId.BlastMortar:
-        return { texture: 'buildings_sprites', frame: 65 };
-      case TowerId.Catapult:
-        return { texture: 'buildings_sprites', frame: 1570 };
-      case TowerId.CompoundBow:
-        return { texture: 'buildings_sprites', frame: 1882 };
-      case TowerId.Flamethrower:
-        return { texture: 'buildings_sprites', frame: 614 };
-      case TowerId.ReactorCore:
-        return { texture: 'buildings_sprites', frame: 807 };
-      case TowerId.TeslaCoil:
-        return { texture: 'buildings_sprites', frame: 546 };
-      default:
-        return { texture: 'tower' };
-    }
-  }
-}
-
-interface SpriteInfo {
-  texture: string,
-  frame?: number,
 }

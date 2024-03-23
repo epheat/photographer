@@ -37,6 +37,8 @@ export class BattleTDGameState implements GameState {
             complete: true,
         }
     }
+
+    // TODO: static constructor from JSON save file
 }
 
 export interface GameState {
