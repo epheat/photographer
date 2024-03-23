@@ -28,7 +28,7 @@ export class TowerPlot extends Phaser.GameObjects.Container {
   }
 
   onClick() {
-    const playerState = (this.scene as GameScene).gameState.playerState;
+    const playerState = (this.scene as GameScene).gameSimulator.gameState.playerState;
     if (playerState.selectedCard == undefined) {
       return;
     }

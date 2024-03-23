@@ -1,6 +1,7 @@
 import * as Phaser from 'phaser'
 import GameScene from './scenes/GameScene'
 import {BattleTDGameState} from "@/phaser/battletd/model/GameState";
+import {BattleTDGameSimulator} from "@/phaser/battletd/model/GameSimulator";
 
 export function launch(containerId: string, gameState: BattleTDGameState): BattleTDGame {
     const config: Phaser.Types.Core.GameConfig = {
@@ -16,13 +17,14 @@ export function launch(containerId: string, gameState: BattleTDGameState): Battl
         },
         scene: [GameScene]
     }
+
     return new BattleTDGame(config, gameState);
 }
 
 export class BattleTDGame extends Phaser.Game {
-    public gameState: BattleTDGameState;
+    public gameSimulator: BattleTDGameSimulator;
     constructor(config: Phaser.Types.Core.GameConfig, gameState: BattleTDGameState) {
         super(config);
-        this.gameState = gameState;
+        this.gameSimulator = new BattleTDGameSimulator(gameState);
     }
 }

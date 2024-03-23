@@ -20,6 +20,7 @@ import { BattleTDGameState, WavePhase } from "@/phaser/battletd/model/GameState"
 import { BattleTDGame } from "@/phaser/battletd/BattleTD";
 import { getTowerCard, TowerCard } from "@/phaser/battletd/model/Cards";
 import { EnemyType } from "@/phaser/battletd/model/Enemies";
+import {BattleTDGameSimulator} from "@/phaser/battletd/model/GameSimulator";
 
 export default class GameScene extends Phaser.Scene {
 
@@ -32,7 +33,7 @@ export default class GameScene extends Phaser.Scene {
     private monsterPath!: Phaser.Curves.Path;
     private monsterPathStart!: Phaser.Types.Tilemaps.TiledObject;
 
-    public gameState!: BattleTDGameState;
+    public gameSimulator!: BattleTDGameSimulator;
 
     constructor() {
         super('game-scene')
@@ -66,7 +67,7 @@ export default class GameScene extends Phaser.Scene {
         this.plots = this.add.group({ runChildUpdate: false });
         this.createMap3();
 
-        this.gameState = (this.game as BattleTDGame).gameState;
+        this.gameSimulator = (this.game as BattleTDGame).gameSimulator;
 
         eventBus.on(events.newWave, this.spawnWave, this);
         eventBus.on(events.monsterReachedPathEnd, this.takeCastleDamage, this);
@@ -78,15 +79,15 @@ export default class GameScene extends Phaser.Scene {
     update(time: number, delta: number) {
         this.components.update(delta);
 
-        this.gameState.update(time, delta);
+        this.gameSimulator.update(time, delta);
 
-        if (this.gameState.waveState.phase == WavePhase.PreBattlePhase && this.monsters.children.size == 0) {
-            this.spawnWave(EnemyType.Orc1, this.gameState.waveState.waveNumber);
+        if (this.gameSimulator.gameState.waveState.phase == WavePhase.PreBattlePhase && this.monsters.children.size == 0) {
+            this.spawnWave(EnemyType.Orc1, this.gameSimulator.gameState.waveState.waveNumber);
         }
-        if (this.gameState.waveState.phase == WavePhase.BattlePhase && this.monsters.children.size == 0) {
-            this.gameState.waveState.complete = true;
+        if (this.gameSimulator.gameState.waveState.phase == WavePhase.BattlePhase && this.monsters.children.size == 0) {
+            this.gameSimulator.gameState.waveState.complete = true;
             // TODO: calculate interest
-            this.gameState.playerState.gold++;
+            this.gameSimulator.gameState.playerState.gold++;
         }
     }
 
@@ -122,16 +123,16 @@ export default class GameScene extends Phaser.Scene {
             this.monsters.add(monster);
             setTimeout(() => {
                 monster.startFollow();
-            }, 1000 * i + BattleTDGameState.PRE_BATTLE_PHASE_TIME_MILLIS)
+            }, 1000 * i + BattleTDGameSimulator.PRE_BATTLE_PHASE_TIME_MILLIS)
         }
     }
 
     private takeCastleDamage(monster: Monster): void {
-        this.gameState.playerState.castle.hp -= monster.castleDmg;
+        this.gameSimulator.gameState.playerState.castle.hp -= monster.castleDmg;
     }
 
     private selectCard(selectedIndex: number): void {
-        this.gameState.playerState.selectedCard = selectedIndex;
+        this.gameSimulator.gameState.playerState.selectedCard = selectedIndex;
         this.plots.children.each(tower => {
             (tower as TowerPlot).setHighlightVisible(selectedIndex != undefined);
             return true;
@@ -139,19 +140,19 @@ export default class GameScene extends Phaser.Scene {
     }
 
     private buyCard(shopIndex: number): void {
-        const card: TowerCard = getTowerCard(this.gameState.shopState.offerings[shopIndex])!;
-        this.gameState.playerState.gold -= card.cost;
-        this.gameState.shopState.offerings.splice(shopIndex, 1);
-        this.gameState.playerState.bench.push(card.towerId);
+        const card: TowerCard = getTowerCard(this.gameSimulator.gameState.shopState.offerings[shopIndex])!;
+        this.gameSimulator.gameState.playerState.gold -= card.cost;
+        this.gameSimulator.gameState.shopState.offerings.splice(shopIndex, 1);
+        this.gameSimulator.gameState.playerState.bench.push(card.towerId);
     }
 
     private placeTower(plot: TowerPlot): void {
-        if (this.gameState.playerState.selectedCard == undefined) {
+        if (this.gameSimulator.gameState.playerState.selectedCard == undefined) {
             console.log("No tower selected.");
             return;
         }
-        this.gameState.playerState.bench.splice(this.gameState.playerState.selectedCard, 1);
-        this.gameState.playerState.selectedCard = undefined;
+        this.gameSimulator.gameState.playerState.bench.splice(this.gameSimulator.gameState.playerState.selectedCard, 1);
+        this.gameSimulator.gameState.playerState.selectedCard = undefined;
 
         this.plots.children.each(tower => {
             (tower as TowerPlot).setHighlightVisible(false);
