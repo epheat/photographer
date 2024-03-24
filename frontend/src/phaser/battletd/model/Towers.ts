@@ -25,11 +25,12 @@ export enum ProjectileType {
  */
 
 export interface TowerProjectile {
-    readonly projectileType: ProjectileType,
-    readonly projectileSize: number,
-    readonly projectileSpeed: number,
-    readonly projectileDamage: number,
-    readonly fireRate: number,
+    readonly type: ProjectileType,
+    readonly size: number,
+    readonly speed: number,
+    readonly impactDamage: number,
+    readonly lifespan?: number,
+    readonly drag?: number,
 }
 
 export const projectileSpriteInfos: { [key in ProjectileType]: SpriteInfo } = {
@@ -44,6 +45,8 @@ export const projectileSpriteInfos: { [key in ProjectileType]: SpriteInfo } = {
 
 export interface TowerDefinition {
     readonly towerId: TowerId,
+    readonly reloadTime: number,
+    readonly range: number,
     readonly projectile: TowerProjectile,
     // TODO: sprite, etc.
 }
@@ -55,86 +58,95 @@ export interface TowerSpriteInfo extends SpriteInfo {
 export const towerDefinitions: { [key in TowerId]: TowerDefinition } = {
     [TowerId.RustyCannon]: {
         towerId: TowerId.RustyCannon,
+        reloadTime: 750,
+        range: 120,
         projectile: {
-            projectileType: ProjectileType.Cannonball,
-            fireRate: 10,
-            projectileSize: 3,
-            projectileSpeed: 200,
-            projectileDamage: 35,
+            type: ProjectileType.Cannonball,
+            size: 3,
+            speed: 200,
+            impactDamage: 35,
         },
     },
     [TowerId.BlastMortar]: {
         towerId: TowerId.BlastMortar,
+        reloadTime: 1200,
+        range: 400,
         projectile: {
-            projectileType: ProjectileType.Cannonball,
-            fireRate: 5,
-            projectileSize: 4,
-            projectileSpeed: 150,
-            projectileDamage: 50,
+            type: ProjectileType.Cannonball,
+            size: 4,
+            speed: 150,
+            impactDamage: 50,
         },
     },
     [TowerId.PelletGun]: {
         towerId: TowerId.PelletGun,
+        reloadTime: 110,
+        range: 150,
         projectile: {
-            projectileType: ProjectileType.Pellet,
-            fireRate: 50,
-            projectileSize: 3,
-            projectileSpeed: 380,
-            projectileDamage: 6,
+            type: ProjectileType.Pellet,
+            size: 3,
+            speed: 380,
+            impactDamage: 4,
         },
     },
     [TowerId.Catapult]: {
         towerId: TowerId.Catapult,
+        reloadTime: 2000,
+        range: 400,
         projectile: {
-            projectileType: ProjectileType.Cannonball,
-            fireRate: 4,
-            projectileSize: 7,
-            projectileSpeed: 100,
-            projectileDamage: 70,
+            type: ProjectileType.Cannonball,
+            size: 7,
+            speed: 100,
+            impactDamage: 70,
         },
 
     },
     [TowerId.CompoundBow]: {
         towerId: TowerId.CompoundBow,
+        reloadTime: 780,
+        range: 260,
         projectile: {
-            projectileType: ProjectileType.Arrow,
-            fireRate: 15,
-            projectileSize: 3,
-            projectileSpeed: 350,
-            projectileDamage: 22,
+            type: ProjectileType.Arrow,
+            size: 3,
+            speed: 410,
+            impactDamage: 22,
         },
 
     },
     [TowerId.Flamethrower]: {
         towerId: TowerId.Flamethrower,
+        reloadTime: 10,
+        range: 100,
         projectile: {
-            projectileType: ProjectileType.Arrow,
-            fireRate: 10,
-            projectileSize: 4,
-            projectileSpeed: 150,
-            projectileDamage: 30,
+            type: ProjectileType.Arrow,
+            size: 6,
+            speed: 100,
+            impactDamage: 2,
+            drag: 0.4,
         },
 
     },
     [TowerId.ReactorCore]: {
         towerId: TowerId.ReactorCore,
+        reloadTime: 3000,
+        range: 600,
         projectile: {
-            projectileType: ProjectileType.Arrow,
-            fireRate: 10,
-            projectileSize: 4,
-            projectileSpeed: 200,
-            projectileDamage: 30,
+            type: ProjectileType.Arrow,
+            size: 4,
+            speed: 200,
+            impactDamage: 30,
         },
 
     },
     [TowerId.TeslaCoil]: {
         towerId: TowerId.TeslaCoil,
+        reloadTime: 2600,
+        range: 150,
         projectile: {
-            projectileType: ProjectileType.Arrow,
-            fireRate: 10,
-            projectileSize: 4,
-            projectileSpeed: 200,
-            projectileDamage: 30,
+            type: ProjectileType.Arrow,
+            size: 4,
+            speed: 200,
+            impactDamage: 30,
         },
     },
 }

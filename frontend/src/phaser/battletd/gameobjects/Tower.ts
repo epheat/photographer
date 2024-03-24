@@ -10,11 +10,6 @@ import { SpriteInfo } from "@/phaser/battletd/model/Common";
 
 export interface TowerOptions {
   readonly towerId: TowerId,
-  readonly reloadTime?: number,
-  readonly range?: number,
-  readonly projectileSize?: number,
-  readonly projectileSpeed?: number,
-  readonly projectileDamage?: number,
 }
 
 export interface TowerProps extends TowerOptions {
@@ -27,8 +22,6 @@ export class Tower extends Phaser.GameObjects.Container {
   private readonly reloadIndicator: Phaser.GameObjects.Rectangle;
   private readonly towerId: TowerId;
   private readonly towerDefinition: TowerDefinition;
-  private readonly reloadTime: number;
-  private readonly range: number;
   private readonly projectiles: Phaser.Physics.Arcade.Group;
   private reloading: boolean = false;
 
@@ -40,8 +33,6 @@ export class Tower extends Phaser.GameObjects.Container {
     this.towerSprite = this.createTowerSprite();
     this.reloadIndicator = this.createReloadIndicator();
     this.add([this.rangeIndicator, this.towerSprite, this.reloadIndicator]);
-    this.reloadTime = props.reloadTime ?? 250;
-    this.range = props.range ?? 120;
 
     // this.setSize(16, 16).setInteractive().on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, this.reload);
     this.scene.add.existing(this);
@@ -78,7 +69,7 @@ export class Tower extends Phaser.GameObjects.Container {
     const monsterUnits = monsters.getChildren() as Monster[];
     const monsterDistances = monsterUnits
       .map(monster => { return { monster: monster, distance: Phaser.Math.Distance.Between(this.x, this.y, monster.x, monster.y) }})
-      .filter(mon => mon.distance < this.range);
+      .filter(mon => mon.distance < this.towerDefinition.range);
     if (monsterDistances.length == 0) {
       return;
     } else {
@@ -88,7 +79,7 @@ export class Tower extends Phaser.GameObjects.Container {
 
   protected getFurthestInPath(monsters: Phaser.GameObjects.Group): Monster | undefined {
     const monsterUnits = monsters.getChildren() as Monster[];
-    const monstersInRange = monsterUnits.filter(monster => Phaser.Math.Distance.Between(this.x, this.y, monster.x, monster.y) < this.range);
+    const monstersInRange = monsterUnits.filter(monster => Phaser.Math.Distance.Between(this.x, this.y, monster.x, monster.y) < this.towerDefinition.range);
     if (monstersInRange.length == 0) {
       return;
     }
@@ -105,7 +96,7 @@ export class Tower extends Phaser.GameObjects.Container {
 
     this.scene.tweens.add({
       targets: this.reloadIndicator,
-      duration: this.reloadTime,
+      duration: this.towerDefinition.reloadTime,
       scaleX: 0.0,
       onComplete: () => {
         this.reloadIndicator.setVisible(false);
@@ -121,14 +112,15 @@ export class Tower extends Phaser.GameObjects.Container {
 
     const projectile = this.createProjectile();
     const angle = this.getLeadingAngleToFire(monster);
-    this.scene.physics.velocityFromRotation(angle, this.towerDefinition.projectile.projectileSpeed, projectile.body.velocity);
+    this.scene.physics.velocityFromRotation(angle, this.towerDefinition.projectile.speed, projectile.body.velocity);
+    projectile.body.setDamping(true).setDrag(this.towerDefinition.projectile.drag ?? 0);
     this.reload();
   }
 
   protected createProjectile(): Phaser.Types.Physics.Arcade.ImageWithDynamicBody {
-    const spriteInfo: SpriteInfo = projectileSpriteInfos[this.towerDefinition.projectile.projectileType];
+    const spriteInfo: SpriteInfo = projectileSpriteInfos[this.towerDefinition.projectile.type];
     const projectile = this.scene.physics.add.image(this.x, this.y, spriteInfo.texture, spriteInfo.frame);
-    const projectileSize = this.towerDefinition.projectile.projectileSize;
+    const projectileSize = this.towerDefinition.projectile.size;
     // offset the hitbox, since the body is positioned from the top-left of the gameobject.
     // see: https://phaser.discourse.group/t/circular-collider-using-setcircle-is-not-centred-properly/8263/2
     projectile.setCircle(projectileSize, projectile.body.halfWidth - projectileSize, projectile.body.halfHeight - projectileSize);
@@ -142,7 +134,7 @@ export class Tower extends Phaser.GameObjects.Container {
     // fire directly toward the monster's current location.
     const directAngle = this.getDirectFireVector(monster).angle();
 
-    const projectileSpeed = this.towerDefinition.projectile.projectileSpeed;
+    const projectileSpeed = this.towerDefinition.projectile.speed;
     const deltaX = monster.x - this.x;
     const deltaY = monster.y - this.y;
     const a = monster.velocity.x + monster.velocity.x + monster.velocity.y * monster.velocity.y - projectileSpeed * projectileSpeed;
@@ -163,12 +155,12 @@ export class Tower extends Phaser.GameObjects.Container {
 
   protected getDirectFireVector(monster: Monster): Phaser.Math.Vector2 {
     const angle = Phaser.Math.RadToDeg(Phaser.Math.Angle.Between(this.x, this.y, monster.x, monster.y));
-    return this.scene.physics.velocityFromAngle(angle, this.towerDefinition.projectile.projectileSpeed);
+    return this.scene.physics.velocityFromAngle(angle, this.towerDefinition.projectile.speed);
   }
 
   protected hitMonster(projectile: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
                        monster: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile) {
     projectile.destroy();
-    (monster as Monster).takeDamage(this.towerDefinition.projectile.projectileDamage);
+    (monster as Monster).takeDamage(this.towerDefinition.projectile.impactDamage);
   }
 }
