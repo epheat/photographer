@@ -113,17 +113,36 @@ export class Tower extends Phaser.GameObjects.Container {
     const projectile = this.createProjectile();
     const angle = this.getLeadingAngleToFire(monster);
     this.scene.physics.velocityFromRotation(angle, this.towerDefinition.projectile.speed, projectile.body.velocity);
-    projectile.body.setDamping(true).setDrag(this.towerDefinition.projectile.drag ?? 0);
+    if (this.towerDefinition.projectile.drag) {
+      projectile.body.setDamping(true).setDrag(this.towerDefinition.projectile.drag);
+    }
     this.reload();
   }
 
   protected createProjectile(): Phaser.Types.Physics.Arcade.ImageWithDynamicBody {
-    const spriteInfo: SpriteInfo = projectileSpriteInfos[this.towerDefinition.projectile.type];
-    const projectile = this.scene.physics.add.image(this.x, this.y, spriteInfo.texture, spriteInfo.frame);
-    const projectileSize = this.towerDefinition.projectile.size;
+    const projectileDef = this.towerDefinition.projectile;
+    const spriteInfo: SpriteInfo = projectileSpriteInfos[projectileDef.type];
+    const projectile = this.scene.physics.add.sprite(this.x, this.y, spriteInfo.texture, spriteInfo.frame);
+    if (spriteInfo.animationKey) {
+      projectile.anims.play(spriteInfo.animationKey);
+    }
+    const projectileSize = projectileDef.size;
     // offset the hitbox, since the body is positioned from the top-left of the gameobject.
     // see: https://phaser.discourse.group/t/circular-collider-using-setcircle-is-not-centred-properly/8263/2
     projectile.setCircle(projectileSize, projectile.body.halfWidth - projectileSize, projectile.body.halfHeight - projectileSize);
+
+    const lifespan = projectileDef.lifespan;
+    if (lifespan) {
+      this.scene.tweens.add({
+        targets: projectile,
+        delay: lifespan,
+        duration: 200,
+        alpha: 0.0,
+        onComplete: () => {
+          projectile.destroy();
+        }
+      })
+    }
     this.projectiles.add(projectile);
     return projectile;
   }

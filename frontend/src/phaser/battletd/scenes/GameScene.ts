@@ -10,6 +10,7 @@ import pellet from "@/phaser/battletd/assets/tiles/miniworld/projectiles/pellet.
 import pellet2 from "@/phaser/battletd/assets/tiles/miniworld/projectiles/pellet2.png";
 import bullet from "@/phaser/battletd/assets/tiles/miniworld/projectiles/bullet.png";
 import bullet2 from "@/phaser/battletd/assets/tiles/miniworld/projectiles/bullet2.png";
+import fire from "@/phaser/battletd/assets/tiles/fire_fx_v1.0/png/orange/loops/burning_loop_1.png";
 import range from "@/phaser/battletd/assets/range.png";
 import star from "@/phaser/battletd/assets/star.png";
 import map1 from "@/phaser/battletd/tiled/map1.json";
@@ -48,6 +49,7 @@ export default class GameScene extends Phaser.Scene {
         this.load.image('bullet2', bullet2);
         this.load.image('pellet', pellet);
         this.load.image('pellet2', pellet2);
+        this.load.spritesheet('fire', fire, { frameWidth: 24, frameHeight: 32 });
         this.load.image('star', star);
         this.load.image('plot', plot);
         this.load.image('tower', tower);
@@ -68,6 +70,13 @@ export default class GameScene extends Phaser.Scene {
     }
 
     create() {
+        this.anims.create({
+            key: 'fireAnim',
+            frames: this.anims.generateFrameNumbers('fire', {}),
+            frameRate: 10,
+            repeat: -1,
+        });
+
         this.monsters = this.physics.add.group({ runChildUpdate: true });
         this.towers = this.add.group({ runChildUpdate: true });
         this.plots = this.add.group({ runChildUpdate: false });
