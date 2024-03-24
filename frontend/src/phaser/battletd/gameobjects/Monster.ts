@@ -1,6 +1,8 @@
-import { eventBus, events } from "@/phaser/battletd/events/EventBus";
-import { EnemyDefinition, EnemyType, getEnemyDefinition } from "@/phaser/battletd/model/Enemies";
+import {eventBus, events} from "@/phaser/battletd/events/EventBus";
+import {EnemyDefinition, enemyDefinitions, EnemyType} from "@/phaser/battletd/model/Enemies";
+import {Direction} from "@/phaser/battletd/model/Common";
 import Vector2 = Phaser.Math.Vector2;
+import FilterMode = Phaser.Textures.FilterMode;
 
 export interface MonsterProps {
   enemyType: EnemyType;
@@ -23,8 +25,11 @@ export class Monster extends Phaser.GameObjects.Container {
 
   constructor(scene: Phaser.Scene, path: Phaser.Curves.Path, x: number, y: number, props: MonsterProps) {
     super(scene, x, y);
+    this.enemyType = props.enemyType;
+    const enemyDefinition: EnemyDefinition = enemyDefinitions[this.enemyType];
     this.path = path;
-    this.monster = this.scene.add.sprite(0, 0, 'orc');
+    this.monster = this.scene.add.sprite(0, 0, this.enemyType);
+    this.monster.texture.setFilter(FilterMode.NEAREST);
     this.setSize(this.monster.displayWidth, this.monster.displayHeight);
     this.hpBarBaseScale = props.hpBarBaseScale ?? 1.2;
     this.hpBar = this.scene.add.rectangle(0, this.monster.displayHeight, this.monster.displayWidth * this.hpBarBaseScale, 5, 0xff3333);
@@ -33,12 +38,10 @@ export class Monster extends Phaser.GameObjects.Container {
     this.scene.physics.add.existing(this);
     (this.body as Phaser.Physics.Arcade.Body).setCircle(this.monster.displayWidth / 2);
 
-    this.enemyType = props.enemyType;
-    const enemyDefinition: EnemyDefinition = getEnemyDefinition(this.enemyType)!;
 
     this.maxHp = enemyDefinition.baseHp;
     this.hp = enemyDefinition.baseHp;
-    this.castleDmg = enemyDefinition.castleDamage ?? 1;
+    this.castleDmg = enemyDefinition.castleDamage;
 
     this.pathProgressSpeed = enemyDefinition.baseSpeed / this.path.getLength();
     this.pathProgress = 0.0;
@@ -60,8 +63,12 @@ export class Monster extends Phaser.GameObjects.Container {
     const currentPosition = new Vector2(this.x, this.y);
     const nextPosition = this.path.getPoint(this.pathProgress);
     this.setPosition(nextPosition.x, nextPosition.y);
-
     this.velocity = nextPosition.subtract(currentPosition).scale(1 / delta * 1000);
+    const animToPlay = `${this.enemyType}Walk${this.getDirection(this.velocity)}`;
+    if (animToPlay != this.monster.anims.currentAnim?.key) {
+      console.log("play");
+      this.monster.play(animToPlay);
+    }
   }
 
   public startFollow(): void {
@@ -74,6 +81,22 @@ export class Monster extends Phaser.GameObjects.Container {
     this.hpBar.setScale(newScale, 1);
     if (this.hp <= 0) {
       this.destroy();
+    }
+  }
+
+  private getDirection(velocity: Vector2): Direction {
+    if (Math.abs(velocity.x) > Math.abs(velocity.y)) {
+      if (velocity.x < 0) {
+        return Direction.LEFT;
+      } else {
+        return Direction.RIGHT;
+      }
+    } else {
+      if (velocity.y < 0) {
+        return Direction.UP;
+      } else {
+        return Direction.DOWN;
+      }
     }
   }
 }

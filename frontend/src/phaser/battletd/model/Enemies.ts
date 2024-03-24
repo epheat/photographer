@@ -48,138 +48,115 @@ export interface EnemyWave {
     readonly troops: EnemySquad[];
 }
 
-export const Orc1Enemy : EnemyDefinition = {
-    enemyType: EnemyType.Orc1,
-    baseHp: 200,
-    baseSpeed: 50,
-    baseResistances: [],
-    baseWeaknesses: [ DamageType.Piercing ],
-    rank: EnemyRank.Soldier,
-    castleDamage: 1,
-}
-export const Orc2Enemy : EnemyDefinition = {
-    enemyType: EnemyType.Orc2,
-    baseHp: 250,
-    baseSpeed: 60,
-    baseResistances: [ DamageType.Slashing ],
-    baseWeaknesses: [ DamageType.Piercing ],
-    rank: EnemyRank.Commander,
-    castleDamage: 1,
-}
-export const Orc3Enemy : EnemyDefinition = {
-    enemyType: EnemyType.Orc3,
-    baseHp: 300,
-    baseSpeed: 75,
-    baseResistances: [ ...physicalDamageTypes ],
-    baseWeaknesses: [ ...elementalDamageTypes ],
-    rank: EnemyRank.Leader,
-    castleDamage: 1,
-}
-export const Orc4Enemy : EnemyDefinition = {
-    enemyType: EnemyType.Orc4,
-    baseHp: 500,
-    baseSpeed: 40,
-    baseResistances: [ ...elementalDamageTypes ],
-    baseWeaknesses: [ DamageType.Piercing ],
-    rank: EnemyRank.Elite,
-    castleDamage: 1,
-}
-
-export const Demon1Enemy : EnemyDefinition = {
-    enemyType: EnemyType.Demon1,
-    baseHp: 220,
-    baseSpeed: 45,
-    baseResistances: [ DamageType.Flame ],
-    baseWeaknesses: [ DamageType.Ice, DamageType.Slashing ],
-    rank: EnemyRank.Soldier,
-    castleDamage: 1,
-}
-export const Demon2Enemy : EnemyDefinition = {
-    enemyType: EnemyType.Demon2,
-    baseHp: 240,
-    baseSpeed: 60,
-    baseResistances: [ DamageType.Flame, DamageType.Piercing ],
-    baseWeaknesses: [ DamageType.Ice ],
-    rank: EnemyRank.Commander,
-    castleDamage: 1,
-}
-
-export const Demon3Enemy : EnemyDefinition = {
-    enemyType: EnemyType.Demon3,
-    baseHp: 400,
-    baseSpeed: 75,
-    baseResistances: [ DamageType.Flame, ...physicalDamageTypes ],
-    baseWeaknesses: [ DamageType.Ice ],
-    rank: EnemyRank.Leader,
-    castleDamage: 1,
-}
-
-export const ElkEnemy : EnemyDefinition = {
-    enemyType: EnemyType.Elk,
-    baseHp: 800,
-    baseSpeed: 25,
-    baseResistances: [ ...physicalDamageTypes ],
-    baseWeaknesses: [ ...elementalDamageTypes ],
-    rank: EnemyRank.Leader,
-    castleDamage: 2,
-}
-
-export const MinotaurEnemy : EnemyDefinition = {
-    enemyType: EnemyType.Minotaur,
-    baseHp: 600,
-    baseSpeed: 40,
-    baseResistances: [ ...physicalDamageTypes, ...elementalDamageTypes ],
-    baseWeaknesses: [ ...specialDamageTypes ],
-    rank: EnemyRank.Elite,
-    castleDamage: 2,
-}
-
-export const SkeletonEnemy : EnemyDefinition = {
-    enemyType: EnemyType.Skeleton,
-    baseHp: 100,
-    baseSpeed: 100,
-    baseResistances: [ ],
-    baseWeaknesses: [ ...physicalDamageTypes ],
-    rank: EnemyRank.Soldier,
-    castleDamage: 1,
-}
-
-export const WoollyEnemy : EnemyDefinition = {
-    enemyType: EnemyType.Woolly,
-    baseHp: 500,
-    baseSpeed: 50,
-    baseResistances: [ DamageType.Ice ],
-    baseWeaknesses: [ ],
-    rank: EnemyRank.Leader,
-    castleDamage: 1,
-}
-
-export const YetiEnemy : EnemyDefinition = {
-    enemyType: EnemyType.Yeti,
-    baseHp: 600,
-    baseSpeed: 40,
-    baseResistances: [ DamageType.Ice, DamageType.Water ],
-    baseWeaknesses: [ ],
-    rank: EnemyRank.Elite,
-    castleDamage: 2,
+export const enemyDefinitions: { [key in EnemyType]: EnemyDefinition } = {
+    [EnemyType.Orc1]: {
+        enemyType: EnemyType.Orc1,
+        baseHp: 200,
+        baseSpeed: 50,
+        baseResistances: [],
+        baseWeaknesses: [ DamageType.Piercing ],
+        rank: EnemyRank.Soldier,
+        castleDamage: 1,
+    },
+    [EnemyType.Orc2]: {
+        enemyType: EnemyType.Orc2,
+        baseHp: 250,
+        baseSpeed: 60,
+        baseResistances: [ DamageType.Slashing ],
+        baseWeaknesses: [ DamageType.Piercing ],
+        rank: EnemyRank.Commander,
+        castleDamage: 1,
+    },
+    [EnemyType.Orc3]: {
+        enemyType: EnemyType.Orc3,
+        baseHp: 300,
+        baseSpeed: 75,
+        baseResistances: [ ...physicalDamageTypes ],
+        baseWeaknesses: [ ...elementalDamageTypes ],
+        rank: EnemyRank.Leader,
+        castleDamage: 1,
+    },
+    [EnemyType.Orc4]: {
+        enemyType: EnemyType.Orc4,
+        baseHp: 500,
+        baseSpeed: 40,
+        baseResistances: [ ...elementalDamageTypes ],
+        baseWeaknesses: [ DamageType.Piercing ],
+        rank: EnemyRank.Elite,
+        castleDamage: 1,
+    },
+    [EnemyType.Demon1]: {
+        enemyType: EnemyType.Demon1,
+        baseHp: 220,
+        baseSpeed: 45,
+        baseResistances: [ DamageType.Flame ],
+        baseWeaknesses: [ DamageType.Ice, DamageType.Slashing ],
+        rank: EnemyRank.Soldier,
+        castleDamage: 1,
+    },
+    [EnemyType.Demon2]: {
+        enemyType: EnemyType.Demon2,
+        baseHp: 240,
+        baseSpeed: 60,
+        baseResistances: [ DamageType.Flame, DamageType.Piercing ],
+        baseWeaknesses: [ DamageType.Ice ],
+        rank: EnemyRank.Commander,
+        castleDamage: 1,
+    },
+    [EnemyType.Demon3]: {
+        enemyType: EnemyType.Demon3,
+        baseHp: 400,
+        baseSpeed: 75,
+        baseResistances: [ DamageType.Flame, ...physicalDamageTypes ],
+        baseWeaknesses: [ DamageType.Ice ],
+        rank: EnemyRank.Leader,
+        castleDamage: 1,
+    },
+    [EnemyType.Elk]: {
+        enemyType: EnemyType.Elk,
+        baseHp: 800,
+        baseSpeed: 25,
+        baseResistances: [ ...physicalDamageTypes ],
+        baseWeaknesses: [ ...elementalDamageTypes ],
+        rank: EnemyRank.Leader,
+        castleDamage: 2,
+    },
+    [EnemyType.Minotaur]: {
+        enemyType: EnemyType.Minotaur,
+        baseHp: 600,
+        baseSpeed: 40,
+        baseResistances: [ ...physicalDamageTypes, ...elementalDamageTypes ],
+        baseWeaknesses: [ ...specialDamageTypes ],
+        rank: EnemyRank.Elite,
+        castleDamage: 2,
+    },
+    [EnemyType.Skeleton]: {
+        enemyType: EnemyType.Skeleton,
+        baseHp: 100,
+        baseSpeed: 100,
+        baseResistances: [ ],
+        baseWeaknesses: [ ...physicalDamageTypes ],
+        rank: EnemyRank.Soldier,
+        castleDamage: 1,
+    },
+    [EnemyType.Woolly]: {
+        enemyType: EnemyType.Woolly,
+        baseHp: 500,
+        baseSpeed: 50,
+        baseResistances: [ DamageType.Ice ],
+        baseWeaknesses: [ ],
+        rank: EnemyRank.Leader,
+        castleDamage: 1,
+    },
+    [EnemyType.Yeti]: {
+        enemyType: EnemyType.Yeti,
+        baseHp: 600,
+        baseSpeed: 40,
+        baseResistances: [ DamageType.Ice, DamageType.Water ],
+        baseWeaknesses: [ ],
+        rank: EnemyRank.Elite,
+        castleDamage: 2,
+    },
 }
 
 // TODO: dragons as BOSS type enemies
-
-export const enemies: EnemyDefinition[] = [
-    Orc1Enemy,
-    Orc2Enemy,
-    Orc3Enemy,
-    Orc4Enemy,
-    Demon1Enemy,
-    Demon2Enemy,
-    Demon3Enemy,
-    ElkEnemy,
-    MinotaurEnemy,
-    WoollyEnemy,
-    YetiEnemy,
-]
-
-export function getEnemyDefinition(enemyType: EnemyType): EnemyDefinition | undefined {
-    return enemies.find(enemy => enemy.enemyType == enemyType);
-}

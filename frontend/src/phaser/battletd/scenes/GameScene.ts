@@ -4,13 +4,13 @@ import miniBuildingsTileset from "@/phaser/battletd/assets/tiles/miniworld/build
 import miniNatureTileset from "@/phaser/battletd/assets/tiles/miniworld/nature.png";
 import tower from "@/phaser/battletd/assets/tiles/miniworld/tower.png";
 import plot from "@/phaser/battletd/assets/tiles/miniworld/plot.png";
-import orc from "@/phaser/battletd/assets/tiles/miniworld/orc.png";
+import orc1 from "@/phaser/battletd/assets/tiles/miniworld/enemies/orc1.png";
 import bomb from "@/phaser/battletd/assets/bomb.png";
 import pellet from "@/phaser/battletd/assets/tiles/miniworld/projectiles/pellet.png";
 import pellet2 from "@/phaser/battletd/assets/tiles/miniworld/projectiles/pellet2.png";
 import bullet from "@/phaser/battletd/assets/tiles/miniworld/projectiles/bullet.png";
 import bullet2 from "@/phaser/battletd/assets/tiles/miniworld/projectiles/bullet2.png";
-import fire from "@/phaser/battletd/assets/tiles/fire_fx_v1.0/png/orange/loops/burning_loop_1.png";
+import fire from "@/phaser/battletd/assets/tiles/fire_fx_v1.0/png/orange/loops/burning_loop_5.png";
 import range from "@/phaser/battletd/assets/range.png";
 import star from "@/phaser/battletd/assets/star.png";
 import map1 from "@/phaser/battletd/tiled/map1.json";
@@ -49,11 +49,11 @@ export default class GameScene extends Phaser.Scene {
         this.load.image('bullet2', bullet2);
         this.load.image('pellet', pellet);
         this.load.image('pellet2', pellet2);
-        this.load.spritesheet('fire', fire, { frameWidth: 24, frameHeight: 24 });
+        this.load.spritesheet('fire', fire, { frameWidth: 8, frameHeight: 8 });
         this.load.image('star', star);
         this.load.image('plot', plot);
         this.load.image('tower', tower);
-        this.load.image('orc', orc);
+        this.load.spritesheet('Orc1', orc1, { frameWidth: 16, frameHeight: 16 });
         this.load.image('range_indicator', range)
         this.load.image('terrain', miniTerrainTileset);
         this.load.image('nature', miniNatureTileset);
@@ -70,13 +70,7 @@ export default class GameScene extends Phaser.Scene {
     }
 
     create() {
-        this.anims.create({
-            key: 'fireAnim',
-            frames: this.anims.generateFrameNumbers('fire', {}),
-            frameRate: 10,
-            repeat: -1,
-        });
-
+        this.createAnimations();
         this.monsters = this.physics.add.group({ runChildUpdate: true });
         this.towers = this.add.group({ runChildUpdate: true });
         this.plots = this.add.group({ runChildUpdate: false });
@@ -89,6 +83,39 @@ export default class GameScene extends Phaser.Scene {
         eventBus.on(events.selectCard, this.selectCard, this);
         eventBus.on(events.buyCard, this.buyCard, this);
         eventBus.on(events.placeTower, this.placeTower, this);
+    }
+
+    createAnimations(): void {
+        this.anims.create({
+            key: 'fireAnim',
+            frames: this.anims.generateFrameNumbers('fire', {}),
+            frameRate: 10,
+            repeat: -1,
+        });
+        this.anims.create({
+            key: 'Orc1WalkD',
+            frames: this.anims.generateFrameNumbers('Orc1', { start: 1, end: 4 }),
+            frameRate: 8,
+            repeat: -1,
+        });
+        this.anims.create({
+            key: 'Orc1WalkU',
+            frames: this.anims.generateFrameNumbers('Orc1', { start: 6, end: 9 }),
+            frameRate: 8,
+            repeat: -1,
+        });
+        this.anims.create({
+            key: 'Orc1WalkR',
+            frames: this.anims.generateFrameNumbers('Orc1', { start: 11, end: 14 }),
+            frameRate: 8,
+            repeat: -1,
+        });
+        this.anims.create({
+            key: 'Orc1WalkL',
+            frames: this.anims.generateFrameNumbers('Orc1', { start: 16, end: 19 }),
+            frameRate: 8,
+            repeat: -1,
+        });
     }
 
     update(time: number, delta: number) {

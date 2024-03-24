@@ -1,12 +1,14 @@
-import { Monster } from "@/phaser/battletd/gameobjects/Monster";
+import {Monster} from "@/phaser/battletd/gameobjects/Monster";
 import GameScene from "@/phaser/battletd/scenes/GameScene";
 import {
   projectileSpriteInfos,
-  TowerDefinition, towerDefinitions,
+  TowerDefinition,
+  towerDefinitions,
   TowerId,
   towerSpriteInfos
 } from "@/phaser/battletd/model/Towers";
-import { SpriteInfo } from "@/phaser/battletd/model/Common";
+import {SpriteInfo} from "@/phaser/battletd/model/Common";
+import FilterMode = Phaser.Textures.FilterMode;
 
 export interface TowerOptions {
   readonly towerId: TowerId,
@@ -123,6 +125,7 @@ export class Tower extends Phaser.GameObjects.Container {
     const projectileDef = this.towerDefinition.projectile;
     const spriteInfo: SpriteInfo = projectileSpriteInfos[projectileDef.type];
     const projectile = this.scene.physics.add.sprite(this.x, this.y, spriteInfo.texture, spriteInfo.frame);
+    projectile.texture.setFilter(FilterMode.NEAREST);
     if (spriteInfo.animationKey) {
       projectile.anims.play(spriteInfo.animationKey);
     }
@@ -133,6 +136,7 @@ export class Tower extends Phaser.GameObjects.Container {
 
     const lifespan = projectileDef.lifespan;
     if (lifespan) {
+      // after {lifespan}ms, fade and destroy
       this.scene.tweens.add({
         targets: projectile,
         delay: lifespan,
@@ -145,6 +149,7 @@ export class Tower extends Phaser.GameObjects.Container {
     }
     const growth = projectileDef.growth;
     if (growth) {
+      // over {lifespan}ms, grow to {growth} scale
       this.scene.tweens.add({
         targets: projectile,
         duration: lifespan ?? 2000,
@@ -188,6 +193,7 @@ export class Tower extends Phaser.GameObjects.Container {
   protected hitMonster(projectile: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
                        monster: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile) {
     projectile.destroy();
+    // TODO: apply modifiers based on projectile damage type and monster resistances / weaknesses
     (monster as Monster).takeDamage(this.towerDefinition.projectile.impactDamage);
   }
 }

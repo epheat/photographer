@@ -3,3 +3,10 @@ export interface SpriteInfo {
     frame?: number,
     animationKey?: string,
 }
+
+export enum Direction {
+    UP = "U",
+    DOWN = "D",
+    LEFT = "L",
+    RIGHT = "R",
+}

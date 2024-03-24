@@ -122,12 +122,12 @@ export const towerDefinitions: { [key in TowerId]: TowerDefinition } = {
         range: 100,
         projectile: {
             type: ProjectileType.Fire,
-            size: 6,
+            size: 4,
             speed: 100,
             impactDamage: 8,
             drag: 0.4,
             lifespan: 1200,
-            growth: 1.8,
+            growth: 2.5,
         },
 
     },
