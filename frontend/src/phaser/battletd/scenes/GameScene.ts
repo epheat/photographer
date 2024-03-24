@@ -49,7 +49,7 @@ export default class GameScene extends Phaser.Scene {
         this.load.image('bullet2', bullet2);
         this.load.image('pellet', pellet);
         this.load.image('pellet2', pellet2);
-        this.load.spritesheet('fire', fire, { frameWidth: 24, frameHeight: 32 });
+        this.load.spritesheet('fire', fire, { frameWidth: 24, frameHeight: 24 });
         this.load.image('star', star);
         this.load.image('plot', plot);
         this.load.image('tower', tower);

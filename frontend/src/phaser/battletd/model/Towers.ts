@@ -32,6 +32,7 @@ export interface TowerProjectile {
     readonly impactDamage: number,
     readonly lifespan?: number,
     readonly drag?: number,
+    readonly growth?: number,
 }
 
 export const projectileSpriteInfos: { [key in ProjectileType]: SpriteInfo } = {
@@ -126,6 +127,7 @@ export const towerDefinitions: { [key in TowerId]: TowerDefinition } = {
             impactDamage: 8,
             drag: 0.4,
             lifespan: 1200,
+            growth: 1.8,
         },
 
     },

@@ -143,6 +143,14 @@ export class Tower extends Phaser.GameObjects.Container {
         }
       })
     }
+    const growth = projectileDef.growth;
+    if (growth) {
+      this.scene.tweens.add({
+        targets: projectile,
+        duration: lifespan ?? 2000,
+        scale: growth,
+      });
+    }
     this.projectiles.add(projectile);
     return projectile;
   }
