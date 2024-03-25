@@ -36,7 +36,6 @@ export class Tower extends Phaser.GameObjects.Container {
     this.reloadIndicator = this.createReloadIndicator();
     this.add([this.rangeIndicator, this.towerSprite, this.reloadIndicator]);
 
-    // this.setSize(16, 16).setInteractive().on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, this.reload);
     this.scene.add.existing(this);
     this.projectiles = this.scene.physics.add.group();
     this.scene.physics.add.overlap(this.projectiles, (this.scene as GameScene).monsters, this.hitMonster.bind(this));

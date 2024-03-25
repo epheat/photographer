@@ -1,4 +1,5 @@
 import { TowerId } from "@/phaser/battletd/model/Towers";
+import { EnemyType } from "@/phaser/battletd/model/Enemies";
 
 export class BattleTDGameState implements GameState {
 
@@ -35,6 +36,8 @@ export class BattleTDGameState implements GameState {
             phaseTime: 0,
             phaseTimeRemainingMillis: 0,
             complete: true,
+            enemyType: EnemyType.Orc1,
+            enemyCount: 0,
         }
     }
 
@@ -78,6 +81,11 @@ export interface WaveState {
     phaseTime: number,
     phaseTimeRemainingMillis: number,
     complete: boolean,
+
+    // TODO: more details about enemy troops, including enemy type, number of enemies.
+    // Should be flexible enough to support waves with multiple enemy types.
+    enemyType: EnemyType,
+    enemyCount: number,
 }
 
 export enum WavePhase {

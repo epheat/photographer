@@ -5,6 +5,9 @@ import miniNatureTileset from "@/phaser/battletd/assets/tiles/miniworld/nature.p
 import tower from "@/phaser/battletd/assets/tiles/miniworld/tower.png";
 import plot from "@/phaser/battletd/assets/tiles/miniworld/plot.png";
 import orc1 from "@/phaser/battletd/assets/tiles/miniworld/enemies/orc1.png";
+import orc2 from "@/phaser/battletd/assets/tiles/miniworld/enemies/orc2.png";
+import orc3 from "@/phaser/battletd/assets/tiles/miniworld/enemies/orc3.png";
+import orc4 from "@/phaser/battletd/assets/tiles/miniworld/enemies/orc4.png";
 import bomb from "@/phaser/battletd/assets/bomb.png";
 import pellet from "@/phaser/battletd/assets/tiles/miniworld/projectiles/pellet.png";
 import pellet2 from "@/phaser/battletd/assets/tiles/miniworld/projectiles/pellet2.png";
@@ -54,6 +57,9 @@ export default class GameScene extends Phaser.Scene {
         this.load.image('plot', plot);
         this.load.image('tower', tower);
         this.load.spritesheet('Orc1', orc1, { frameWidth: 16, frameHeight: 16 });
+        this.load.spritesheet('Orc2', orc2, { frameWidth: 16, frameHeight: 16 });
+        this.load.spritesheet('Orc3', orc3, { frameWidth: 16, frameHeight: 16 });
+        this.load.spritesheet('Orc4', orc4, { frameWidth: 16, frameHeight: 16 });
         this.load.image('range_indicator', range)
         this.load.image('terrain', miniTerrainTileset);
         this.load.image('nature', miniNatureTileset);
@@ -92,30 +98,32 @@ export default class GameScene extends Phaser.Scene {
             frameRate: 10,
             repeat: -1,
         });
-        this.anims.create({
-            key: 'Orc1WalkD',
-            frames: this.anims.generateFrameNumbers('Orc1', { start: 1, end: 4 }),
-            frameRate: 8,
-            repeat: -1,
-        });
-        this.anims.create({
-            key: 'Orc1WalkU',
-            frames: this.anims.generateFrameNumbers('Orc1', { start: 6, end: 9 }),
-            frameRate: 8,
-            repeat: -1,
-        });
-        this.anims.create({
-            key: 'Orc1WalkR',
-            frames: this.anims.generateFrameNumbers('Orc1', { start: 11, end: 14 }),
-            frameRate: 8,
-            repeat: -1,
-        });
-        this.anims.create({
-            key: 'Orc1WalkL',
-            frames: this.anims.generateFrameNumbers('Orc1', { start: 16, end: 19 }),
-            frameRate: 8,
-            repeat: -1,
-        });
+        [EnemyType.Orc1, EnemyType.Orc2, EnemyType.Orc3, EnemyType.Orc4].forEach(enemyType => {
+            this.anims.create({
+                key: `${enemyType}WalkD`,
+                frames: this.anims.generateFrameNumbers(enemyType, { start: 1, end: 4 }),
+                frameRate: 8,
+                repeat: -1,
+            });
+            this.anims.create({
+                key: `${enemyType}WalkU`,
+                frames: this.anims.generateFrameNumbers(enemyType, { start: 6, end: 9 }),
+                frameRate: 8,
+                repeat: -1,
+            });
+            this.anims.create({
+                key: `${enemyType}WalkR`,
+                frames: this.anims.generateFrameNumbers(enemyType, { start: 11, end: 14 }),
+                frameRate: 8,
+                repeat: -1,
+            });
+            this.anims.create({
+                key: `${enemyType}WalkL`,
+                frames: this.anims.generateFrameNumbers(enemyType, { start: 16, end: 19 }),
+                frameRate: 8,
+                repeat: -1,
+            });
+        })
     }
 
     update(time: number, delta: number) {
@@ -124,7 +132,7 @@ export default class GameScene extends Phaser.Scene {
         this.gameSimulator.update(time, delta);
 
         if (this.gameSimulator.gameState.waveState.phase == WavePhase.PreBattlePhase && this.monsters.children.size == 0) {
-            this.spawnWave(EnemyType.Orc1, this.gameSimulator.gameState.waveState.waveNumber);
+            this.spawnWave(this.gameSimulator.gameState.waveState.enemyType, this.gameSimulator.gameState.waveState.waveNumber);
         }
         if (this.gameSimulator.gameState.waveState.phase == WavePhase.BattlePhase && this.monsters.children.size == 0) {
             this.gameSimulator.gameState.waveState.complete = true;
