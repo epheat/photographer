@@ -1,0 +1,164 @@
+[
+  {
+    "hometown": "Brooklyn, New York",
+    "occupation": "AI Research Assistant",
+    "startingTribe": "Gata",
+    "tribe": "Gata",
+    "name": "Andy Rueda",
+    "id": "AndyRueda",
+    "age": 31
+  },
+  {
+    "hometown": "Los Angeles, California",
+    "occupation": "Marketing Manager",
+    "startingTribe": "Gata",
+    "tribe": "Gata",
+    "name": "Anika Dhar",
+    "id": "AnikaDhar",
+    "age": 26
+  },
+  {
+    "hometown": "Houston, Texas",
+    "occupation": "IT Consultant",
+    "startingTribe": "Luvo",
+    "tribe": "Luvo",
+    "name": "Aysha Welch",
+    "id": "AyshaWelch",
+    "age": 32
+  },
+  {
+    "hometown": "Chicago, Illinois",
+    "occupation": "Strategy Consultant",
+    "startingTribe": "Tuku",
+    "tribe": "Tuku",
+    "name": "Caroline Vidmar",
+    "id": "CarolineVidmar",
+    "age": 27
+  },
+  {
+    "hometown": "Baltimore, Maryland",
+    "occupation": "Radio Host",
+    "startingTribe": "Tuku",
+    "tribe": "Tuku",
+    "name": "Gabe Ortis",
+    "id": "GabeOrtis",
+    "age": 26
+  },
+  {
+    "hometown": "Winnipeg, Manitoba",
+    "occupation": "Corporate Lawyer",
+    "startingTribe": "Luvo",
+    "tribe": "Luvo",
+    "name": "Genevieve Mushaluk",
+    "id": "GenevieveMushaluk",
+    "age": 33
+  },
+  {
+    "hometown": "Phoenix, Arizona",
+    "occupation": "E-Sports Commentator",
+    "startingTribe": "Luvo",
+    "tribe": "Luvo",
+    "name": "Rome Cooney",
+    "id": "RomeCooney",
+    "age": 30
+  },
+  {
+    "hometown": "Los Angeles, California",
+    "occupation": "Podcast Host",
+    "startingTribe": "Gata",
+    "tribe": "Gata",
+    "name": "Jon Lovett",
+    "id": "JonLovett",
+    "age": 42
+  },
+  {
+    "hometown": "San Francisco, California",
+    "occupation": "Emergency Room Doctor",
+    "startingTribe": "Luvo",
+    "tribe": "Luvo",
+    "name": "Kishan Patel",
+    "id": "KishanPatel",
+    "age": 28
+  },
+  {
+    "hometown": "Cheboygan, Michigan",
+    "occupation": "Construction Worker",
+    "startingTribe": "Tuku",
+    "tribe": "Tuku",
+    "name": "Kyle Ostwald",
+    "id": "KyleOstwald",
+    "age": 31
+  },
+  {
+    "hometown": "Southfield, Michigan",
+    "occupation": "Graphic Designer",
+    "startingTribe": "Gata",
+    "tribe": "Gata",
+    "name": "Rachel LaMont",
+    "id": "RachelLaMont",
+    "age": 34
+  },
+  {
+    "hometown": "Nashville, Tennessee",
+    "occupation": "Sports Reporter",
+    "startingTribe": "Gata",
+    "tribe": "Gata",
+    "name": "Sam Phalen",
+    "id": "SamPhalen",
+    "age": 24
+  },
+  {
+    "hometown": "Phoenixville, Pennslyvania",
+    "occupation": "Nurse",
+    "startingTribe": "Gata",
+    "tribe": "Gata",
+    "name": "Sierra Wright",
+    "id": "SierraWright",
+    "age": 27
+  },
+  {
+    "hometown": "Norwalk, Connecticut",
+    "occupation": "Medical Device Sales",
+    "startingTribe": "Luvo",
+    "tribe": "Luvo",
+    "name": "Solomon \"Sol\" Yi",
+    "id": "SolomonYi",
+    "age": 43
+  },
+  {
+    "hometown": "Putnam Valley, New York",
+    "occupation": "Flight School Owner",
+    "startingTribe": "Tuku",
+    "tribe": "Tuku",
+    "name": "Sue Smey",
+    "id": "SueSmey",
+    "age": 59
+  },
+  {
+    "hometown": "Manahawkin, New Jersey",
+    "occupation": "Freelance Writer",
+    "startingTribe": "Luvo",
+    "tribe": "Luvo",
+    "name": "Teeny Chirichillo",
+    "id": "TeenyChirichillo",
+    "age": 23
+  },
+  {
+    "hometown": "Washington D.C.",
+    "occupation": "Athlete Marketing Manager",
+    "startingTribe": "Tuku",
+    "tribe": "Tuku",
+    "name": "Terran \"TK\" Foster",
+    "id": "TerranFoster",
+    "age": 31
+  },
+  {
+    "hometown": "Oahu, Hawaii",
+    "occupation": "Flight Attendant",
+    "startingTribe": "Tuku",
+    "tribe": "Tuku",
+    "name": "Tiyana Hallums",
+    "id": "TiyanaHallums",
+    "age": 27
+  }
+]

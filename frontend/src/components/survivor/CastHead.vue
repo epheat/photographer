@@ -14,6 +14,9 @@
       soka: tribe === 'Soka',
       tika: tribe === 'Tika',
       vava: tribe === 'Vava',
+      gata: tribe === 'Gata',
+      luvo: tribe === 'Luvo',
+      tuku: tribe === 'Tuku',
     }"/>
     <div class="cover" v-if="correct || incorrect" :title="id" :class="{
       correct: correct,
@@ -79,6 +82,24 @@ import MattBlankinshipHead from "@/assets/survivors/S44/MattBlankinshipHead.jpg"
 import MatthewGrinsteadMayleHead from "@/assets/survivors/S44/MatthewGrinsteadMayleHead.jpg";
 import SarahWadeHead from "@/assets/survivors/S44/SarahWadeHead.jpg";
 import YamilArochoHead from "@/assets/survivors/S44/YamilArochoHead.jpg";
+import AndyRuedaHead from "@/assets/survivors/S47/AndyRuedaHead.jpg";
+import AnikaDharHead from "@/assets/survivors/S47/AnikaDharHead.jpg";
+import AyshaWelchHead from "@/assets/survivors/S47/AyshaWelchHead.jpg";
+import CarolineVidmarHead from "@/assets/survivors/S47/CarolineVidmarHead.jpg";
+import GabeOrtisHead from "@/assets/survivors/S47/GabeOrtisHead.jpg";
+import GenevieveMushalukHead from "@/assets/survivors/S47/GenevieveMushalukHead.jpg";
+import JonLovettHead from "@/assets/survivors/S47/JonLovettHead.jpg";
+import KishanPatelHead from "@/assets/survivors/S47/KishanPatelHead.jpg";
+import KyleOstwaldHead from "@/assets/survivors/S47/KyleOstwaldHead.jpg";
+import RachelLaMontHead from "@/assets/survivors/S47/RachelLaMontHead.jpg";
+import RomeCooneyHead from "@/assets/survivors/S47/RomeCooneyHead.jpg";
+import SamPhalenHead from "@/assets/survivors/S47/SamPhalenHead.jpg";
+import SierraWrightHead from "@/assets/survivors/S47/SierraWrightHead.jpg";
+import SolomonYiHead from "@/assets/survivors/S47/SolomonYiHead.jpg";
+import SueSmeyHead from "@/assets/survivors/S47/SueSmeyHead.jpg";
+import TeenyChirichilloHead from "@/assets/survivors/S47/TeenyChirichilloHead.jpg";
+import TerranFosterHead from "@/assets/survivors/S47/TerranFosterHead.jpg";
+import TiyanaHallumsHead from "@/assets/survivors/S47/TiyanaHallumsHead.jpg";
 
 export default {
   name: "CastHead",
@@ -149,6 +170,25 @@ export default {
         MatthewGrinsteadMayle: MatthewGrinsteadMayleHead,
         SarahWade: SarahWadeHead,
         YamilArocho: YamilArochoHead,
+        // S47
+        AndyRueda: AndyRuedaHead,
+        AnikaDhar: AnikaDharHead,
+        AyshaWelch: AyshaWelchHead,
+        CarolineVidmar: CarolineVidmarHead,
+        GabeOrtis: GabeOrtisHead,
+        GenevieveMushaluk: GenevieveMushalukHead,
+        JonLovett: JonLovettHead,
+        KishanPatel: KishanPatelHead,
+        KyleOstwald: KyleOstwaldHead,
+        RachelLaMont: RachelLaMontHead,
+        RomeCooney: RomeCooneyHead,
+        SamPhalen: SamPhalenHead,
+        SierraWright: SierraWrightHead,
+        SolomonYi: SolomonYiHead,
+        SueSmey: SueSmeyHead,
+        TeenyChirichillo: TeenyChirichilloHead,
+        TerranFoster: TerranFosterHead,
+        TiyanaHallums: TiyanaHallumsHead,
       }
     }
   },
@@ -222,6 +262,15 @@ img {
   &.vava {
     border: 3px solid $survivor-vava;
     border-image: linear-gradient(to left top, $survivor-vava, $survivor-vava-2) 3;
+  }
+  &.gata {
+    border: 3px solid $survivor-gata;
+  }
+  &.luvo {
+    border: 3px solid $survivor-luvo;
+  }
+  &.tuku {
+    border: 3px solid $survivor-tuku;
   }
 }
 

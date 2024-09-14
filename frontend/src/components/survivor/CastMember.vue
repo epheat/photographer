@@ -14,6 +14,9 @@
       soka: tribe === 'Soka',
       tika: tribe === 'Tika',
       vava: tribe === 'Vava',
+      gata: tribe === 'Gata',
+      luvo: tribe === 'Luvo',
+      tuku: tribe === 'Tuku',
     }"/>
     <h3>{{ name }}</h3>
     <p>Age: {{ age }}</p>
@@ -79,6 +82,24 @@ import MattBlankinship from "@/assets/survivors/S44/MattBlankinship.jpg";
 import MatthewGrinsteadMayle from "@/assets/survivors/S44/MatthewGrinsteadMayle.jpg";
 import SarahWade from "@/assets/survivors/S44/SarahWade.jpg";
 import YamilArocho from "@/assets/survivors/S44/YamilArocho.jpg";
+import AndyRueda from "@/assets/survivors/S47/AndyRueda.jpg";
+import AnikaDhar from "@/assets/survivors/S47/AnikaDhar.jpg";
+import AyshaWelch from "@/assets/survivors/S47/AyshaWelch.jpg";
+import CarolineVidmar from "@/assets/survivors/S47/CarolineVidmar.jpg";
+import GabeOrtis from "@/assets/survivors/S47/GabeOrtis.jpg";
+import GenevieveMushaluk from "@/assets/survivors/S47/GenevieveMushaluk.jpg";
+import JonLovett from "@/assets/survivors/S47/JonLovett.jpg";
+import KishanPatel from "@/assets/survivors/S47/KishanPatel.jpg";
+import KyleOstwald from "@/assets/survivors/S47/KyleOstwald.jpg";
+import RachelLaMont from "@/assets/survivors/S47/RachelLaMont.jpg";
+import RomeCooney from "@/assets/survivors/S47/RomeCooney.jpg";
+import SamPhalen from "@/assets/survivors/S47/SamPhalen.jpg";
+import SierraWright from "@/assets/survivors/S47/SierraWright.jpg";
+import SolomonYi from "@/assets/survivors/S47/SolomonYi.jpg";
+import SueSmey from "@/assets/survivors/S47/SueSmey.jpg";
+import TeenyChirichillo from "@/assets/survivors/S47/TeenyChirichillo.jpg";
+import TerranFoster from "@/assets/survivors/S47/TerranFoster.jpg";
+import TiyanaHallums from "@/assets/survivors/S47/TiyanaHallums.jpg";
 
 export default {
   name: "CastMember",
@@ -152,6 +173,25 @@ export default {
         MatthewGrinsteadMayle: MatthewGrinsteadMayle,
         SarahWade: SarahWade,
         YamilArocho: YamilArocho,
+        // S47
+        AndyRueda: AndyRueda,
+        AnikaDhar: AnikaDhar,
+        AyshaWelch: AyshaWelch,
+        CarolineVidmar: CarolineVidmar,
+        GabeOrtis: GabeOrtis,
+        GenevieveMushaluk: GenevieveMushaluk,
+        JonLovett: JonLovett,
+        KishanPatel: KishanPatel,
+        KyleOstwald: KyleOstwald,
+        RachelLaMont: RachelLaMont,
+        RomeCooney: RomeCooney,
+        SamPhalen: SamPhalen,
+        SierraWright: SierraWright,
+        SolomonYi: SolomonYi,
+        SueSmey: SueSmey,
+        TeenyChirichillo: TeenyChirichillo,
+        TerranFoster: TerranFoster,
+        TiyanaHallums: TiyanaHallums,
       }
     }
   },
@@ -216,6 +256,15 @@ export default {
     &.vava {
       border: 3px solid $survivor-vava;
       border-image: linear-gradient(to left top, $survivor-vava, $survivor-vava-2) 3;
+    }
+    &.gata {
+      border: 3px solid $survivor-gata;
+    }
+    &.luvo {
+      border: 3px solid $survivor-luvo;
+    }
+    &.tuku {
+      border: 3px solid $survivor-tuku;
     }
   }
 }
