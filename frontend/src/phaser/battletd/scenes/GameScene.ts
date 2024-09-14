@@ -14,6 +14,7 @@ import pellet2 from "@/phaser/battletd/assets/tiles/miniworld/projectiles/pellet
 import bullet from "@/phaser/battletd/assets/tiles/miniworld/projectiles/bullet.png";
 import bullet2 from "@/phaser/battletd/assets/tiles/miniworld/projectiles/bullet2.png";
 import fire from "@/phaser/battletd/assets/tiles/fire_fx_v1.0/png/orange/loops/burning_loop_5.png";
+import blueFire from "@/phaser/battletd/assets/tiles/fire_fx_v1.0/png/blue/loops/burning_loop_2.png";
 import range from "@/phaser/battletd/assets/range.png";
 import star from "@/phaser/battletd/assets/star.png";
 import map1 from "@/phaser/battletd/tiled/map1.json";
@@ -53,6 +54,7 @@ export default class GameScene extends Phaser.Scene {
         this.load.image('pellet', pellet);
         this.load.image('pellet2', pellet2);
         this.load.spritesheet('fire', fire, { frameWidth: 8, frameHeight: 8 });
+        this.load.spritesheet('blueFire', blueFire, { frameWidth: 20, frameHeight: 24 });
         this.load.image('star', star);
         this.load.image('plot', plot);
         this.load.image('tower', tower);
@@ -95,6 +97,12 @@ export default class GameScene extends Phaser.Scene {
         this.anims.create({
             key: 'fireAnim',
             frames: this.anims.generateFrameNumbers('fire', {}),
+            frameRate: 10,
+            repeat: -1,
+        });
+        this.anims.create({
+            key: 'blueFireAnim',
+            frames: this.anims.generateFrameNumbers('blueFire', {}),
             frameRate: 10,
             repeat: -1,
         });

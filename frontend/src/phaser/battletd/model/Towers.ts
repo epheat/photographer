@@ -19,6 +19,7 @@ export enum ProjectileType {
     Arrow = "arrow",
     Pellet = "pellet",
     Fire = "fire",
+    BlueFire = "blueFire",
 }
 
 /**
@@ -40,6 +41,7 @@ export const projectileSpriteInfos: { [key in ProjectileType]: SpriteInfo } = {
     [ProjectileType.Arrow]: { texture: 'bullet' },
     [ProjectileType.Pellet]: { texture: 'pellet' },
     [ProjectileType.Fire]: { texture: 'fire', animationKey: 'fireAnim' },
+    [ProjectileType.BlueFire]: { texture: 'blueFire', animationKey: 'blueFireAnim' },
 }
 
 /**
@@ -119,7 +121,7 @@ export const towerDefinitions: { [key in TowerId]: TowerDefinition } = {
     [TowerId.Flamethrower]: {
         towerId: TowerId.Flamethrower,
         reloadTime: 40,
-        range: 100,
+        range: 80,
         projectile: {
             type: ProjectileType.Fire,
             size: 4,
@@ -148,10 +150,10 @@ export const towerDefinitions: { [key in TowerId]: TowerDefinition } = {
         reloadTime: 2600,
         range: 150,
         projectile: {
-            type: ProjectileType.Arrow,
-            size: 4,
+            type: ProjectileType.BlueFire,
+            size: 8,
             speed: 200,
-            impactDamage: 30,
+            impactDamage: 100,
         },
     },
 }

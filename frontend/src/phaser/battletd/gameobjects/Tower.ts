@@ -1,4 +1,4 @@
-import {Monster} from "@/phaser/battletd/gameobjects/Monster";
+import { Monster } from "@/phaser/battletd/gameobjects/Monster";
 import GameScene from "@/phaser/battletd/scenes/GameScene";
 import {
   projectileSpriteInfos,
@@ -7,7 +7,7 @@ import {
   TowerId,
   towerSpriteInfos
 } from "@/phaser/battletd/model/Towers";
-import {SpriteInfo} from "@/phaser/battletd/model/Common";
+import { SpriteInfo } from "@/phaser/battletd/model/Common";
 import FilterMode = Phaser.Textures.FilterMode;
 
 export interface TowerOptions {
@@ -49,7 +49,9 @@ export class Tower extends Phaser.GameObjects.Container {
 
   protected createTowerSprite(): Phaser.GameObjects.Sprite {
     const spriteInfo: SpriteInfo = towerSpriteInfos[this.towerId];
-    return this.scene.add.sprite(0, 0, spriteInfo.texture, spriteInfo.frame);
+    const sprite = this.scene.add.sprite(0, 0, spriteInfo.texture, spriteInfo.frame);
+    sprite.texture.setFilter(FilterMode.NEAREST);
+    return sprite;
   }
 
   protected createReloadIndicator(): Phaser.GameObjects.Rectangle {
