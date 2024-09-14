@@ -1,15 +1,25 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocument } from "@aws-sdk/lib-dynamodb";
+import {
+    CognitoIdentityProviderClient,
+    AdminGetUserCommand,
+    UserStatusType
+} from "@aws-sdk/client-cognito-identity-provider";
 import { APIGatewayProxyEventV2, APIGatewayProxyEventV2WithJWTAuthorizer, APIGatewayProxyResultV2 } from "aws-lambda";
-import {deny, error, fault, success} from "./responses";
-import {getUserInfo, userHasGroup} from "./auth";
-import {v4 as uuidv4} from "uuid";
+import { deny, error, fault, success } from "./responses";
+import { getUserInfo, userHasGroup } from "./auth";
+import { v4 as uuidv4 } from "uuid";
+import { SendEmailCommand, SESv2Client } from "@aws-sdk/client-sesv2";
+import { Charset } from "aws-cdk-lib/aws-lambda-nodejs";
 
 const tableName = "PSGameData";
 const client = new DynamoDBClient([{ region: "us-east-1" }]);
 // DynamoDB document client abstracts the mapping from ddb attributes into javascript objects.
 // docs: https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB/DocumentClient.html
 const ddb = DynamoDBDocument.from(client);
+const userPoolId = "us-east-1_TLQmyLdLo"; // TODO: feed in from environment variable
+const cognitoClient = new CognitoIdentityProviderClient([{ region: "us-east-1" }]);
+const sesClient = new SESv2Client([{ region: "us-east-1" }]);
 
 /**
  * GET games/survivor/cast
@@ -694,6 +704,82 @@ export async function putItem(event: APIGatewayProxyEventV2WithJWTAuthorizer): P
         return fault({ message: err });
     }
     return success({ message: "Success." });
+}
+
+export async function sendPredictionReminders(predictionId: string): Promise<void> {
+    const seasonId = await getActiveSeason();
+    console.log(`Sending reminder for prediction ${predictionId}`);
+    // get season leaderboard to fetch all users who have participated this season, then filter down to only those who
+    // have not submitted a prediction yet.
+    const userPoints = await ddb.query({
+        TableName: tableName,
+        IndexName: "pointsIndex",
+        KeyConditionExpression: "resourceId = :resourceId",
+        ExpressionAttributeValues: {
+            ':resourceId': `FantasySurvivor-${seasonId}-UserPoints`
+        }
+    });
+    const userPredictions = await ddb.query({
+        TableName: tableName,
+        IndexName: "resourceTypeIndex",
+        KeyConditionExpression: "resourceType = :resourceType and resourceId = :resourceId",
+        ExpressionAttributeValues: {
+            ':resourceType': 'UserPrediction',
+            ':resourceId': predictionId,
+        },
+    });
+    let userPointsWithUsername = (userPoints.Items ?? []).map(item => { return {
+        entityId: item.entityId,
+        username: item.username,
+    }});
+    // start with all userPoints, removing those that are present in userPredictions
+    let usernamesWithoutPrediction: string[] = userPointsWithUsername.filter(item => {
+        !userPredictions.Items?.find(userPrediction => userPrediction.entityId == item.entityId);
+    }).map(item => {
+        return item.username;
+    });
+
+    const emailAddresses: string[] = [];
+    for (const username of usernamesWithoutPrediction) {
+        const user = await cognitoClient.send(new AdminGetUserCommand({
+            UserPoolId: userPoolId,
+            Username: username,
+        }));
+
+        if (user.UserStatus !== UserStatusType.CONFIRMED) {
+            console.log(`User is not confirmed: ${username}`);
+            continue;
+        }
+
+        const email = user.UserAttributes?.find(attribute => attribute.Name == "email")?.Value;
+        if (email == undefined) {
+            console.log(`Couldn't find email property for user ${username}`);
+            continue;
+        }
+
+        emailAddresses.push(email);
+    }
+
+    const sesResult = await sesClient.send(new SendEmailCommand({
+        FromEmailAddress: "noreply@noreply.evanheaton.com",
+        Destination: {
+            ToAddresses: emailAddresses,
+        },
+        Content: {
+            Simple: {
+                Subject: {
+                    Data: "FantasySurvivor: Submit your predictions!",
+                },
+                Body: {
+                    Text: {
+                        Data: "Time is running out! Follow the link below to submit your predictions in FantasySurvivor!\n\nhttps://evanheaton.com/#/games/FantasySurvivor\n\n- Evan",
+                    }
+                }
+            }
+        }
+    }));
+
+    return;
 }
 
 function isValidItem(item: any): boolean {

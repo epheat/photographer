@@ -1,12 +1,12 @@
 import {
+  aws_certificatemanager as acm,
   aws_dynamodb as dynamodb,
+  aws_iam as iam,
   aws_lambda as lambda,
   aws_lambda_nodejs as nodejs,
   aws_route53 as route53,
   aws_route53_targets as targets,
   aws_s3 as s3,
-  aws_iam as iam,
-  aws_certificatemanager as acm,
   CfnOutput,
   Duration,
   RemovalPolicy,
@@ -16,9 +16,10 @@ import {
 import * as apigateway from "@aws-cdk/aws-apigatewayv2-alpha";
 import * as integrations from "@aws-cdk/aws-apigatewayv2-integrations-alpha";
 import * as authorizers from "@aws-cdk/aws-apigatewayv2-authorizers-alpha";
-import {Construct} from "constructs";
+import { Construct } from "constructs";
 import * as path from "path";
-import {PSAuth} from "./constructs/ps-auth";
+import { PSAuth } from "./constructs/ps-auth";
+import { Effect, PolicyStatement } from "aws-cdk-lib/aws-iam";
 
 export interface PSBackendStackProps extends StackProps {
   domain: String,
@@ -209,6 +210,18 @@ export class PSBackendStack extends Stack {
       handler: 'putItem',
     });
     gameDataTable.grantReadWriteData(putItemLambda);
+    const sendPredictionRemindersLambda = new nodejs.NodejsFunction(this, 'send-prediction-reminders-func', {
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      entry: path.join(__dirname, "./lambda/survivor.ts"),
+      handler: 'sendPredictionReminders',
+    });
+    gameDataTable.grantReadData(sendPredictionRemindersLambda);
+    auth.userPool.grant(sendPredictionRemindersLambda, "cognito-idp:AdminGetUser");
+    sendPredictionRemindersLambda.role?.addToPrincipalPolicy(new PolicyStatement({
+      actions: ["ses:SendEmail"],
+      resources: ["*"],
+      effect: Effect.ALLOW,
+    }));
 
     // images functions
     const getImageUploadUrl = new nodejs.NodejsFunction(this, 'get-image-upload-url-func', {
