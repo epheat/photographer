@@ -87,7 +87,7 @@ export class PSWebsiteStack extends Stack {
               }
             },
             user: 'root',
-            image: DockerImage.fromRegistry('public.ecr.aws/sam/build-nodejs14.x:latest'),
+            image: DockerImage.fromRegistry('public.ecr.aws/sam/build-nodejs20.x:latest'),
             command: [
               'bash', '-c', [
                 'cd /asset-input',
