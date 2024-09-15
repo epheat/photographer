@@ -13,7 +13,7 @@ export interface IComponent {
 
 export interface IComponentSystem {
   addComponent(go: Phaser.GameObjects.GameObject, component: IComponent): void
-  findComponent<ComponentType>(go: Phaser.GameObjects.GameObject, componentType: Constructor<ComponentType>): ComponentType | undefined
+  findComponent<ComponentType extends object>(go: Phaser.GameObjects.GameObject, componentType: Constructor<ComponentType>): ComponentType | undefined
   removeComponent(go: Phaser.GameObjects.GameObject, component: IComponent): void
   destroy(): void
   update(dt: number): void
@@ -63,7 +63,7 @@ export default class ComponentSystem implements IComponentSystem {
     component.destroy?.();
   }
 
-  findComponent<ComponentType>(go: Phaser.GameObjects.GameObject, componentType: Constructor<ComponentType>) {
+  findComponent<ComponentType extends object>(go: Phaser.GameObjects.GameObject, componentType: Constructor<ComponentType>) {
     const components = this.componentsByGameObject.get(go.name) ?? [];
     return components.find(component => component instanceof componentType) as ComponentType | undefined;
   }

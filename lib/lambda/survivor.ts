@@ -706,6 +706,12 @@ export async function putItem(event: APIGatewayProxyEventV2WithJWTAuthorizer): P
     return success({ message: "Success." });
 }
 
+/**
+ * Lambda sendPredictionReminders
+ *
+ * When a prediction is created, a State Machine will be spun up which will invoke this Lambda 24h before the prediction
+ * window closes. This will email all players who haven't submitted userPredictions yet.
+ */
 export async function sendPredictionReminders(predictionId: string): Promise<void> {
     const seasonId = await getActiveSeason();
     console.log(`Sending reminder for prediction ${predictionId}`);

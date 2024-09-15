@@ -9,6 +9,7 @@ import {
 } from "@/phaser/battletd/model/Towers";
 import { SpriteInfo } from "@/phaser/battletd/model/Common";
 import FilterMode = Phaser.Textures.FilterMode;
+import ArcadePhysicsCallback = Phaser.Types.Physics.Arcade.ArcadePhysicsCallback;
 
 export interface TowerOptions {
   readonly towerId: TowerId,
@@ -191,8 +192,7 @@ export class Tower extends Phaser.GameObjects.Container {
     return this.scene.physics.velocityFromAngle(angle, this.towerDefinition.projectile.speed);
   }
 
-  protected hitMonster(projectile: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
-                       monster: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile) {
+  protected hitMonster: ArcadePhysicsCallback = (projectile, monster): void => {
     projectile.destroy();
     // TODO: apply modifiers based on projectile damage type and monster resistances / weaknesses
     (monster as Monster).takeDamage(this.towerDefinition.projectile.impactDamage);

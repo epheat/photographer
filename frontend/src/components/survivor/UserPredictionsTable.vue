@@ -1,33 +1,35 @@
 <template>
   <div class="user-predictions-table">
     <table>
-      <tr>
-        <th>username</th>
-        <th>prediction</th>
-        <th>selections</th>
-        <th>points</th>
-      </tr>
-      <tr v-for="userPrediction in userPredictions" :key="`${userPrediction.entityId}-${userPrediction.resourceId}`">
-        <td class="username">{{ userPrediction.username }}</td>
-        <td>
-          <div class="flex">
-            <div>{{ getEpisode(userPrediction.predictionId) }}</div>
-            <img class="icon" :src="getIcon(userPrediction.predictionId)" alt="icon"/>
-          </div>
-        </td>
-        <td>
-          <CastHead
-              v-for="survivor in userPrediction.selections"
-              :key="survivor"
-              :id="survivor"
-              :tribe="getTribe(survivor)"
-              :correct="isCorrect(survivor, userPrediction.predictionId)"
-          />
-        </td>
-        <td>
-          {{ getPoints(userPrediction) }}
-        </td>
-      </tr>
+      <tbody>
+        <tr>
+          <th>username</th>
+          <th>prediction</th>
+          <th>selections</th>
+          <th>points</th>
+        </tr>
+        <tr v-for="userPrediction in userPredictions" :key="`${userPrediction.entityId}-${userPrediction.resourceId}`">
+          <td class="username">{{ userPrediction.username }}</td>
+          <td>
+            <div class="flex">
+              <div>{{ getEpisode(userPrediction.predictionId) }}</div>
+              <img class="icon" :src="getIcon(userPrediction.predictionId)" alt="icon"/>
+            </div>
+          </td>
+          <td>
+            <CastHead
+                v-for="survivor in userPrediction.selections"
+                :key="survivor"
+                :id="survivor"
+                :tribe="getTribe(survivor)"
+                :correct="isCorrect(survivor, userPrediction.predictionId)"
+            />
+          </td>
+          <td>
+            {{ getPoints(userPrediction) }}
+          </td>
+        </tr>
+      </tbody>
     </table>
   </div>
 </template>
