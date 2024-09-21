@@ -7,6 +7,7 @@
       <div class="tab" :class="{active: currentTab === 2}" @click="setTab(2)">Cast</div>
       <div class="tab" v-if="shouldShowAdminPage" :class="{active: currentTab === 3}" @click="setTab(3)">Admin</div>
     </div>
+    <div class="info-banner" v-if="!loggedIn">This game requires an account to play. Please <router-link to="/auth/login">Login</router-link> or <router-link to="/auth/register">Register</router-link>.</div>
     <div class="error-message" v-if="errorMessage">{{ errorMessage }}</div>
     <div class="success-message" v-if="successMessage">{{ successMessage }}</div>
     <div class="loading-message" v-if="loading">loading...</div>
@@ -181,6 +182,7 @@ export default {
       currentTab: 0,
       errorMessage: "",
       successMessage: "",
+      loggedIn: authStore.state.loggedIn,
       loading: false,
       showUserPredictionModal: false,
       cast: [],
@@ -686,6 +688,18 @@ export default {
     height: 20em;
     box-sizing: border-box;
     margin-bottom: 10px;
+  }
+}
+
+.info-banner {
+  padding: 10px;
+  border-radius: 4px;
+  background-color: $ps-red;
+  color: $ps-white;
+  box-shadow: 0px 2px 3px rgba(100, 100, 100, 0.6);
+
+  a {
+    color: $ps-white;
   }
 }
 </style>
