@@ -17,6 +17,7 @@
       gata: tribe === 'Gata',
       luvo: tribe === 'Luvo',
       tuku: tribe === 'Tuku',
+      beka: tribe === 'Beka',
     }"/>
     <h3>{{ name }}</h3>
     <p>Age: {{ age }}</p>
@@ -265,6 +266,10 @@ export default {
     }
     &.tuku {
       border: 3px solid $survivor-tuku;
+    }
+    &.beka {
+      border: 3px solid $survivor-beka;
+      border-image: linear-gradient(to left top, $survivor-beka, $survivor-beka-2) 3;
     }
   }
 }
