@@ -1,11 +1,17 @@
-import { DockerImage, Fn, PhysicalName, Stack, StackProps } from "aws-cdk-lib";
-import { aws_s3 as s3 } from "aws-cdk-lib";
-import { aws_s3_deployment as s3deploy } from "aws-cdk-lib";
-import { aws_cloudfront as cloudfront } from "aws-cdk-lib";
-import { aws_cloudfront_origins as origins } from "aws-cdk-lib";
-import { aws_route53 as route53 } from "aws-cdk-lib";
-import { aws_route53_targets as targets } from "aws-cdk-lib";
-import { aws_certificatemanager as acm } from "aws-cdk-lib";
+import {
+  aws_certificatemanager as acm,
+  aws_cloudfront as cloudfront,
+  aws_cloudfront_origins as origins,
+  aws_route53 as route53,
+  aws_route53_targets as targets,
+  aws_s3 as s3,
+  aws_s3_deployment as s3deploy,
+  DockerImage,
+  Fn,
+  PhysicalName,
+  Stack,
+  StackProps
+} from "aws-cdk-lib";
 import * as path from "path";
 import { exec } from "child_process";
 import * as fs from "fs-extra";
@@ -90,7 +96,7 @@ export class PSWebsiteStack extends Stack {
             image: DockerImage.fromRegistry('public.ecr.aws/sam/build-nodejs20.x:latest'),
             command: [
               'bash', '-c', [
-                'cd /asset-input',
+                'rm -rf /asset-input/node_modules',
                 'npm ci',
                 'npm run build',
                 'cp -r /asset-input/dist/* /asset-output/',
