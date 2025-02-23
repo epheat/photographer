@@ -18,6 +18,9 @@
       luvo: tribe === 'Luvo',
       tuku: tribe === 'Tuku',
       beka: tribe === 'Beka',
+      vula: tribe === 'Vula',
+      lagi: tribe === 'Lagi',
+      civa: tribe === 'Civa',
     }"/>
     <h3>{{ name }}</h3>
     <p>Age: {{ age }}</p>
@@ -101,6 +104,24 @@ import SueSmey from "@/assets/survivors/S47/SueSmey.jpg";
 import TeenyChirichillo from "@/assets/survivors/S47/TeenyChirichillo.jpg";
 import TerranFoster from "@/assets/survivors/S47/TerranFoster.jpg";
 import TiyanaHallums from "@/assets/survivors/S47/TiyanaHallums.jpg";
+import BiancaRoses from "@/assets/survivors/S48/BiancaRoses.jpg";
+import CedrekMcFadden from "@/assets/survivors/S48/CedrekMcFadden.jpg";
+import CharityNelms from "@/assets/survivors/S48/CharityNelms.jpg";
+import ChrissySarnowsky from "@/assets/survivors/S48/ChrissySarnowsky.jpg";
+import DavidKinne from "@/assets/survivors/S48/DavidKinne.jpg";
+import EvaErickson from "@/assets/survivors/S48/EvaErickson.jpg";
+import JoeHunter from "@/assets/survivors/S48/JoeHunter.jpg";
+import JustinPioppi from "@/assets/survivors/S48/JustinPioppi.jpg";
+import KamillaKarthigesu from "@/assets/survivors/S48/KamillaKarthigesu.jpg";
+import KevinLeung from "@/assets/survivors/S48/KevinLeung.jpg";
+import KyleFraser from "@/assets/survivors/S48/KyleFraser.jpg";
+import MaryZheng from "@/assets/survivors/S48/MaryZheng.jpg";
+import MitchGuerra from "@/assets/survivors/S48/MitchGuerra.jpg";
+import SaiouniaHughley from "@/assets/survivors/S48/SaiouniaHughley.jpg";
+import ShauhinDavari from "@/assets/survivors/S48/ShauhinDavari.jpg";
+import StarToomey from "@/assets/survivors/S48/StarToomey.jpg";
+import StephanieBerger from "@/assets/survivors/S48/StephanieBerger.jpg";
+import ThomasKrottinger from "@/assets/survivors/S48/ThomasKrottinger.jpg";
 
 export default {
   name: "CastMember",
@@ -193,6 +214,25 @@ export default {
         TeenyChirichillo: TeenyChirichillo,
         TerranFoster: TerranFoster,
         TiyanaHallums: TiyanaHallums,
+        // S48
+        BiancaRoses: BiancaRoses,
+        CedrekMcFadden: CedrekMcFadden,
+        CharityNelms: CharityNelms,
+        ChrissySarnowsky: ChrissySarnowsky,
+        DavidKinne: DavidKinne,
+        EvaErickson: EvaErickson,
+        JoeHunter: JoeHunter,
+        JustinPioppi: JustinPioppi,
+        KamillaKarthigesu: KamillaKarthigesu,
+        KevinLeung: KevinLeung,
+        KyleFraser: KyleFraser,
+        MaryZheng: MaryZheng,
+        MitchGuerra: MitchGuerra,
+        SaiouniaHughley: SaiouniaHughley,
+        ShauhinDavari: ShauhinDavari,
+        StarToomey: StarToomey,
+        StephanieBerger: StephanieBerger,
+        ThomasKrottinger: ThomasKrottinger,
       }
     }
   },
@@ -270,6 +310,15 @@ export default {
     &.beka {
       border: 3px solid $survivor-beka;
       border-image: linear-gradient(to left top, $survivor-beka, $survivor-beka-2) 3;
+    }
+    &.vula {
+      border: 3px solid $survivor-vula;
+    }
+    &.lagi {
+      border: 3px solid $survivor-lagi;
+    }
+    &.civa {
+      border: 3px solid $survivor-civa;
     }
   }
 }

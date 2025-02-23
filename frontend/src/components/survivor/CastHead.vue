@@ -18,6 +18,9 @@
       luvo: tribe === 'Luvo',
       tuku: tribe === 'Tuku',
       beka: tribe === 'Beka',
+      vula: tribe === 'Vula',
+      lagi: tribe === 'Lagi',
+      civa: tribe === 'Civa',
     }"/>
     <div class="cover" v-if="correct || incorrect" :title="id" :class="{
       correct: correct,
@@ -101,6 +104,24 @@ import SueSmeyHead from "@/assets/survivors/S47/SueSmeyHead.jpg";
 import TeenyChirichilloHead from "@/assets/survivors/S47/TeenyChirichilloHead.jpg";
 import TerranFosterHead from "@/assets/survivors/S47/TerranFosterHead.jpg";
 import TiyanaHallumsHead from "@/assets/survivors/S47/TiyanaHallumsHead.jpg";
+import BiancaRosesHead from "@/assets/survivors/S48/BiancaRosesHead.jpg";
+import CedrekMcFaddenHead from "@/assets/survivors/S48/CedrekMcFaddenHead.jpg";
+import CharityNelmsHead from "@/assets/survivors/S48/CharityNelmsHead.jpg";
+import ChrissySarnowskyHead from "@/assets/survivors/S48/ChrissySarnowskyHead.jpg";
+import DavidKinneHead from "@/assets/survivors/S48/DavidKinneHead.jpg";
+import EvaEricksonHead from "@/assets/survivors/S48/EvaEricksonHead.jpg";
+import JoeHunterHead from "@/assets/survivors/S48/JoeHunterHead.jpg";
+import JustinPioppiHead from "@/assets/survivors/S48/JustinPioppiHead.jpg";
+import KamillaKarthigesuHead from "@/assets/survivors/S48/KamillaKarthigesuHead.jpg";
+import KevinLeungHead from "@/assets/survivors/S48/KevinLeungHead.jpg";
+import KyleFraserHead from "@/assets/survivors/S48/KyleFraserHead.jpg";
+import MaryZhengHead from "@/assets/survivors/S48/MaryZhengHead.jpg";
+import MitchGuerraHead from "@/assets/survivors/S48/MitchGuerraHead.jpg";
+import SaiouniaHughleyHead from "@/assets/survivors/S48/SaiouniaHughleyHead.jpg";
+import ShauhinDavariHead from "@/assets/survivors/S48/ShauhinDavariHead.jpg";
+import StarToomeyHead from "@/assets/survivors/S48/StarToomeyHead.jpg";
+import StephanieBergerHead from "@/assets/survivors/S48/StephanieBergerHead.jpg";
+import ThomasKrottingerHead from "@/assets/survivors/S48/ThomasKrottingerHead.jpg";
 
 export default {
   name: "CastHead",
@@ -190,6 +211,25 @@ export default {
         TeenyChirichillo: TeenyChirichilloHead,
         TerranFoster: TerranFosterHead,
         TiyanaHallums: TiyanaHallumsHead,
+        // S48
+        BiancaRoses: BiancaRosesHead,
+        CedrekMcFadden: CedrekMcFaddenHead,
+        CharityNelms: CharityNelmsHead,
+        ChrissySarnowsky: ChrissySarnowskyHead,
+        DavidKinne: DavidKinneHead,
+        EvaErickson: EvaEricksonHead,
+        JoeHunter: JoeHunterHead,
+        JustinPioppi: JustinPioppiHead,
+        KamillaKarthigesu: KamillaKarthigesuHead,
+        KevinLeung: KevinLeungHead,
+        KyleFraser: KyleFraserHead,
+        MaryZheng: MaryZhengHead,
+        MitchGuerra: MitchGuerraHead,
+        SaiouniaHughley: SaiouniaHughleyHead,
+        ShauhinDavari: ShauhinDavariHead,
+        StarToomey: StarToomeyHead,
+        StephanieBerger: StephanieBergerHead,
+        ThomasKrottinger: ThomasKrottingerHead,
       }
     }
   },
@@ -276,6 +316,15 @@ img {
   &.beka {
     border: 3px solid $survivor-beka;
     border-image: linear-gradient(to left top, $survivor-beka, $survivor-beka-2) 3;
+  }
+  &.vula {
+    border: 3px solid $survivor-vula;
+  }
+  &.lagi {
+    border: 3px solid $survivor-lagi;
+  }
+  &.civa {
+    border: 3px solid $survivor-civa;
   }
 }
 
